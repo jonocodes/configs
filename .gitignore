@@ -1,0 +1,5 @@
+.stignore
+.stfolder
+result
+node_modules
+nix/hosts/po

@@ -1,0 +1,129 @@
+## Flox Environment Manifest -----------------------------------------
+##
+##   _Everything_ you need to know about the _manifest_ is here:
+##
+##               https://flox.dev/docs/concepts/manifest
+##
+## -------------------------------------------------------------------
+# Flox manifest version managed by Flox CLI
+version = 1
+
+
+## Install Packages --------------------------------------------------
+##  $ flox install gum  <- puts a package in [install] section below
+##  $ flox search gum   <- search for a package
+##  $ flox show gum     <- show all versions of a package
+## -------------------------------------------------------------------
+[install]
+yarn = { pkg-path = "yarn", version = "1.22.22" }
+node-gyp.pkg-path = "node-gyp"  # needed for cdktf-cli
+node-gyp.pkg-group = "node-gyp"
+python3 = { pkg-path = "python311" }
+go.pkg-path = "go"
+gcc.pkg-path = "gcc"
+kubectl.pkg-path = "kubectl"
+zlib.pkg-path = "zlib"
+binutils.pkg-path = "binutils"
+terraform.pkg-path = "terraform"
+gnumake.pkg-path = "gnumake"
+conda.pkg-path = "conda"
+conda.systems = ["aarch64-linux", "x86_64-linux"]
+nodejs_18.pkg-path = "nodejs_18"
+
+gcloud.flake = "path:.flox/env/gcloud"
+
+# install pdm globally since this causes: "ERROR: Could not install packages due to an OSError: [Errno 30] Read-only file system: 'RECORD'"
+# even when the pdm version exactly matches
+#pdm.pkg-path = "pdm"
+#pdm.version = "2.22.1"
+
+
+## Environment Variables ---------------------------------------------
+##  ... available for use in the activated environment
+##      as well as [hook], [profile] scripts and [services] below.
+## -------------------------------------------------------------------
+[vars]
+POPULUS_ENVIRONMENT = "dev"
+POPULUS_DATACENTER = "us"
+
+## Activation Hook ---------------------------------------------------
+##  ... run by _bash_ shell when you run 'flox activate'.
+## -------------------------------------------------------------------
+[hook]
+on-activate = '''
+
+  # Install nodejs dependencies
+#  yarn
+
+  # Setup a Python virtual environment
+
+# make conda-create-env
+
+# conda-shell stuff should happen here?
+
+'''
+
+
+## Profile script ----------------------------------------------------
+## ... sourced by _your shell_ when you run 'flox activate'.
+## -------------------------------------------------------------------
+[profile]
+bash = '''
+  echo "Activating conda environment" >&2
+  eval /home/jono/.conda/bin/conda "shell.bash" "hook" $argv | source
+
+  conda activate populus-env
+
+'''
+fish = '''
+
+  echo "Activating conda environment" >&2
+  eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
+
+  conda activate populus-env
+
+	python -V
+  pip -V
+	conda -V
+
+  # install pdm here to avoid the "Could not install packages due to an OSError: [Errno 30] Read-only file system: 'RECORD'" when installed in [install]
+  #  also notice that I do it after loading conda so its in environment
+  #  otherwise it often works if I install it in nix globally
+
+  pip install pdm --quiet
+	
+  pdm -V
+
+  echo READY
+
+  # if conda env not there, create it
+
+  # if node_modules no there, run yarn
+
+  if test ! -d "$FLOX_ENV_PROJECT/node_modules"
+    yarn
+  end
+
+'''
+
+
+## Services ----------------------------------------------------------
+##  $ flox services start             <- Starts all services
+##  $ flox services status            <- Status of running services
+##  $ flox activate --start-services  <- Activates & starts all
+## -------------------------------------------------------------------
+[services]
+dbproxy.command = "make db-start-proxies"
+testdb.command = "make start-test-db"
+# testdb.command = "make start-test-db && docker attach pg_pop"
+# testdb.command = "conda run -n populus-env make start-test-db && docker attach pg_pop"
+
+## Other Environment Options -----------------------------------------
+[options]
+# Systems that environment is compatible with
+systems = [
+  "aarch64-darwin",
+  "aarch64-linux",
+  "x86_64-darwin",
+  "x86_64-linux",
+]
