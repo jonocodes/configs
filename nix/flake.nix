@@ -97,10 +97,21 @@
     in {
       nixosConfigurations = {
         dobro = mkHost "dobro" "x86_64-linux";
-        x200 = mkHost "x200" "x86_64-linux";
+        # x200 = mkHost "x200" "x86_64-linux";
         plex = mkHost "plex" "x86_64-linux";
         zeeba = mkHost "zeeba" "x86_64-linux";
       	t430 = mkHost "t430" "x86_64-linux";
       };
+    # }
+    # // {
+    #   nixosTests = {
+    #     jsyncthing = nixpkgs.lib.nixosTest {
+    #       nodes = {
+    #         test = { config, pkgs, ... }: {
+    #           imports = [ ./tests/jsyncthing.nix ];
+    #         };
+    #       };
+    #     };
+    #   };
     };
 }

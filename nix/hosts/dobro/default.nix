@@ -1,19 +1,25 @@
 # https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html
 # https://github.com/ne9z/dotfiles-flake/tree/2e39ad6ee4edebf7f00e4bf76d35c56d98f78fd7
 
-{ pkgs, pkgs-unstable, inputs, modulesPath, android-nixpkgs, nixpkgs, nix-flatpak, config, ... }:
+{ pkgs, pkgs-unstable, inputs, modulesPath, android-nixpkgs, nixpkgs, nix-flatpak, config, lib, ... }:
 let
   inherit (inputs) self;
 
   local = self.packages;
 
-  jonoHome = "/home/jono";
+  vars = import ./vars.nix;
+  jonoHome = vars.jonoHome;
+
+  # zeebaVars = import ../zeeba/vars.nix;
+  zeebaSyncthingId = (import ../zeeba/vars.nix).syncthingId;
+
+  # jonoHome = "/home/jono";
 
   syncthingGuiPass = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
 
   syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
 
-  crossSecret = builtins.readFile /home/jono/sync/common/private/testsecret.txt;
+#  crossSecret = builtins.readFile /home/jono/sync/common/private/testsecret.txt;
 
   # androidSdkModule = import ((builtins.fetchGit {
   #   url = "https://github.com/tadfisher/android-nixpkgs.git";
@@ -22,8 +28,16 @@ let
 
 in {
 
+  # inherit jonoHome;
+
   # not sure why, but I needed to do this to use caches in devenv with php ?
   nix.settings.trusted-users = [ "root" "jono" ];
+
+  # Garbage Collector Settings
+  nix.gc.automatic = true;
+  nix.gc.dates = "daily";
+  nix.gc.options = "--delete-older-than 7d";
+
 
   # NOTE: sops would be a good way to handle secrets once I need it. syncthing was wonky so not using it there.
   # sops = {
@@ -219,7 +233,8 @@ in {
         devices = {
           "choco".id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
           
-          "zeeba".id = "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
+          "zeeba".id = zeebaSyncthingId;
+          # "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
           
           "pop-mac".id = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
         
@@ -237,7 +252,7 @@ in {
   };
 
   # just since so much dev work requires node
-  programs.npm.enable = true;
+  # programs.npm.enable = true;
 
   environment.systemPackages = with pkgs; [
     # local.windsurf
@@ -249,10 +264,23 @@ in {
     mbuffer
   ];
 
+  # home-manager.gc = {
+  #     automatic = true;
+  #     frequency = "daily";
+  #     options = "--delete-older-than 7d";
+  # };
+
   home-manager.users.jono = {config, lib, pkgs, ...}: {
+    imports = [ ../../modules/user-jono.nix ];
 
     # The home.stateVersion option does not have a default and must be set
-    home.stateVersion = "24.11";
+    # home.stateVersion = "24.11";
+
+    # nix.gc = {
+    #   automatic = true;
+    #   frequency = "daily";
+    #   options = "--delete-older-than 7d";
+    # };
 
     fonts.fontconfig.enable = false;
 
@@ -269,7 +297,7 @@ in {
     home.packages = with pkgs-unstable;
     [
       android-studio
-      nodejs_22
+      # nodejs_22
     ] ++ (with pkgs; [
       # android-studio # very old version, 2023
       # android-studio-full  # this takes so long to install because it has to build arm v8 every time
@@ -302,77 +330,75 @@ in {
 
     # };
 
-    programs.fish = {
-      enable = true;
+#     programs.fish = {
+#       enable = true;
 
-      shellInit = ''
-        # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
+#       shellInit = ''
+#         # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
 
-        set -x POPULUS_ENVIRONMENT dev
-        set -x POPULUS_DATACENTER us
+# #        set -x POPULUS_ENVIRONMENT dev
+# #        set -x POPULUS_DATACENTER us
 
-        set -x EDITOR micro
+#         set -x EDITOR micro
 
-        # set -x NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE 1
+#         # set -x NIXPKGS_ACCEPT_ANDROID_SDK_LICENSE 1
 
-        ## Android
-        set --export ANDROID_HOME $HOME/Android/Sdk
-        set -gx PATH $ANDROID_HOME/emulator $PATH;
-        set -gx PATH $ANDROID_HOME/tools $PATH;
-        set -gx PATH $ANDROID_HOME/tools/bin $PATH;
-        set -gx PATH $ANDROID_HOME/platform-tools $PATH;
-      '';
+#         ## Android
+#         set --export ANDROID_HOME $HOME/Android/Sdk
+#         set -gx PATH $ANDROID_HOME/emulator $PATH;
+#         set -gx PATH $ANDROID_HOME/tools $PATH;
+#         set -gx PATH $ANDROID_HOME/tools/bin $PATH;
+#         set -gx PATH $ANDROID_HOME/platform-tools $PATH;
+#       '';
 
-      interactiveShellInit = ''
-        set fish_greeting # Disable greeting
+#       interactiveShellInit = ''
+#         set fish_greeting # Disable greeting
 
-        # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
+#         # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
 
-        # conda-shell -c fish
-      '';
+#         # conda-shell -c fish
+#       '';
 
-      shellAbbrs = {
-        cat = "bat";
-        p = "ping google.com"; # "ping nixos.org";
+#       shellAbbrs = {
+#         cat = "bat";
+#         p = "ping nixos.org";
 
-        "..." = "cd ../..";
+#         "..." = "cd ../..";
 
-        u = "sudo date && os-update && time os-build && os-switch";
+#         u = "sudo date && os-update && time os-build && os-switch";
 
-        # pop-devenv = "nix develop --impure path:$HOME/sync/configs/devenv/nix-populus-conda";
+#         # pop-devenv = "nix develop --impure path:$HOME/sync/configs/devenv/nix-populus-conda";
 
-        # conda-populus =
-        #   "conda activate populus-env && alias python=$HOME/.conda/envs/populus-env/bin/python";
+#         # conda-populus =
+#         #   "conda activate populus-env && alias python=$HOME/.conda/envs/populus-env/bin/python";
 
-      };
+#       };
 
-      shellAliases = {
+#       shellAliases = {
 
-        # update the checksum of the repos
-        os-update = "cd $HOME/sync/configs/nix && nix flake update && cd -";
+#         # update the checksum of the repos
+#         os-update = "cd $HOME/sync/configs/nix && nix flake update && cd -";
 
-        # list incoming changes, compile, but dont install/switch to them
-        os-build =
-          "nix build --out-link /tmp/result --dry-run $HOME/sync/configs/nix#nixosConfigurations.dobro.config.system.build.toplevel && nix build --out-link /tmp/result $HOME/sync/configs/nix#nixosConfigurations.dobro.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
+#         # list incoming changes, compile, but dont install/switch to them
+#         os-build =
+#           "nix build --out-link /tmp/result --dry-run $HOME/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nix build --out-link /tmp/result $HOME/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
 
-        # switch brings in flake file changes. as well as the last 'build'
-        os-switch = "sudo nixos-rebuild switch -v --flake $HOME/sync/configs/nix";
+#         # switch brings in flake file changes. as well as the last 'build'
+#         os-switch = "sudo nixos-rebuild switch -v --flake $HOME/sync/configs/nix";
 
-      };
+#       };
 
-    };
-
-    home.sessionVariables.JONO1 = "bar";
+    # };
 
     # this to try to fix libc++6 errors needed for airflow
 #    home.sessionVariables.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib/:$LD_LIBRARY_PATH";
 
-    programs.git = {
-      enable = true;
-      userName = "Jono";
-      userEmail = "jono@foodnotblogs.com";
-      lfs.enable = true;
-    };
+    # programs.git = {
+    #   enable = true;
+    #   userName = "Jono";
+    #   userEmail = "jono@foodnotblogs.com";
+    #   lfs.enable = true;
+    # };
 
   };
 

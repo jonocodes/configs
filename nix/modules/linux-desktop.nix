@@ -54,7 +54,38 @@ in {
       gnumake
       just
 
-      # NOTE: vs code extensions I like: Nix IDE, Python, Black, parquet-viewer, SQLite viewer, codium, rainbow csv, docker, expo tools .
+      # NOTE: vs code extensions I like: Nix IDE, Python, Black, parquet-viewer, SQLite viewer, codium/cline, rainbow csv, docker, expo tools
+
+#  programs.vscode = {
+  #   enable = true;
+  #   extensions = with pkgs.vscode-extensions; [
+  #     ms-python.python  # Python extension
+  #     ms-vscode.cpptools  # C++ extension
+  #     eamodio.gitlens  # GitLens extension
+  #     esbenp.prettier-vscode  # Prettier (for formatting)
+  #   ];
+  # };
+
+
+      # also add to keybindings.json:
+      # {
+      #     "key": "shift shift",
+      #     "command": "workbench.action.quickOpen",
+      # }]
+
+      # like:
+
+      # {
+#   home.file.".config/Code/User/keybindings.json".source = pkgs.writeText "keybindings.json" ''
+#     [
+#       {
+#         "key": "shift shift",
+#         "command": "workbench.action.quickOpen"
+#       }
+#     ]
+#   '';
+# }
+
 
       # hunspell-dict-en-us-wordlist
       hunspellDicts.en_US
@@ -100,6 +131,9 @@ in {
       # jetbrains.pycharm-professional
 
       ghostty
+      # windsurf
+      (lib.hiPrio windsurf) # https://github.com/NixOS/nixpkgs/issues/356478#issuecomment-2559417152
+      comma
 
     ] ++ (with pkgs; [
 

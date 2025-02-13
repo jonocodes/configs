@@ -17,7 +17,7 @@ in {
       # python311Packages.conda
       # python3.pkgs.truststore 
       # pdm
-      nodejs_18
+      nodejs_20
       yarn
       gnumake
       go-task

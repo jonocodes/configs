@@ -1,0 +1,109 @@
+{ config, lib, pkgs, ... }:
+
+with lib;
+
+let
+  cfg = config.services.jsyncthing;
+
+  syncRoot = "/home/jono/sync";
+
+  deviceMap = {
+
+    dobro = "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
+
+    choco = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+
+    zeeba = "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
+  
+    pop-mac = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
+  
+    galaxyS23 = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
+
+  };
+
+  # Function to validate devices and generate settings
+  generateSettings = folderDevices:
+    let
+      allDevices = unique (concatMap (folder: folder.devices) (attrValues folderDevices));
+      unknownDevices = filter (device: !(deviceMap ? ${device})) allDevices;
+    in
+    assert assertMsg (unknownDevices == []) "Unknown devices: ${toString unknownDevices}";
+    {
+      devices = mapAttrs (name: id: { inherit id; }) (filterAttrs (name: _: elem name allDevices) deviceMap);
+      folders = mapAttrs (name: folder: {
+
+
+        # path = folder.path or "${syncRoot}/${name}";
+        path = folder.path or "/home/jono/sync/${name}";
+        devices = folder.devices;
+        versioning =
+          if folder.versioned or false
+          then {
+            type = "staggered";
+            params = {
+              cleanInterval = "3600";
+              maxAge = "1";
+            };
+          }
+          else {};
+      }) folderDevices;
+    };
+
+in {
+
+      # builtins.debug "here is my messags";
+
+
+  options.services.jsyncthing = {
+    enable = mkEnableOption "Syncthing wrapper service";
+    folderDevices = mkOption {
+      type = types.attrsOf (types.submodule {
+        options = {
+          devices = mkOption {
+            type = types.listOf types.str;
+            description = "List of devices for this folder";
+          };
+          path = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "Custom path for the folder (optional)";
+          };
+          versioned = mkOption {
+            type = types.nullOr types.bool;
+            default = false;
+            description = "Enable versioning for this folder";
+          };
+        };
+      });
+      default = {};
+      example = {
+        common = {
+          devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+          versioned = true;
+        };
+        more = {
+          devices = [ "choco" "zeeba" "pop-mac" ];
+        };
+        camera = {
+          path = "/dpool/camera/JonoCameraS23";
+          devices = [ "galaxyS23" ];
+        };
+      };
+      description = "Folder configurations with associated devices and options";
+    };
+  };
+
+  config = mkIf cfg.enable {
+    services.syncthing = {
+      enable = true;
+      user = "jono";
+      dataDir = syncRoot;
+      overrideDevices = true;
+      overrideFolders = true;
+      settings = generateSettings cfg.folderDevices;
+    };
+
+    # prevent the creation of the default sync folder
+    # systemd.services.syncthing.environment.STNODEFAULTFOLDER = "true";
+  };
+}

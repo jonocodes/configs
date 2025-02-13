@@ -60,84 +60,94 @@ in {
       enable = true;
     };
 
-    syncthing = {
-
+    jsyncthing = {
       enable = true;
-      user = "jono";
-      dataDir = "${jonoHome}/sync";
-      configDir = "${jonoHome}/.config/syncthing";
-
-      overrideDevices = true;
-      overrideFolders = true;
-
-      guiAddress = "0.0.0.0:8384";
-
-      settings = {
-
-        gui = {
-          user = "admin";
-          password = syncthingGuiPass;
+      folderDevices = {
+        "common" = {
+          # path = "/home/jono/sync/common";  # TODO: remove
+          devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
+          versioned = true;
         };
-
-        folders = {
-
-          "common" = {
-            path = "${jonoHome}/sync/common";
-            devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
-
-            # versioning = {
-            #   type = "staggered";
-            #   params = {
-            #     cleanInterval = "3600";
-            #     maxAge = "1";
-            #   };
-            # };
-          };
-
-          "more" = {
-            path = "${jonoHome}/sync/more";
-            devices = [ "choco" "dobro" "pop-mac" ];
-          };
-
-          "configs" = {
-            path = "${jonoHome}/sync/configs";
-            devices = [ "choco" "dobro" "pop-mac" ];
-          };
-
-          "savr_data" = {
-            path = "${jonoHome}/sync/savr_data";
-            devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
-          };
-
-        };
-
         "more" = {
-          path = "${jonoHome}/sync/more";
+          # path = "/home/jono/sync/more";
           devices = [ "choco" "dobro" "pop-mac" ];
         };
+        # camera = {
+        #   path = "/dpool/camera/JonoCameraS23";
+        #   devices = [ "galaxyS23" ];
+        # };
+
         "configs" = {
-          path = "${jonoHome}/sync/configs";
+          # path = "/home/jono/sync/configs";
           devices = [ "choco" "dobro" "pop-mac" ];
         };
+
         "savr_data" = {
-          path = "${jonoHome}/sync/savr_data";
+          # path = "/home/jono/sync/savr_data";
           devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
         };
 
-        devices = {
-          "choco".id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-          
-          "dobro".id = "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
-
-          "pop-mac".id = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
-        
-          "galaxyS23".id = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
-
-        };
-
       };
-
     };
+
+    # syncthing = {
+
+    #   enable = true;
+    #   user = "jono";
+    #   dataDir = "${jonoHome}/sync";
+    #   configDir = "${jonoHome}/.config/syncthing";
+
+    #   overrideDevices = true;
+    #   overrideFolders = true;
+
+    #   guiAddress = "0.0.0.0:8384";
+
+    #   settings = {
+
+    #     gui = {
+    #       user = "admin";
+    #       password = syncthingGuiPass;
+    #     };
+
+    #     folders = {
+
+    #       "common" = {
+    #         path = "${jonoHome}/sync/common";
+    #         devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
+    #       };
+
+    #       "more" = {
+    #         path = "${jonoHome}/sync/more";
+    #         devices = [ "choco" "dobro" "pop-mac" ];
+    #       };
+
+    #       "configs" = {
+    #         path = "${jonoHome}/sync/configs";
+    #         devices = [ "choco" "dobro" "pop-mac" ];
+    #       };
+
+    #       "savr_data" = {
+    #         path = "${jonoHome}/sync/savr_data";
+    #         devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
+    #       };
+
+    #     };
+
+    #     devices = {
+    #       "choco".id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+          
+    #       "dobro".id = "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
+
+    #       "pop-mac".id = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
+        
+    #       "galaxyS23".id = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
+
+    #     };
+
+    #   };
+
+    # };
+
   };
 
   home-manager.users.jono = {config, ...}: {
@@ -206,6 +216,7 @@ in {
   imports = [ 
     ./hardware-configuration.nix
     ../../modules/common-nixos.nix
+    ../../modules/jsyncthing.nix
   ];
 
 }
