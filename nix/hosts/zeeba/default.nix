@@ -4,7 +4,7 @@ let
 
   jonoHome = "/home/jono";
 
-  syncthingGuiPass = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
+  # syncthingGuiPass = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
 
   syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
 
@@ -63,26 +63,20 @@ in {
     jsyncthing = {
       enable = true;
       folderDevices = {
-        "common" = {
+        common = {
           # path = "/home/jono/sync/common";  # TODO: remove
           devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
           versioned = true;
         };
-        "more" = {
-          # path = "/home/jono/sync/more";
+        more = {
           devices = [ "choco" "dobro" "pop-mac" ];
         };
-        # camera = {
-        #   path = "/dpool/camera/JonoCameraS23";
-        #   devices = [ "galaxyS23" ];
-        # };
-
-        "configs" = {
+        configs = {
           # path = "/home/jono/sync/configs";
           devices = [ "choco" "dobro" "pop-mac" ];
+          versioned = true;
         };
-
-        "savr_data" = {
+        savr_data = {
           # path = "/home/jono/sync/savr_data";
           devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
         };
@@ -197,7 +191,7 @@ in {
 
         # list incoming changes, compile, but dont install/switch to them
         os-build =
-          "nix --experimental-features 'nix-command flakes' build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.zeeba.config.system.build.toplevel && nix --experimental-features 'nix-command flakes' build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.zeeba.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
+          "nix --experimental-features 'nix-command flakes' build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nix --experimental-features 'nix-command flakes' build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
 
         # switch brings in flake file changes. as well as the last 'build'
         os-switch = "sudo nixos-rebuild switch -v --flake /home/jono/sync/configs/nix";

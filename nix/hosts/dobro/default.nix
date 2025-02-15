@@ -7,15 +7,13 @@ let
 
   local = self.packages;
 
-  vars = import ./vars.nix;
+  vars = import ../vars.nix;
   jonoHome = vars.jonoHome;
 
   # zeebaVars = import ../zeeba/vars.nix;
-  zeebaSyncthingId = (import ../zeeba/vars.nix).syncthingId;
+  # zeebaSyncthingId = (import ../zeeba/vars.nix).syncthingId;
 
   # jonoHome = "/home/jono";
-
-  syncthingGuiPass = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
 
   syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
 
@@ -156,99 +154,126 @@ in {
       };
     };
 
-    syncthing = {
 
-      # TODO: make my own syncthing wrapper so I can programatically manage the syncthing network: https://github.com/Yeshey/nixOS-Config/blob/468f1f63f0efa337370d317901bb92fc421b3033/modules/nixos/mySystem/syncthing.nix#L173
-
-      # NOTE: waiting on ability to do ignore inline: https://github.com/NixOS/nixpkgs/pull/353770
-
-
-      # if there are sync issues, they can often be resolved like so> /nix/store/gij0yzbyi9d64rh4f62386fqd3x4nl8g-syncthing-1.28.0/bin/syncthing --reset-database
+    jsyncthing = {
 
       enable = true;
-      user = "jono";
-      dataDir = "${jonoHome}/sync";
-      configDir = "${jonoHome}/.config/syncthing";
 
-      overrideDevices = true;
-      overrideFolders = true;
+      folderDevices = {
 
-      guiAddress = "0.0.0.0:8384";
-
-      settings = {
-
-        gui = {
-
-          # TODO: once this merges I can move the password to sops. https://github.com/NixOS/nixpkgs/pull/290485
-
-          user = "admin";
-
-          # NOTE: syncthing config accepts raw or brcypt hashed password
-
-          password = syncthingGuiPass;
+        common = {
+          devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
         };
-
-        defaults = {
-          folder.path = "~/sync";
+        more = {
+          # path = "${jonoHome}/sync/more";
+          devices = [ "choco" "zeeba" "pop-mac" ];
         };
-
-        folders = {
-
-          # NOTE: you need a corresponding .stignore file specified in home dir for each folder here
-
-          "common" = {
-            path = "${jonoHome}/sync/common";
-            devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
-
-            versioning = {
-              type = "staggered";
-              params = {
-                cleanInterval = "3600";
-                maxAge = "1";
-              };
-            };
-          };
-          "more" = {
-            path = "${jonoHome}/sync/more";
-            devices = [ "choco" "zeeba" "pop-mac" ];
-          };
-          "camera" = {
-            path = "/dpool/camera/JonoCameraS23";
-            devices = [ "galaxyS23" ];
-          };
-          # "phone_photos" = {
-          #   path = "/dpool/camera/JonoCameraS20";
-          #   devices = [ "galaxyS20" ];
-          # };
-          "configs" = {
-            path = "${jonoHome}/sync/configs";
-            devices = [ "choco" "zeeba" "pop-mac" ];
-          };
-          "savr_data" = {
-            path = "${jonoHome}/sync/savr_data";
-            devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
-          };
+        "camera" = {
+          path = "/dpool/camera/JonoCameraS23";
+          devices = [ "galaxyS23" ];
         };
-
-        devices = {
-          "choco".id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-          
-          "zeeba".id = zeebaSyncthingId;
-          # "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
-          
-          "pop-mac".id = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
-        
-          "galaxyS23".id = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
-          
-          # "plex" = {
-          #   id =
-          #     "KUJBRR4-XZRTGFD-DDUQA5E-K2TFBPY-ROBDN2S-IKXFYHS-HELJG3N-P6WJYAH";
-          # };
+        # "phone_photos" = {
+        #   path = "/dpool/camera/JonoCameraS20";
+        #   devices = [ "galaxyS20" ];
+        # };
+        configs = {
+          # path = "${jonoHome}/sync/configs";
+          devices = [ "choco" "zeeba" "pop-mac" ];
         };
-
+        "savr_data" = {
+          # path = "${jonoHome}/sync/savr_data";
+          devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+        };
       };
 
     };
+
+    # syncthing = {
+
+    #   enable = true;
+    #   user = "jono";
+    #   dataDir = "${jonoHome}/sync";
+    #   configDir = "${jonoHome}/.config/syncthing";
+
+    #   overrideDevices = true;
+    #   overrideFolders = true;
+
+    #   guiAddress = "0.0.0.0:8384";
+
+    #   settings = {
+
+    #     gui = {
+
+    #       # TODO: once this merges I can move the password to sops. https://github.com/NixOS/nixpkgs/pull/290485
+
+    #       user = "admin";
+
+    #       # NOTE: syncthing config accepts raw or brcypt hashed password
+
+    #       password = syncthingGuiPass;
+    #     };
+
+    #     defaults = {
+    #       folder.path = "~/sync";
+    #     };
+
+    #     folders = {
+
+    #       # NOTE: you need a corresponding .stignore file specified in home dir for each folder here
+
+    #       "common" = {
+    #         path = "${jonoHome}/sync/common";
+    #         devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+
+    #         versioning = {
+    #           type = "staggered";
+    #           params = {
+    #             cleanInterval = "3600";
+    #             maxAge = "1";
+    #           };
+    #         };
+    #       };
+    #       "more" = {
+    #         path = "${jonoHome}/sync/more";
+    #         devices = [ "choco" "zeeba" "pop-mac" ];
+    #       };
+    #       "camera" = {
+    #         path = "/dpool/camera/JonoCameraS23";
+    #         devices = [ "galaxyS23" ];
+    #       };
+    #       # "phone_photos" = {
+    #       #   path = "/dpool/camera/JonoCameraS20";
+    #       #   devices = [ "galaxyS20" ];
+    #       # };
+    #       "configs" = {
+    #         path = "${jonoHome}/sync/configs";
+    #         devices = [ "choco" "zeeba" "pop-mac" ];
+    #       };
+    #       "savr_data" = {
+    #         path = "${jonoHome}/sync/savr_data";
+    #         devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+    #       };
+    #     };
+
+    #     devices = {
+    #       "choco".id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+          
+    #       "zeeba".id = zeebaSyncthingId;
+    #       # "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
+          
+    #       "pop-mac".id = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
+        
+    #       "galaxyS23".id = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
+          
+    #       # "plex" = {
+    #       #   id =
+    #       #     "KUJBRR4-XZRTGFD-DDUQA5E-K2TFBPY-ROBDN2S-IKXFYHS-HELJG3N-P6WJYAH";
+    #       # };
+    #     };
+
+    #   };
+
+    # };
   };
 
   # just since so much dev work requires node
@@ -431,6 +456,7 @@ in {
 
     ../../modules/common-nixos.nix
     ../../modules/linux-desktop.nix
+    ../../modules/jsyncthing.nix
 
     ../../modules/gnome.nix
     #../../modules/kde.nix

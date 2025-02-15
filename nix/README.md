@@ -1,63 +1,19 @@
+# To bootstrap a new system
 
-# TODO
+On a fresh system start by copy the syncthing config from default.template.nix into configuration.nix
 
-write how to bootstrap a new system
+> sudo nixos-rebuild --upgrade switch
 
-
-# to bootstrap a new system
-
-setup syncthing to get config share in /etc/nixos/configuration.nix
-
-```nix
-  services = {
-    syncthing = {
-
-      enable = true;
-      user = "jono";
-      dataDir = "/home/jono/sync";
-      configDir = "/home/jono/.config/syncthing";
-
-      overrideDevices = true;
-      overrideFolders = true;
-
-      guiAddress = "0.0.0.0:8384";
-
-      settings = {
-
-        gui = {
-          user = "admin";
-          password = "temp_password";
-        };
-
-        folders = {
-          "configs" = {
-            path = "/home/jono/sync/configs";
-            devices = [ "choco" ];
-          };
-        };
-
-        devices = {
-          "choco" = {
-            id =
-              "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-          };
-        };
-
-      };
-
-    };
-  };
-```
+This should bring down the config share via syncthing.
 
 
-then > sudo nixos-rebuild --upgrade switch
+Now you can create a new host in the config and switch to the flake setup.
 
-setup syncthing to get the configs into ~/sync/configs/
 
-mkdir ~/sync/configs/nix/hosts/(hostname)/
-cp /etc/nixos/* ~/sync/configs/nix/hosts/(hostname)/
-cd ~/sync/configs/nix/hosts/
-cp default.template.nix (hostname)/default.nix
+> mkdir ~/sync/configs/nix/hosts/(hostname)/
+> cp /etc/nixos/* ~/sync/configs/nix/hosts/(hostname)/
+> cd ~/sync/configs/nix/hosts/
+> cp default.template.nix (hostname)/default.nix
 
 copy over whatever looks critical from configuration.nix to default.nix. it should not be much
 
@@ -77,14 +33,3 @@ now log out and in. your shell should be updated and aliases set
 
 delete configuration.nix since its not being used any more.
 
-
-
-# to set up dobro
-
-this is no longer the case
-
-ln -s $HOME/sync/configs/nix/hosts/dobro/flake.nix /etc/nixos/flake.nix
-
-ln -s $HOME/sync/configs/nix/hosts/dobro/flake.lock /etc/nixos/flake.lock
-
-ln -s $HOME/sync/configs/nix/modules /etc/nixos/modules

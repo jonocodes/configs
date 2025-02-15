@@ -5,15 +5,31 @@ with lib;
 let
   cfg = config.services.jsyncthing;
 
+  # TODO: add ignore files
+
+  # TODO: make my own syncthing wrapper so I can programatically manage the syncthing network: https://github.com/Yeshey/nixOS-Config/blob/468f1f63f0efa337370d317901bb92fc421b3033/modules/nixos/mySystem/syncthing.nix#L173
+
+  # NOTE: waiting on ability to do ignore inline: https://github.com/NixOS/nixpkgs/pull/353770
+
+
+  # Maybe move do a different namespace like 'within' here: https://github.com/AdrielVelazquez/nixos-config/blob/main/modules/services/docker.nix
+
+
+  # if there are sync issues, they can often be resolved like so> /nix/store/gij0yzbyi9d64rh4f62386fqd3x4nl8g-syncthing-1.28.0/bin/syncthing --reset-database
+
+
   syncRoot = "/home/jono/sync";
 
   deviceMap = {
 
-    dobro = "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
+    dobro = 
+    "QDPAOUZ-TN6RRAG-X6AJNTZ-QMXHGC4-RZPBFTG-4VS74JF-3ESV6QN-KMZTOAS";
+    # "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
 
     choco = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
 
-    zeeba = "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
+    zeeba = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
+    # "2PYYQJJ-SETCMFF-3IOL6F6-SZC2QQ6-EZXAAAM-XZ6R3DW-ZANZFFK-PQ7LBAU";
   
     pop-mac = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
   
@@ -29,30 +45,47 @@ let
     in
     assert assertMsg (unknownDevices == []) "Unknown devices: ${toString unknownDevices}";
     {
+      gui = {
+        user = "admin";
+
+        # NOTE: syncthing config accepts raw or brcypt hashed password
+
+        password =  "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
+      };
+
       devices = mapAttrs (name: id: { inherit id; }) (filterAttrs (name: _: elem name allDevices) deviceMap);
       folders = mapAttrs (name: folder: {
 
-
         # path = folder.path or "${syncRoot}/${name}";
-        path = folder.path or "/home/jono/sync/${name}";
+        # path = "/tmp";
+        path = if (builtins.hasAttr "path" folder && folder.path != null) then folder.path else "${syncRoot}/${name}";
+
+        # path = folder.path or "/home/jono/sync/${name}";
         devices = folder.devices;
-        versioning =
-          if folder.versioned or false
-          then {
-            type = "staggered";
-            params = {
-              cleanInterval = "3600";
-              maxAge = "1";
-            };
-          }
-          else {};
-      }) folderDevices;
+        # versioning =
+        #   if folder.versioned or false
+        #   then {
+        #     type = "staggered";
+        #     params = {
+        #       cleanInterval = "3600";
+        #       maxAge = "1";
+        #     };
+        #   }
+        #   else null;
+      } 
+      // lib.optionalAttrs (builtins.hasAttr "versioned" folder && folder.versioned ) {
+        versioning = {
+          type = "staggered";
+          params = {
+            cleanInterval = "3600";
+            maxAge = "1";
+          };
+        };
+       }
+        ) folderDevices;
     };
 
 in {
-
-      # builtins.debug "here is my messags";
-
 
   options.services.jsyncthing = {
     enable = mkEnableOption "Syncthing wrapper service";
@@ -98,8 +131,11 @@ in {
       enable = true;
       user = "jono";
       dataDir = syncRoot;
+      configDir = "${syncRoot}/.config/syncthing";
       overrideDevices = true;
       overrideFolders = true;
+      guiAddress = "0.0.0.0:8384";
+
       settings = generateSettings cfg.folderDevices;
     };
 

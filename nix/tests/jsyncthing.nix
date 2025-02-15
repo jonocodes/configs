@@ -1,23 +1,77 @@
 
-# run this test like so :  nix eval --impure '#nixosConfigurations.test.config.services.syncthing.settings'
+# run like: nix eval --impure --file ./nix/tests/jsyncthing.nix
 
-{ pkgs, lib, nixpkgs, system, ... }:
+let
+  pkgs = import <nixpkgs> {};
+  lib = pkgs.lib;
+  jsyncthing = import ../modules/jsyncthing.nix;
+in
+let
 
-{
-  imports = [
-    ../modules/jsyncthing.nix
-  ];
-
-  config = {
+  result1 = (jsyncthing { config = {
     services.jsyncthing = {
       enable = true;
       folderDevices = {
         testFolder = {
           devices = [ "zeeba" ];
-          path = "/home/jono/sync/testFolder";
           versioned = true;
+        };
+        two = {
+          devices = [ "choco" ];
+          versioned = false;
+          path = "/some/other/path";
         };
       };
     };
-  };
-}
+  }; lib = lib; pkgs = pkgs; }).config.content.services;
+in
+
+  assert result1.syncthing.settings.devices."zeeba".id == "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
+
+  assert result1.syncthing == {
+    enable = true;
+    user = "jono";
+    dataDir = "/home/jono/sync";
+    configDir = "/home/jono/sync/.config/syncthing";
+
+    overrideDevices = true;
+    overrideFolders = true;
+
+    guiAddress = "0.0.0.0:8384";
+
+    settings = {
+
+      gui = {
+        user = "admin";
+        password =  "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
+      };
+
+      devices = {
+        zeeba = {
+          id = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH"; };
+        choco = {
+          id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR"; };
+          
+        }; 
+        folders = { 
+          testFolder = { 
+            devices = [ "zeeba" ];
+            path = "/home/jono/sync/testFolder";
+            versioning = {
+                type = "staggered";
+                params = {
+                  cleanInterval = "3600";
+                  maxAge = "1";
+                };
+              };
+          };
+          two = {
+            devices = [ "choco" ];
+            path = "/some/other/path";
+            # versioning = null;
+          };
+        };
+      };
+    };
+
+  "tests passed"

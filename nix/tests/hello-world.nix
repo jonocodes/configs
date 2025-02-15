@@ -1,12 +1,16 @@
+
+# run like: nix eval --impure --file ./nix/tests/hello-world.nix
+
 let
   pkgs = import <nixpkgs> {};
   lib = pkgs.lib;
-  inherit (lib) runTests;
+  hello = import ../modules/hello-world.nix ;
 in
-  runTests {
-    testFoo = {
-      expr = import ../modules/hello-world.nix { config = { helloMessage = "foo"; }; lib = pkgs.lib; };
-      expected = { config.result = "Hello foo"; };
-    };
+  assert (hello { lib = pkgs.lib; 
+    config = { helloMessage = "foo"; }; }).config.result == "Hello foo";
 
-  }
+  assert (hello { lib = pkgs.lib; 
+    config = { helloMessage = "bar"; }; }).config.result == "Hello bar";
+
+
+  "tests passed"

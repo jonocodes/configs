@@ -49,10 +49,10 @@ in {
 
       settings = {
 
-        gui = {
-          user = "admin";
-          password = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
-        };
+        # gui = {
+        #   user = "admin";
+        #   password = "changethis";
+        # };
 
         folders = {
           "configs" = {
@@ -87,15 +87,14 @@ in {
     programs.fish = {
       enable = true;
 
-      interactiveShellInit = ''
-        set fish_greeting # Disable greeting
-      '';
+      # interactiveShellInit = ''
+      #   set fish_greeting # Disable greeting
+      # '';
 
       shellAbbrs = {
-        cat = "bat";
-        p = "ping google.com"; # "ping nixos.org";
-
-        "..." = "cd ../..";
+        # cat = "bat";
+        # p = "ping google.com"; # "ping nixos.org";
+        # "..." = "cd ../..";
 
         u = "sudo date && os-update && time os-build && os-switch";
       };
@@ -107,7 +106,7 @@ in {
 
         # list incoming changes, compile, but dont install/switch to them
         os-build =
-          "nix build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.nixhost.config.system.build.toplevel && nix build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.nixhost.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
+          "nix build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nix build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
 
         # switch brings in flake file changes. as well as the last 'build'
         os-switch = "sudo nixos-rebuild switch -v --flake /home/jono/sync/configs/nix";
@@ -130,10 +129,5 @@ in {
     ./hardware-configuration.nix
     ../../modules/common-nixos.nix
   ];
-
-
-
-  # TODO: https://nixos.wiki/wiki/Impermanence
-
 
 }
