@@ -21,9 +21,14 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
 
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs"; # Important:  Disko should use the same nixpkgs version
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
+
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, android-nixpkgs, home-manager, flox, sops-nix }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, android-nixpkgs, home-manager, flox, sops-nix, disko, nixos-hardware }@inputs:
     let
 
       localpackages = import ./packages {
@@ -49,6 +54,8 @@
           };
 
           specialArgs = {
+
+
             # By default, the system will only use packages from the
             # stable channel.  You can selectively install packages
             # from the unstable channel.  You can also add more
@@ -70,6 +77,8 @@
 
             # make all inputs available in other nix files
             inherit inputs;
+            
+            # nixos-hardware = inputs.nixos-hardware;
           };
 
           modules = [
@@ -77,6 +86,7 @@
             ./hosts/${hostName}
 
             sops-nix.nixosModules.sops
+            disko.nixosModules.disko
 
             # android-nixpkgs.nixosModules.android-nixpkgs
 
@@ -101,17 +111,9 @@
         plex = mkHost "plex" "x86_64-linux";
         zeeba = mkHost "zeeba" "x86_64-linux";
       	t430 = mkHost "t430" "x86_64-linux";
+        orc = mkHost "orc" "aarch64-linux";
+        imbp = mkHost "imbp" "x86_64-linux";
       };
-    # }
-    # // {
-    #   nixosTests = {
-    #     jsyncthing = nixpkgs.lib.nixosTest {
-    #       nodes = {
-    #         test = { config, pkgs, ... }: {
-    #           imports = [ ./tests/jsyncthing.nix ];
-    #         };
-    #       };
-    #     };
-    #   };
+
     };
 }

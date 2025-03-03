@@ -1,0 +1,19 @@
+meta {
+  name: get item
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://localhost:8000/items/123
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Hi",
+    "price": 1234,
+    "is_offer": true
+  }
+}

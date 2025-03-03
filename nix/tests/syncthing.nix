@@ -1,15 +1,15 @@
 
-# run like: nix eval --impure --file ./nix/tests/jsyncthing.nix
+# run like: nix eval --impure --file ./nix/tests/syncthing.nix
 
 let
   pkgs = import <nixpkgs> {};
   lib = pkgs.lib;
-  jsyncthing = import ../modules/jsyncthing.nix;
+  syncthing = import ../modules/syncthing.nix;
 in
 let
 
-  result1 = (jsyncthing { config = {
-    services.jsyncthing = {
+  result1 = (syncthing { config = {
+    digitus.services.syncthing = {
       enable = true;
       folderDevices = {
         testFolder = {

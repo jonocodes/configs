@@ -2,15 +2,15 @@
 let
   inherit (inputs) self;
 
-  syncthingIgnores = ''
-    .direnv
-    .devenv
-    .git
-    .venv
-    .DS_Store
-    node_modules
-    result
-  '';
+  # syncthingIgnores = ''
+  #   .direnv
+  #   .devenv
+  #   .git
+  #   .venv
+  #   .DS_Store
+  #   node_modules
+  #   result
+  # '';
 
 in {
 
@@ -25,8 +25,8 @@ in {
     jono = {
       isNormalUser = true;
       description = "jono";
-      extraGroups = [ "networkmanager" "wheel" "docker" ];
-      shell = pkgs.fish;
+      extraGroups = [ "networkmanager" "wheel" ];
+      # shell = pkgs.fish;
     };
   };
 
@@ -73,61 +73,61 @@ in {
     };
   };
 
-  home-manager.users.jono = {config, ...}: {
-    # The home.stateVersion option does not have a default and must be set
-    home.stateVersion = "24.11";
-
-    home.file = {
-      "sync/configs/.stignore".text = syncthingIgnores;
-    };
-
-    programs.ssh.enable = true;
-
-
-    programs.fish = {
-      enable = true;
-
-      # interactiveShellInit = ''
-      #   set fish_greeting # Disable greeting
-      # '';
-
-      shellAbbrs = {
-        # cat = "bat";
-        # p = "ping google.com"; # "ping nixos.org";
-        # "..." = "cd ../..";
-
-        u = "sudo date && os-update && time os-build && os-switch";
-      };
-
-      shellAliases = {
-
-        # update the checksum of the repos
-        os-update = "cd /home/jono/sync/configs/nix && nix flake update && cd -";
-
-        # list incoming changes, compile, but dont install/switch to them
-        os-build =
-          "nix build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nix build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
-
-        # switch brings in flake file changes. as well as the last 'build'
-        os-switch = "sudo nixos-rebuild switch -v --flake /home/jono/sync/configs/nix";
-
-      };
-
-    };
-
-  };
+#   home-manager.users.jono = {config, ...}: {
+#     # The home.stateVersion option does not have a default and must be set
+#     home.stateVersion = "24.11";
+# 
+#     home.file = {
+#       "sync/configs/.stignore".text = syncthingIgnores;
+#     };
+# 
+#     programs.ssh.enable = true;
+# 
+# 
+#     programs.fish = {
+#       enable = true;
+# 
+#       # interactiveShellInit = ''
+#       #   set fish_greeting # Disable greeting
+#       # '';
+# 
+#       shellAbbrs = {
+#         # cat = "bat";
+#         # p = "ping google.com"; # "ping nixos.org";
+#         # "..." = "cd ../..";
+# 
+#         u = "sudo date && os-update && time os-build && os-switch";
+#       };
+# 
+#       shellAliases = {
+# 
+#         # update the checksum of the repos
+#         os-update = "cd /home/jono/sync/configs/nix && nix flake update && cd -";
+# 
+#         # list incoming changes, compile, but dont install/switch to them
+#         os-build =
+#           "nix build --out-link /tmp/result --dry-run /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nix build --out-link /tmp/result /home/jono/sync/configs/nix#nixosConfigurations.$hostname.config.system.build.toplevel && nvd diff /run/current-system /tmp/result";
+# 
+#         # switch brings in flake file changes. as well as the last 'build'
+#         os-switch = "sudo nixos-rebuild switch -v --flake /home/jono/sync/configs/nix";
+# 
+#       };
+# 
+#     };
+# 
+#   };
 
   # boot.initrd.availableKernelModules =
   #   [ "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   # boot.kernelParams = [ ];
 
-  networking.hostId = "6c5d7bdd"; # needed for zfs support
+  # networking.hostId = "6c5d7bdd"; # only needed for zfs support
 
   networking.hostName = "nixhost";
 
   imports = [ 
     ./hardware-configuration.nix
-    ../../modules/common-nixos.nix
+    # ../../modules/common-nixos.nix
   ];
 
 }

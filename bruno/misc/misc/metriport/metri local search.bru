@@ -1,0 +1,21 @@
+meta {
+  name: metri local search
+  type: http
+  seq: 21
+}
+
+get {
+  url: http://localhost:8080/api/patient/search?firstName=jon&lastName=arst&dob=2000-01-01
+  body: none
+  auth: none
+}
+
+params:query {
+  firstName: jon
+  lastName: arst
+  dob: 2000-01-01
+}
+
+headers {
+  x-api-key: HFj2OLNQ889niPgs0HIBuCR9YQtntE4aQVb6EC3g
+}

@@ -9,6 +9,10 @@ in {
     # };
 
 
+#   nixpkgs.config.allowUnfree = true;
+
+
+
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.warn-dirty = false;
 
@@ -65,6 +69,8 @@ in {
     vimAlias = true;
   };
 
+
+  # move this into user-jono
   users.users = {
 
     jono = {
@@ -72,6 +78,17 @@ in {
       description = "jono";
       extraGroups = [ "networkmanager" "wheel" "docker" ];
       shell = pkgs.fish;
+
+      openssh.authorizedKeys.keys = [
+        # dobro
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGI9g+ml4fmwK8eNYe7qb7lWHlqZ4baVc5U6nkMCbnG jono@foodnotblogs.com"
+
+        # oracle, shared key - probably dont need this any more
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW4SMTIQQChTCFL/SJKkOp9mejFiCih0cNjT3mirFLcuuGPiH/jlp/h6312238Piea737cgbt0c70Jt1S7F/zmsKVU9rQPk/kluOoE5jMJLoOqZeUxxRmZVYs1ebxeSoI2MHQGv+9U0YjKMCvKfQfT5IDm9sjRtcfodo81RbUOayCvc3Kq4B6iUe1A4/UbNXlHEzsbIVpn3fcgzAYynuzCkQ/rzMfNwIz8JTs4oxs4WVo0hmCyqcrpQqsXUQ8OXrIim/EQaJgQp+1Y7c7r9eMjV3HzQBWfd4sKTROcAUXgff0uW6ieArIuugOnDjE/ipxI0n1b9PQGg1b0ZkqZo2Nj ssh-key-2025-02-18"
+
+        # populus mac
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKDc7mCQOFHhXTbenLwIPG3MMqy3bi1kmu00fjUJ5saf jono.finger@populus.ai"
+      ];
     };
 
   };
@@ -104,15 +121,21 @@ in {
       age # for sops encryption
       sops
 
+      gnumake
+      just
+
       parallel-disk-usage # pdu cli
 
 
       #   nix helpers
       nvd
+      # nh
       # rnix-lsp
 
       #   for mailcow
       openssl
+
+      comma  # run uninstalled apps ie > , xeyes
 
       #   short term dev projects
       # tcpdump
@@ -121,7 +144,7 @@ in {
       #   nix binary runner helpers
       # nix-index
       # nix-locate
-      steam-run # did not work for windsurf
+      # steam-run # x86 only
       # TODO: https://github.com/thiagokokada/nix-alien
       #   other methods: https://unix.stackexchange.com/questions/522822/different-methods-to-run-a-non-nixos-executable-on-nixos
 
@@ -146,7 +169,7 @@ in {
 
     ] ++ (with pkgs;
       [
-        inputs.flox.packages.${pkgs.system}.default
+        # inputs.flox.packages.${pkgs.system}.default
         cifs-utils
       ]);
 

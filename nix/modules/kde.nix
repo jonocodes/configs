@@ -17,11 +17,11 @@ in
     pulse.enable = true;
   };
 
-  home-manager.users.jono.services.kdeconnect = {
-    enable = true;
-    package = pkgs.kdePackages.kdeconnect-kde;
-    indicator = true;
-  };
+#   home-manager.users.jono.services.kdeconnect = {
+#     enable = true;
+#     package = pkgs.kdePackages.kdeconnect-kde;
+#     indicator = true;
+#   };
 
   # so gnome and kde can be installed together
   # programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.ksshaskpass.out}/bin/ksshaskpass";
@@ -33,11 +33,11 @@ in
     kdePackages.kfind
     kdePackages.kcalc
 
-#    transmission_4-qt
+    #    transmission_4-qt
 
     ocs-url # allows the installing of kde plugins
 
-    baobab  # disk usage anylizer since gnome's is better then kdePackages.filelight
+    baobab # disk usage anylizer since gnome's is better then kdePackages.filelight
 
     kdePackages.plasma-pa
 

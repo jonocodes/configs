@@ -1,0 +1,19 @@
+meta {
+  name: update-create item
+  type: http
+  seq: 1
+}
+
+put {
+  url: http://localhost:8000/items/1234
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Hi1212",
+    "price": 5455,
+    "is_offer": true
+  }
+}

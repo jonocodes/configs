@@ -10,6 +10,26 @@
       options = "--delete-older-than 7d";
     };
 
+    # # cant really do this here since its nested. dang
+    # users.users = {
+
+    #   jono = {
+    #     isNormalUser = true;
+    #     description = "jono";
+    #     extraGroups = [ "networkmanager" "wheel" "docker" ];
+    #     shell = pkgs.fish;
+
+    #     openssh.authorizedKeys.keys = [
+    #       # dobro
+    #       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGI9g+ml4fmwK8eNYe7qb7lWHlqZ4baVc5U6nkMCbnG jono@foodnotblogs.com"
+    #       # oracle
+    #       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW4SMTIQQChTCFL/SJKkOp9mejFiCih0cNjT3mirFLcuuGPiH/jlp/h6312238Piea737cgbt0c70Jt1S7F/zmsKVU9rQPk/kluOoE5jMJLoOqZeUxxRmZVYs1ebxeSoI2MHQGv+9U0YjKMCvKfQfT5IDm9sjRtcfodo81RbUOayCvc3Kq4B6iUe1A4/UbNXlHEzsbIVpn3fcgzAYynuzCkQ/rzMfNwIz8JTs4oxs4WVo0hmCyqcrpQqsXUQ8OXrIim/EQaJgQp+1Y7c7r9eMjV3HzQBWfd4sKTROcAUXgff0uW6ieArIuugOnDjE/ipxI0n1b9PQGg1b0ZkqZo2Nj ssh-key-2025-02-18"
+    #     ];
+    #   };
+
+    # };
+
+
     # fonts.fontconfig.enable = false;
 
     # home.file.".thunderbird".source = config.lib.file.mkOutOfStoreSymlink /dpool/thunderbird_data;
@@ -32,14 +52,24 @@
     # ]);
 
 
+
+    # environment.sessionVariables = {
+    #   FLAKE = "$HOME/sync/configs/nix";
+    # };
+
+
+    programs.nh = {
+      enable = true;
+      clean.enable = true;
+      clean.extraArgs = "--keep-since 7d --keep 3";
+      flake = "/home/jono/sync/configs/nix";
+    };
+
+
     programs.fish = {
       enable = true;
 
       shellInit = ''
-        # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
-
-#        set -x POPULUS_ENVIRONMENT dev
-#        set -x POPULUS_DATACENTER us
 
         set -x EDITOR micro
 
@@ -55,10 +85,6 @@
 
       interactiveShellInit = ''
         set fish_greeting # Disable greeting
-
-        # eval /home/jono/.conda/bin/conda "shell.fish" "hook" $argv | source
-
-        # conda-shell -c fish
       '';
 
       shellAbbrs = {
@@ -67,12 +93,11 @@
 
         "..." = "cd ../..";
 
-        u = "sudo date && os-update && time os-build && os-switch";
+        u-old = "sudo date && os-update && time os-build && os-switch";
+
+        u = "sudo date && nh os switch --update";
 
         # pop-devenv = "nix develop --impure path:$HOME/sync/configs/devenv/nix-populus-conda";
-
-        # conda-populus =
-        #   "conda activate populus-env && alias python=$HOME/.conda/envs/populus-env/bin/python";
 
       };
 
