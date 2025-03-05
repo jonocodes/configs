@@ -1,0 +1,12 @@
+com.jetbrains.PyCharm-Professional
+com.slack.Slack
+com.ticktick.TickTick
+com.usebruno.Bruno
+io.dbeaver.DBeaverCommunity
+io.github.aandrew_me.ytdn
+md.obsidian.Obsidian
+org.gnome.meld
+org.keepassxc.KeePassXC
+org.libreoffice.LibreOffice
+org.mozilla.Thunderbird
+us.zoom.Zoom

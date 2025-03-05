@@ -131,7 +131,7 @@ in {
 
     (let inherit (inputs) nixos-hardware; in nixos-hardware.nixosModules.apple-t2)
 
-        inputs.nix-flatpak.nixosModules.nix-flatpak
+    inputs.nix-flatpak.nixosModules.nix-flatpak
 
     ./hardware-configuration.nix
     ../../modules/common-nixos.nix

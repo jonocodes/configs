@@ -2,17 +2,6 @@
 let inherit (inputs) self;
 in {
 
-
-    # localpackages = import ./pkgs {
-    #   # inherit pkgs;
-    #   # pkgs = pkgs.legacyPackages;
-    # };
-
-
-#   nixpkgs.config.allowUnfree = true;
-
-
-
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.warn-dirty = false;
 

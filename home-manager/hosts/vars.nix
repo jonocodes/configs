@@ -1,0 +1,3 @@
+{
+    jonoHome = "/home/jono";
+}
