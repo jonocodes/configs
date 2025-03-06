@@ -21,16 +21,12 @@ in {
 
   home.packages = with pkgs-unstable;
     [
-      telegram-desktop
-      # # vscodium
-      vscode # needed for dev containers
+#       telegram-desktop    # trying flatpak
+      vscode  # needed for dev containers
 
-      librewolf
+#      librewolf
 
   ] ++ (with pkgs; [
-
-    # # TODO: move to flatpak?
-    # firefox-bin
 
   ]);
 

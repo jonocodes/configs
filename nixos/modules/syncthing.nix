@@ -136,13 +136,20 @@ in {
 
   config = mkIf cfg.enable {
     services.syncthing = {
-      enable = true;
+      enable = true;    # TODO: this should not be hard coded
       user = "jono";
       dataDir = syncRoot;
       configDir = "${syncRoot}/.config/syncthing";
       overrideDevices = true;
       overrideFolders = true;
-      guiAddress = "0.0.0.0:8384";
+#       guiAddress = "0.0.0.0:8384";
+      guiAddress = "0.0.0.0:8388";
+
+      # putting this on non standard ports while I mess with home manager syncthing
+      options = {
+        listenAddresses = [ "tcp://0.0.0.0:22008" "quic://0.0.0.0:22008" ];
+      };
+
 
       settings = generateSettings cfg.folderDevices;
     };

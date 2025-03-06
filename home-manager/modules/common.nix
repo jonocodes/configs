@@ -34,8 +34,15 @@ in {
   programs.fish = {
 #       enable = true;
 
+    interactiveShellInit = ''
+      set fish_greeting # Disable greeting
+    '';
+
     shellInit = ''
       set -x EDITOR micro
+
+      set -x FLAKE_OS $HOME/sync/configs/nixos
+      set -x FLAKE_HOME $HOME/sync/configs/home-manager
       '';
 
     shellAbbrs = {
@@ -45,17 +52,29 @@ in {
 
       "..." = "cd ../..";
 
-      u-flatpak = "cd ~/sync/configs/flatpak && ./flatpak-compose-linux-amd64 apply -current-state=system";
 
+      # TODO: clean up syncthing conflicts like so:
+      # DIFFPROG=org.gnome.meld ./syncthing-resolve-conflicts -d ./common -f
+
+
+      # This does not work yet
+      i-flatpak = "cd ~/sync/configs/flatpak && ./flatpak-compose-linux-amd64 apply -current-state=system";
+
+      u-flatpak = "flatpak update";
+
+      # to update run > i-home --update
       i-nixos = "nh os switch $HOME/sync/configs/nixos";
 
-      u-nixos = "cd ~/sync/configs/nixos && sudo nixos-rebuild build --flake .#$hostname";
+#       u-nixos = "cd ~/sync/configs/nixos && sudo nixos-rebuild build --flake .#$hostname";
 
-      u-nixos-nh = "nh os switch --update $HOME/sync/configs/nixos";
+#       u-nixos = "nh os switch --update $HOME/sync/configs/nixos";
 
-      i-home = "cd ~/sync/configs/home-manager && home-manager switch --flake .#$hostname && cd -";
+      # to update home manager, run the following with '--update'
+      i-home = "nh home switch $HOME/sync/configs/home-manager";
 
-      u-home = "cd ~/sync/configs/home-manager && nix flake update && home-manager switch --flake .#$hostname && cd -";
+#       i-home = "cd ~/sync/configs/home-manager && home-manager switch --flake .#$hostname && cd -";
+
+#       u-home = "cd ~/sync/configs/home-manager && nix flake update && home-manager switch --flake .#$hostname && cd -";
     };
   };
 
@@ -128,7 +147,6 @@ in {
     ] ++ (with pkgs; [
 
       # inputs.flox.packages.${pkgs.system}.default
-
 
     ]);
 

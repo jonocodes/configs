@@ -14,9 +14,52 @@ in {
     "sync/savr_data/.stignore".text = syncthingIgnores;
   };
 
-  # TODO: sync calendars
+  # may need to wait until 25.05
+
+  # failing at warning: failed to load external entity "/home/jono/.local/state/syncthing/config.xml"
+  /* services.syncthing = {
+         enable = true;
+     #     user = "jono";
+     #     dataDir = "/home/jono/sync2";
+     #     configDir = "/home/jono/.config/syncthing2";
+
+         # only in master, not home manager 24.11
+     #    guiAddress = "0.0.0.0:8888";  # Custom port 8888
+
+     #     tray.enable  = true;
+
+         settings = {
+
+           extraOptions = [
+             "--data=/home/jono/sync2"
+             "--config=/home/jono/.config/syncthing2"
+           ];
+
+           gui = {
+             tls = false;
+             theme = "default";
+           };
+           options = {
+             listenAddresses = [ "tcp://0.0.0.0:22001" "quic://0.0.0.0:22001" ];
+           };
+     #       devices = {
+     #         "device1" = {
+     #           id = "DEVICE-ID-GOES-HERE";
+     #           addresses = [ "dynamic" ];
+     #         };
+     #       };
+           folders = {
+             "downl" = {
+               path = "/home/jono/Downloads";
+     #           devices = [ "device1" ];
+             };
+           };
+         };
+       };
+  */
 
   # TODO: in gmail: set sending mail folder. archive folder. deleted folder
+  #   looks like gmail sent and trash is working fine with no touch
 
   programs.thunderbird = {
 
@@ -28,32 +71,9 @@ in {
       default = {
         isDefault = true;
 
-
-        extraConfig = ''
-          user_pref("extensions.installedDistroAddon.{a62ef8ec-5fdc-40c2-873c-223b8a6925cc}", true);
-        '';
-
-
-        # extensions = [
-        #   "TbSync@jobisoft.de"       # TbSync
-        #   "{a62ef8ec-5fdc-40c2-873c-223b8a6925cc}"  # Provider for Google Calendar
-        # ];
-
-        # it looks like extensions must be manually installed
+        # it looks like extensions must be manually installed. so I need to install Google Calendar Provider
 
         settings = {
-          # Enable OAuth2 for Gmail
-          # "mail.server.serverG.hostname" = "imap.gmail.com";
-          # "mail.server.serverG.authMethod" = 10;  # 10 = OAuth2
-          # "mail.server.serverG.socketType" = 2;   # SSL/TLS
-
-          # TbSync Sync Interval
-          "extensions.dav4tbsync.account1.autosyncinterval" = 15;  # Sync every 15 mins
-
-          # calendars
-          # Automatically enable this TbSync account
-          "extensions.dav4tbsync.account1.enabled" = true;
-          "extensions.dav4tbsync.account1.username" = "jfinger@gmail.com";
 
           # Sync only specific calendars by their resource names
           "extensions.dav4tbsync.account1.syncCalendars" = true;
@@ -63,7 +83,6 @@ in {
             # "user@gmail.com#WorkCalendarID"
             "jfinger@gmail.com"
           ];
-          
 
           # UI settings
           "mail.server.default.check_new_mail" = true;
@@ -73,19 +92,30 @@ in {
           "mailnews.mark_message_read.delay" = false;
           "mail.folder_views.unifiedFolders" = true;
 
+          "mailnews.default_sort_type" = 18;
+          "mailnews.default_sort_order" = 1;
+
+          #   attempts at getting 'delete' on nix mac to work
+          # "mail.deleteByBackspace" = true;
+          # "mail.delete_matches_backspace" = true;
+          # "mail.keyboard.delete_key.on_mac" = 1;
+
           # this is an attempt to support google's standard oauth2 workflow. it does not seem to work. so for now, when starting thunderbird for the first time do this in the settings UI:
           #   find the server settings for gmail and set the "Authentication method" to "Oauth2"
 
           "mail.server.serverG.hostname" = "imap.gmail.com"; # IMAP server
+          "mail.server.serverG.name" = "GMail"; # IMAP server
           "mail.server.serverG.type" = "imap";
           "mail.server.serverG.authMethod" = 10; # 10 = OAuth2
           "mail.server.serverG.socketType" = 3; # SSL/TLS
           "mail.server.serverG.is_gmail" = true;
 
-          # "mail.server.serverG.oauth2.issuer" = "accounts.google.com";
-          # "mail.server.serverG.oauth2.scope" = "https://mail.google.com";
+          # "mail.account.account1.smtp.oauth2" = true;
+
+          # outgoing mail does not set Oauth2. I can set it at run time and send email, but it gets unset after restart.
 
           # SMTP Settings
+          "mail.smtpserver.smtpG.description" = "generic gmail smtp";
           "mail.smtpserver.smtpG.hostname" = "smtp.gmail.com";
           "mail.smtpserver.smtpG.authMethod" = 10; # OAuth2
           "mail.smtpserver.smtpG.socketType" = 2; # SSL/TLS
@@ -101,24 +131,6 @@ in {
     };
   };
 
-  # accounts.calendar = {
-  #   accounts = {
-  #     "jfingr@g" = {
-  #       primary = true;
-  #       # type = "google";
-  #       userName = "jfinger@gmail.com";
-  #       # thunderbird = {
-  #       #   enable = true;
-  #       #   settings = {
-  #       #     "calendar.google.calPrefs.syncEvents" = true;
-  #       #     "calendar.google.calPrefs.syncTasks" = true;
-  #       #     "calendar.google.calPrefs.syncInvitations" = true;
-  #       #   };
-  #       # };
-  #     };
-  #   };
-  # };
-
   accounts.email = {
 
     # NOTE: passwords are entered and stored in thunderbird when it starts
@@ -131,17 +143,29 @@ in {
         address = "jono@dgt.is";
         userName = "jono@dgt.is";
         realName = "Jono";
-        imap.host = "gemini.sslcatacombnetworking.com";
-        smtp.host = "gemini.sslcatacombnetworking.com";
+        imap = {
+          host = "gemini.sslcatacombnetworking.com";
+          port = 993;
+        };
+        smtp = {
+          host = "gemini.sslcatacombnetworking.com";
+          port = 465;
+        };
         thunderbird.enable = true;
       };
 
-      "jono@lmi" = {
+      "lmi" = {
         address = "jono@lmi.net";
         userName = "jono@lmi.net";
         realName = "Jono";
-        imap.host = "mail.lmi.net";
-        smtp.host = "mail.lmi.net";
+        imap = {
+          host = "mail.lmi.net";
+          port = 993;
+        };
+        smtp = {
+          host = "mail.lmi.net";
+          port = 465;
+        };
         thunderbird.enable = true;
       };
 
@@ -158,34 +182,18 @@ in {
         userName = "jfinger@gmail.com";
         realName = "Jono";
         flavor = "gmail.com";
-        # thunderbird.enable = true;
-        thunderbird = {
-          enable = true;
-          settings = id:
-            {
-              # "mail.server.server_${id}.authMethod" = 10;
-              # "calendar.google.calPrefs.${id}.syncEvents" = true;
-              # "calendar.google.calPrefs.${id}.syncTasks" = true;
-              # "calendar.google.calPrefs.${id}.syncInvitations" = true;
-            };
-        };
+        thunderbird.enable = true;
       };
 
-      "jono.finger@populus" = {
+      "populus" = {
         flavor = "gmail.com";
         address = "jono.finger@populus.ai";
         userName = "jono.finger@populus.ai";
         realName = "Jono";
-        thunderbird = {
-          enable = true;
-          settings = id:
-            {
-              # "mail.server.serverG.check_new_mail" = false;
-            };
-        };
+        thunderbird.enable = true;
       };
 
-      # TODO: maybe add jono@fnb, jjwf16
+      # TODO: maybe add jono@fnb, jjwf16, bonj
 
     };
   };
@@ -193,12 +201,10 @@ in {
   home.packages = with pkgs-unstable;
     [
       just
+      trayscale
 
-      #         helix
     ] ++ (with pkgs;
       [
-
-        #         librewolf
 
       ]);
 
@@ -212,8 +218,10 @@ in {
 
     inputs.nix-flatpak.homeManagerModules.nix-flatpak
 
-    ../../modules/common-nixos.nix
+    ../../modules/common.nix
     ../../modules/linux-desktop.nix
+
+    #     (home-manager-master + "/modules/services/syncthing.nix")
 
   ];
 

@@ -17,13 +17,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+#     home-manager-master.url = "github:nix-community/home-manager/master";
+
+    home-manager-master = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
 #     flox.url = "github:flox/flox/v1.3.15";
 
     # sops-nix.url = "github:Mic92/sops-nix";
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master }@inputs:
     let
 
 
@@ -73,6 +80,14 @@
 
           # android-nixpkgs.nixosModules.android-nixpkgs
 
+          {
+            disabledModules = [ "services/syncthing.nix" ];
+            imports = [
+              (home-manager-master + "/modules/services/syncthing.nix")
+            ];
+          }
+
+
         ];
       };
     in {
@@ -83,7 +98,7 @@
         # zeeba = mkHost "zeeba" "x86_64-linux";
       	# t430 = mkHost "t430" "x86_64-linux";
         # orc = mkHost "orc" "aarch64-linux";
-        imbp = mkHome "imbp" "x86_64-linux";
+        "jono@imbp" = mkHome "imbp" "x86_64-linux";
       };
 
     };
