@@ -5,6 +5,10 @@
     nixpkgs.url = "nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
+
+    # TODO: replace this with the offical service once merged
+    #   https://github.com/NixOS/nixpkgs/pull/347605
+
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
@@ -20,7 +24,8 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware";
+    # pinning this because it constantly rebuild the kernal. remove the rev if I want to update 
+    nixos-hardware.url = "github:NixOS/nixos-hardware/009b764ac98a3602d41fc68072eeec5d24fc0e49";
 
   };
 

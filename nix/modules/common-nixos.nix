@@ -77,6 +77,10 @@ in {
 
         # populus mac
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKDc7mCQOFHhXTbenLwIPG3MMqy3bi1kmu00fjUJ5saf jono.finger@populus.ai"
+
+        # imbp
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/o9LEemdBD7Gw3nNf1qSydEiOXYZd5ItyhfzOgy+3s jono@foodnotblogs.com
+"
       ];
     };
 
