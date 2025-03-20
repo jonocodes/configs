@@ -24,7 +24,7 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    # pinning this because it constantly rebuild the kernal. remove the rev if I want to update 
+    # pinning this because it constantly rebuild the kernel. remove the rev if I want to update 
     nixos-hardware.url = "github:NixOS/nixos-hardware/009b764ac98a3602d41fc68072eeec5d24fc0e49";
 
   };
@@ -73,8 +73,9 @@
         # plex = mkHost "plex" "x86_64-linux";
         # zeeba = mkHost "zeeba" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
-        # orc = mkHost "orc" "aarch64-linux";
+        orc = mkHost "orc" "aarch64-linux";
         imbp = mkHost "imbp" "x86_64-linux";
+        nixahi = mkHost "nixahi" "aarch64-linux";
       };
 
     };

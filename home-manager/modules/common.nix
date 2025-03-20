@@ -3,15 +3,32 @@ let
 
   syncthingIgnores = builtins.readFile ../files/syncthingIgnores.txt;
 
-  sshKeyDir = ./ssh_pub_keys;
-  sshKeys = builtins.readDir sshKeyDir;
+  # sshKeyDir = ./ssh_pub_keys;
+  # sshKeys = builtins.readDir sshKeyDir;
 
+  # pubKeyDir = ~/.ssh/public-keys;
+
+  # pubKeys = lib.mapAttrsToList
+  #   (name: _: builtins.readFile (sshKeyDir + "/${name}"))
+  #   (lib.filterAttrs
+  #     (name: type: type == "regular" && lib.hasSuffix ".pub" name)
+  #     (builtins.readDir sshKeyDir));
+
+  # pubKeys = lib.concatMapStrings (file: 
+  #   lib.removeSuffix "\n" (builtins.readFile "${sshKeyDir}/${file}") + "\n"
+  # ) (lib.attrNames (lib.filterAttrs 
+  #   (name: _: lib.hasSuffix ".pub" name) 
+  #   (builtins.readDir sshKeyDir)
+  # ));
+
+  syncRoot = "/home/jono/syncHome";
+  
 in {
 
   home.username = "jono";
   home.homeDirectory = "/home/jono";
 
-  home.stateVersion = "24.11";
+  home.stateVersion = lib.mkDefault "24.11";
 
   nix.gc = {
     automatic = true;
@@ -26,15 +43,20 @@ in {
       "sync/configs/.stignore".text = syncthingIgnores;
       "sync/more/.stignore".text = syncthingIgnores;
       "sync/savr_data/.stignore".text = syncthingIgnores;
+
+      # ".ssh/authorized_keys" = {
+      #   text = pubKeys;
+      # };
     }
 
-    (lib.mapAttrs'
-      (name: _: {
-        name = ".ssh/${name}";
-        value = { source = "${sshKeyDir}/${name}"; };
-      })
-      sshKeys)
+    # (lib.mapAttrs'
+    #   (name: _: {
+    #     name = ".ssh/${name}";
+    #     value = { source = "${sshKeyDir}/${name}"; };
+    #   })
+    #   sshKeys)
   ];
+
 
   # TODO: patch home manager syncthing to be like nixos syncthing
   #  https://github.com/nix-community/home-manager/blob/master/modules/services/syncthing.nix
@@ -87,6 +109,11 @@ in {
   programs.ssh = {
     enable = true;
     addKeysToAgent = "yes";
+
+    # extraConfig = ''
+    #   # Auto-include all keys
+    #   ${lib.concatMapStrings (key: key + "\n") pubKeys}
+    # '';
   };
 
   programs.git = {
@@ -95,52 +122,53 @@ in {
     userEmail = "jono@foodnotblogs.com";
     lfs.enable = true;
   };
+  
 
+  # Not yet working
+  services.syncthing = {
 
+      # TODO: passwordFile
+      # TODO: set cert and key to get a static ID
+      # key = "${</path/to/key.pem>}";
 
-  # may need to wait until 25.05 for syncthing in home manager to mature
+      enable = false;  # TODO: enable once 'devices' works. waiting on 25.05 to get more stable
 
-  # failing at warning: failed to load external entity "/home/jono/.local/state/syncthing/config.xml"
-  /* services.syncthing = {
-         enable = true;
-     #     user = "jono";
-     #     dataDir = "/home/jono/sync2";
-     #     configDir = "/home/jono/.config/syncthing2";
+      # tray.enable = true;  # dont think this works
 
-         # only in master, not home manager 24.11
-     #    guiAddress = "0.0.0.0:8888";  # Custom port 8888
+      #  guiAddress = "0.0.0.0:8888";  # Custom port 8888
 
-     #     tray.enable  = true;
+      extraOptions = [
+        "-data=${syncRoot}"
+        "-config=${syncRoot}/.config/syncthing"
+      ];
 
-         settings = {
+      settings = {
 
-           extraOptions = [
-             "--data=/home/jono/sync2"
-             "--config=/home/jono/.config/syncthing2"
-           ];
+        gui = {
+          tls = false;
+          theme = "default";
+        };
+        options = {
+          listenAddresses = [ "tcp://0.0.0.0:22001" "quic://0.0.0.0:22001" ];
+        };
 
-           gui = {
-             tls = false;
-             theme = "default";
-           };
-           options = {
-             listenAddresses = [ "tcp://0.0.0.0:22001" "quic://0.0.0.0:22001" ];
-           };
-     #       devices = {
-     #         "device1" = {
-     #           id = "DEVICE-ID-GOES-HERE";
-     #           addresses = [ "dynamic" ];
-     #         };
-     #       };
-           folders = {
-             "downl" = {
-               path = "/home/jono/Downloads";
-     #           devices = [ "device1" ];
-             };
-           };
-         };
-       };
-  */
+        devicesXXX = {  # NOT WORKING. this should break
+          "choco" = {
+            id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+          };
+
+          zeeba.id = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
+        };
+
+        folders = {
+          "more" = {
+            path = "${syncRoot}/more";
+            devices = [ "choco" ];
+          };
+        };
+      };
+    };
+  
 
 
   # favor apps to not use root for security

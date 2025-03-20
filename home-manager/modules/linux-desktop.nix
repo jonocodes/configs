@@ -36,9 +36,8 @@ in {
 
   home.packages = with pkgs-unstable;
     [
-      vscode  # needed for dev containers
     ] ++ (with pkgs; [
-
+      vscode  # needed for dev containers
     ]);
 
 
@@ -48,9 +47,9 @@ in {
       # TODO: get this working
       # i-flatpak = "cd ~/sync/configs/flatpak && ./flatpak-compose-linux-amd64 apply -current-state=system";
 
-      u-flatpak = "flatpak update";
+      u-flatpak = "flatpak update --assumeyes";
 
-      u = "i-nixos --update && i-home --update && u-flatpak";  # TODO: add u-nixos after locking the t2 kernel
+      u = "i-nixos --update && i-home --update && u-flatpak";
     };
   };
 

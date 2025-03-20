@@ -7,10 +7,10 @@
     
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
-    android-nixpkgs = {
-      url = "github:tadfisher/android-nixpkgs";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # android-nixpkgs = {
+    #   url = "github:tadfisher/android-nixpkgs";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    # };
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -28,7 +28,7 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, android-nixpkgs, home-manager, flox, sops-nix, disko, nixos-hardware }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, flox, sops-nix, disko, nixos-hardware }@inputs:
     let
 
       localpackages = import ./packages {

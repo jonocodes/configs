@@ -34,6 +34,8 @@ let
 
     imbp = "FYNDFJD-C5GT4BD-SXKIZEP-ZYQNKK6-TCQ5UXG-XMQBRZ4-LZZGVPU-NOCOSAX";
 
+    nixahi = "QKJPJZ2-H27NL23-63H2CV2-P426R26-UFOFP7Q-HOXPLVH-A6E5J3K-Y4FPMA4";
+
     galaxyS23 =
       "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
 
@@ -47,6 +49,11 @@ let
       unknownDevices = filter (device: !(deviceMap ? ${device})) allDevices;
     in assert assertMsg (unknownDevices == [ ])
       "Unknown devices: ${toString unknownDevices}"; {
+
+        options = {
+          listenAddresses = [ "tcp://0.0.0.0:22008" "quic://0.0.0.0:22008" ];
+        };
+
         gui = {
           user = "admin";
 
@@ -146,9 +153,9 @@ in {
       guiAddress = "0.0.0.0:8388";
 
       # putting this on non standard ports while I mess with home manager syncthing
-      options = {
-        listenAddresses = [ "tcp://0.0.0.0:22008" "quic://0.0.0.0:22008" ];
-      };
+      # options = {
+      #   listenAddresses = [ "tcp://0.0.0.0:22008" "quic://0.0.0.0:22008" ];
+      # };
 
 
       settings = generateSettings cfg.folderDevices;

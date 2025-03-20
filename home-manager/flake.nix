@@ -27,7 +27,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-#     flox.url = "github:flox/flox/v1.3.15";
+    flox.url = "github:flox/flox/";  # /v1.3.16
 
     # sops-nix.url = "github:Mic92/sops-nix";
 
@@ -37,7 +37,7 @@
 
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox }@inputs:
     let
 
       mkHome = hostName: system: home-manager.lib.homeManagerConfiguration {
@@ -63,11 +63,10 @@
             then ./hosts/${hostName}.nix
             else ./hosts/base.nix)
 
-          # ./hosts/${hostName}.nix
-
           nix-index-database.hmModules.nix-index
 
           {
+            # TODO: this section can be removed when home manager 25.05 is stable
             disabledModules = [ "services/syncthing.nix" ];
             imports = [
               (home-manager-master + "/modules/services/syncthing.nix")
@@ -82,6 +81,7 @@
         # "jono@zeeba" = mkHome "zeeba" "x86_64-linux";
         "jono@orc" = mkHome "orc" "aarch64-linux";
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
+        "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
       };
 
     };

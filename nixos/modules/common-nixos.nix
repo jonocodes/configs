@@ -1,5 +1,28 @@
-{ pkgs, pkgs-unstable, inputs, modulesPath, ... }:
+{ pkgs, lib, pkgs-unstable, inputs, modulesPath, ... }:
 let inherit (inputs) self;
+
+  # pubKeyDir = "./ssh_pub_keys";
+  # pubKeyFiles = builtins.readDir pubKeyDir;
+  # pubKeys = map (file: builtins.readFile "${pubKeyDir}/${file}") 
+  #               (builtins.filter (name: lib.hasSuffix ".pub" name) pubKeyFiles);
+
+  pubKeys = [
+    # dobro
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGI9g+ml4fmwK8eNYe7qb7lWHlqZ4baVc5U6nkMCbnG jono@foodnotblogs.com"
+
+    # impb
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/o9LEemdBD7Gw3nNf1qSydEiOXYZd5ItyhfzOgy+3s jono@foodnotblogs.com"
+
+    # nixahi
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHpHvDJmCp1AzPORZMCWbjC8yRGRUSzsUNoI+geHb3OI jono@foodnotblogs.com"
+
+    # orc
+    "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW4SMTIQQChTCFL/SJKkOp9mejFiCih0cNjT3mirFLcuuGPiH/jlp/h6312238Piea737cgbt0c70Jt1S7F/zmsKVU9rQPk/kluOoE5jMJLoOqZeUxxRmZVYs1ebxeSoI2MHQGv+9U0YjKMCvKfQfT5IDm9sjRtcfodo81RbUOayCvc3Kq4B6iUe1A4/UbNXlHEzsbIVpn3fcgzAYynuzCkQ/rzMfNwIz8JTs4oxs4WVo0hmCyqcrpQqsXUQ8OXrIim/EQaJgQp+1Y7c7r9eMjV3HzQBWfd4sKTROcAUXgff0uW6ieArIuugOnDjE/ipxI0n1b9PQGg1b0ZkqZo2Nj ssh-key-2025-02-18"
+
+    # populus-mac
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKDc7mCQOFHhXTbenLwIPG3MMqy3bi1kmu00fjUJ5saf jono.finger@populus.ai"
+  ];          
+
 in {
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -9,7 +32,7 @@ in {
     "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
   ];
 
-  system.stateVersion = "24.11";
+  system.stateVersion = lib.mkDefault "24.11";
 
   time.timeZone = "America/Los_Angeles";
 
@@ -37,7 +60,10 @@ in {
 
   services.tailscale.enable = true;
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    # authorizedKeysInHomedir = true;  # TODO: get this working so keys can live in home manager instead?
+  };
 
   services.avahi = {
     enable = true;
@@ -52,11 +78,11 @@ in {
 
   programs.command-not-found.enable = false;
 
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-  };
+#   programs.neovim = {
+#     enable = true;
+#     viAlias = true;
+#     vimAlias = true;
+#   };
 
   programs.nh = {
     enable = true;
@@ -77,6 +103,13 @@ in {
       isNormalUser = true;
        extraGroups = [ "networkmanager" "wheel" "docker" ];
        shell = pkgs.fish;
+
+      openssh = {
+        # enable = true;
+        authorizedKeys.keys = pubKeys;
+        # authorizedKeysInHomedir = true;
+      };
+      
     };
 
   };
@@ -89,10 +122,9 @@ in {
     ] ++ (with pkgs;
       [
 
-        # keeping flox here for now since it may work differently on osx for exanple
+        # keeping flox here for now since it may work differently on osx for example
 
-        inputs.flox.packages.${pkgs.system}.default
-#         cifs-utils
+        # inputs.flox.packages.${pkgs.system}.default
       ]);
 
 }

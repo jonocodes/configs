@@ -8,20 +8,21 @@ in {
   hardware.sane.enable = true;
   hardware.graphics.enable = true;
 
-  programs.nix-ld.enable = true; # for remote vscode. dont know if this works yet
+#   programs.nix-ld.enable = true; # for remote vscode. dont know if this works yet
 
   services.xserver = { enable = true; };
 
   xdg.portal.enable = true;
 
-  virtualisation.virtualbox.host.enable = true;
-  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+  # NOTE: removing for now since does not work in aarm64
+  # virtualisation.virtualbox.host.enable = true;
+  # users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
 
-  programs.adb.enable = true;
-  users.users.jono.extraGroups = [ "adbusers" ];
+#   programs.adb.enable = true;
+#   users.users.jono.extraGroups = [ "adbusers" ];
   # android_sdk.accept_license = true;
 
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ]; # used by nixd
+#   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ]; # used by nixd
 
   services.flatpak = {
 

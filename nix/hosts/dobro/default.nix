@@ -5,15 +5,8 @@
 let
   inherit (inputs) self;
 
-  # local = self.packages;
-
   vars = import ../vars.nix;
   jonoHome = vars.jonoHome;
-
-  # zeebaVars = import ../zeeba/vars.nix;
-  # zeebaSyncthingId = (import ../zeeba/vars.nix).syncthingId;
-
-  # jonoHome = "/home/jono";
 
   syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
 
@@ -232,6 +225,8 @@ in {
 
         android-studio
 
+        yaak
+
         #   nix binary runner helpers
         # nix-index
         # nix-locate
@@ -242,7 +237,6 @@ in {
 
           tilix # temp moved here because compile problem on 9/15/24
         
-          # TODO: move to flatpak?
           firefox-bin
 
           # android-studio # very old version, 2023
