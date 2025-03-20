@@ -61,7 +61,7 @@
 
           (if builtins.pathExists ./hosts/${hostName}.nix
             then ./hosts/${hostName}.nix
-            else ./hosts/base.nix)
+            else ./hosts/_base.nix)
 
           nix-index-database.hmModules.nix-index
 
@@ -77,8 +77,8 @@
       };
     in {
       homeConfigurations = {
-        # "jono@dobro" = mkHome "dobro" "x86_64-linux";
-        # "jono@zeeba" = mkHome "zeeba" "x86_64-linux";
+        "jono@dobro" = mkHome "dobro" "x86_64-linux";
+        "jono@zeeba" = mkHome "zeeba" "x86_64-linux";
         "jono@orc" = mkHome "orc" "aarch64-linux";
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";

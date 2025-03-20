@@ -161,6 +161,15 @@ in {
     # The home.stateVersion option does not have a default and must be set, bummer
     home.stateVersion = "24.11";
 
+
+    programs.nh = {
+      enable = true;
+      # clean.enable = true;
+      # clean.extraArgs = "--keep-since 7d --keep 3";
+      # flake = "/home/jono/sync/configs/nix";
+    };
+
+
     home.file = {
       "sync/common/.stignore".text = syncthingIgnores;
       "sync/configs/.stignore".text = syncthingIgnores;

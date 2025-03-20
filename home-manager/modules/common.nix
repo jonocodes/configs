@@ -2,26 +2,6 @@
 let
 
   syncthingIgnores = builtins.readFile ../files/syncthingIgnores.txt;
-
-  # sshKeyDir = ./ssh_pub_keys;
-  # sshKeys = builtins.readDir sshKeyDir;
-
-  # pubKeyDir = ~/.ssh/public-keys;
-
-  # pubKeys = lib.mapAttrsToList
-  #   (name: _: builtins.readFile (sshKeyDir + "/${name}"))
-  #   (lib.filterAttrs
-  #     (name: type: type == "regular" && lib.hasSuffix ".pub" name)
-  #     (builtins.readDir sshKeyDir));
-
-  # pubKeys = lib.concatMapStrings (file: 
-  #   lib.removeSuffix "\n" (builtins.readFile "${sshKeyDir}/${file}") + "\n"
-  # ) (lib.attrNames (lib.filterAttrs 
-  #   (name: _: lib.hasSuffix ".pub" name) 
-  #   (builtins.readDir sshKeyDir)
-  # ));
-
-  syncRoot = "/home/jono/syncHome";
   
 in {
 
@@ -56,11 +36,6 @@ in {
     #   })
     #   sshKeys)
   ];
-
-
-  # TODO: patch home manager syncthing to be like nixos syncthing
-  #  https://github.com/nix-community/home-manager/blob/master/modules/services/syncthing.nix
-  #  https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/syncthing.nix
 
 
   programs.fish = {
@@ -123,53 +98,6 @@ in {
     lfs.enable = true;
   };
   
-
-  # Not yet working
-  services.syncthing = {
-
-      # TODO: passwordFile
-      # TODO: set cert and key to get a static ID
-      # key = "${</path/to/key.pem>}";
-
-      enable = false;  # TODO: enable once 'devices' works. waiting on 25.05 to get more stable
-
-      # tray.enable = true;  # dont think this works
-
-      #  guiAddress = "0.0.0.0:8888";  # Custom port 8888
-
-      extraOptions = [
-        "-data=${syncRoot}"
-        "-config=${syncRoot}/.config/syncthing"
-      ];
-
-      settings = {
-
-        gui = {
-          tls = false;
-          theme = "default";
-        };
-        options = {
-          listenAddresses = [ "tcp://0.0.0.0:22001" "quic://0.0.0.0:22001" ];
-        };
-
-        devicesXXX = {  # NOT WORKING. this should break
-          "choco" = {
-            id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-          };
-
-          zeeba.id = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
-        };
-
-        folders = {
-          "more" = {
-            path = "${syncRoot}/more";
-            devices = [ "choco" ];
-          };
-        };
-      };
-    };
-  
-
 
   # favor apps to not use root for security
   # requires a logout of gnome after an install to show the launcher?

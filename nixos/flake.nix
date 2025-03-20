@@ -29,6 +29,11 @@
 
   };
 
+  nixConfig = {
+    # Bypass Git dirty checks
+    bash-prompt = "";  # Disable purity checks for flakes
+  };
+
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
     , nixos-hardware, flox }@inputs:
     let
@@ -68,10 +73,10 @@
         };
     in {
       nixosConfigurations = {
-        # dobro = mkHost "dobro" "x86_64-linux";
-        # # x200 = mkHost "x200" "x86_64-linux";
+        dobro = mkHost "dobro" "x86_64-linux";
+        zeeba = mkHost "zeeba" "x86_64-linux";
+        # x200 = mkHost "x200" "x86_64-linux";
         # plex = mkHost "plex" "x86_64-linux";
-        # zeeba = mkHost "zeeba" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
         orc = mkHost "orc" "aarch64-linux";
         imbp = mkHost "imbp" "x86_64-linux";
