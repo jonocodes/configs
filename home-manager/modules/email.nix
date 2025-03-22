@@ -4,6 +4,11 @@ with lib;
 
 let
 
+
+  # NOTE: I dont use this on dobro since that email directory is also for backup and does not gel with this config. Hopefully I can do away with this config once Thunderbird sync comes around.
+
+
+
   # isDarwin = pkgs.currentSystem == "x86_64-darwin" || builtins.currentSystem == "aarch64-darwin";
 
   makeGmailAccount = address: {
@@ -141,7 +146,7 @@ in {
 
       "populus" = makeGmailAccount "jono.finger@populus.ai";
 
-      "jonojugg@g" = makeGmailAccount "jonojuggles@gmail.com";
+      "jonojuggles@g" = makeGmailAccount "jonojuggles@gmail.com";
 
       "bonjono@g" = makeGmailAccount "bonjono@gmail.com";
 
@@ -169,8 +174,6 @@ in {
   };
 
 
-  # imports = [
-
-  # ];
 
 }
+

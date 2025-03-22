@@ -23,6 +23,7 @@ in
 #     indicator = true;
 #   };
 
+
   # so gnome and kde can be installed together
   # programs.ssh.askPassword = pkgs.lib.mkForce "${pkgs.ksshaskpass.out}/bin/ksshaskpass";
 

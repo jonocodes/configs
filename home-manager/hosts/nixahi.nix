@@ -74,7 +74,7 @@ in {
       [
 
         # TODO: waiting on https://github.com/flox/flox/issues/2811
-        inputs.flox.packages.${pkgs.system}.default
+        # inputs.flox.packages.${pkgs.system}.default
 
       ]);
 

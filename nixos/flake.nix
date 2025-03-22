@@ -17,6 +17,7 @@
     #       inputs.nixpkgs.follows = "nixpkgs";
     #     };
 
+    # TODO: can probably remove this since its in home manager now
     flox.url = "github:flox/flox/v1.3.15";
 
     # sops-nix.url = "github:Mic92/sops-nix";
@@ -32,6 +33,11 @@
   nixConfig = {
     # Bypass Git dirty checks
     bash-prompt = "";  # Disable purity checks for flakes
+
+    # dont know if this does anything
+    extra-trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
+    extra-substituters = [ "https://cache.flox.dev" ];  
+  
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko

@@ -61,14 +61,19 @@ in {
 
           tilix # temp moved here because compile problem on 9/15/24
         
-          firefox-bin
+#          firefox-bin
 
           # android-studio # very old version, 2023
           # android-studio-full  # this takes so long to install because it has to build arm v8 every time
+
+          # TODO: waiting on https://github.com/flox/flox/issues/2811
+          inputs.flox.packages.${pkgs.system}.default
+
         ]);
 
 
-      services.flatpak = {
+      # services.flatpak = {
+        # enable = true;
 
         # packages = [
 
@@ -110,21 +115,17 @@ in {
         #   "io.github.mhogomchungu.media-downloader"
 
         # ];
-      };
+      # };
 
 
   imports = [
-    inputs.nix-flatpak.nixosModules.nix-flatpak
+    # inputs.nix-flatpak.nixosModules.nix-flatpak
 
-    ./boot.nix
-    ./fileSystems.nix
+    inputs.nix-flatpak.homeManagerModules.nix-flatpak
 
-    ../../modules/common-nixos.nix
-    ../../modules/linux-desktop.nix
-    ../../modules/syncthing.nix
-
-    ../../modules/gnome.nix
-    #../../modules/kde.nix
+    ../modules/common.nix
+    ../modules/linux-desktop.nix
+    # ../modules/email.nix
 
   ];
 

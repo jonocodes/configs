@@ -67,7 +67,7 @@ in {
 
         telegram-desktop
         # # vscodium
-        vscode # needed for dev containers
+        # vscode # needed for dev containers
 
     ] ++ (with pkgs; [
 

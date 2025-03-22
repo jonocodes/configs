@@ -37,7 +37,7 @@ in {
   home.packages = with pkgs-unstable;
     [
     ] ++ (with pkgs; [
-      vscode  # needed for dev containers
+#      vscode  # TODO: add back
     ]);
 
 

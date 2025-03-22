@@ -212,7 +212,7 @@ in {
         #      syncthing-tray
         telegram-desktop
         # vscodium
-        vscode # needed for dev containers
+        # vscode # needed for dev containers
         thunderbird-bin
         # jetbrains.pycharm-professional
 
@@ -224,6 +224,8 @@ in {
         warp-terminal
 
         android-studio
+
+        home-manager # needed for migration to new seperate configs
 
         yaak  # for now this brings up a blank screen
 

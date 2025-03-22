@@ -17,7 +17,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flox.url = "github:flox/flox/v1.3.10";
+    flox.url = "github:flox/flox/v1.3.16";
 
     sops-nix.url = "github:Mic92/sops-nix";
 
@@ -27,6 +27,12 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
   };
+
+  nixConfig = {
+    extra-trusted-public-keys = "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=";
+    extra-substituters = "https://cache.flox.dev";
+  };
+
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, flox, sops-nix, disko, nixos-hardware }@inputs:
     let
@@ -106,13 +112,13 @@
         };
     in {
       nixosConfigurations = {
-        dobro = mkHost "dobro" "x86_64-linux";
-        # x200 = mkHost "x200" "x86_64-linux";
-        plex = mkHost "plex" "x86_64-linux";
-        zeeba = mkHost "zeeba" "x86_64-linux";
       	t430 = mkHost "t430" "x86_64-linux";
-        orc = mkHost "orc" "aarch64-linux";
-        imbp = mkHost "imbp" "x86_64-linux";
+        x200 = mkHost "x200" "x86_64-linux";
+        # dobro = mkHost "dobro" "x86_64-linux";
+        # plex = mkHost "plex" "x86_64-linux";
+        # zeeba = mkHost "zeeba" "x86_64-linux";
+        # orc = mkHost "orc" "aarch64-linux";
+        # imbp = mkHost "imbp" "x86_64-linux";
       };
 
     };
