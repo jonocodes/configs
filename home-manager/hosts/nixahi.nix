@@ -57,12 +57,16 @@ in {
 
   home.packages = with pkgs-unstable;
     [
+      lazydocker
+
+      lazygit
+
       # trayscale # looks featurefull does not seem to work in kde
       # tailscale-systray # lists connected nodes, but has no toggles
       # KTailctl flatpak works best in KDK
       # in gnome probably us the extension
 
-      firefoxpwa
+      # firefoxpwa
 
       bruno # since the ARM version is not in flathub
 
@@ -70,11 +74,13 @@ in {
 
       telegram-desktop # flatpak version crashes
 
+      # ticktick  # TODO: enable once my master change merges to unstable
+
     ] ++ (with pkgs;
       [
 
         # TODO: waiting on https://github.com/flox/flox/issues/2811
-        # inputs.flox.packages.${pkgs.system}.default
+        inputs.flox-master.packages.${pkgs.system}.default
 
       ]);
 

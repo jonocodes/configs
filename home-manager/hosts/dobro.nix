@@ -37,7 +37,7 @@ in {
         #      syncthing-tray
         telegram-desktop
         # vscodium
-        vscode # needed for dev containers
+        # vscode # needed for dev containers
         thunderbird-bin
         # jetbrains.pycharm-professional
 
@@ -60,6 +60,8 @@ in {
         [
 
           tilix # temp moved here because compile problem on 9/15/24
+
+          vscode
         
 #          firefox-bin
 

@@ -18,7 +18,7 @@
     #     };
 
     # TODO: can probably remove this since its in home manager now
-    flox.url = "github:flox/flox/v1.3.15";
+    # flox.url = "github:flox/flox/v1.3.15";
 
     # sops-nix.url = "github:Mic92/sops-nix";
 
@@ -35,13 +35,13 @@
     bash-prompt = "";  # Disable purity checks for flakes
 
     # dont know if this does anything
-    extra-trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
-    extra-substituters = [ "https://cache.flox.dev" ];  
+    # extra-trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
+    # extra-substituters = [ "https://cache.flox.dev" ];  
   
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware, flox }@inputs:
+    , nixos-hardware }@inputs:
     let
 
       mkHost = hostName: system:

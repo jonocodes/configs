@@ -37,7 +37,7 @@ in {
   home.packages = with pkgs-unstable;
     [
     ] ++ (with pkgs; [
-#      vscode  # TODO: add back
+     vscode  # TODO: add back
     ]);
 
 
