@@ -27,9 +27,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flox.url = "github:flox/flox/v1.3.10";
+   flox.url = "github:flox/flox/v1.3.15";
     # flox.url = "github:flox/flox/8778414b043705d97898eaee0a427c51da859fb8";
-    flox-master.url = "github:flox/flox/4f0624804eb9fe78c08eb2e5ac941b562c8c8fb0";  # until /v1.3.17 comes out
+#    flox-master.url = "github:flox/flox/4f0624804eb9fe78c08eb2e5ac941b562c8c8fb0";  # until /v1.3.17 comes out
 
     # sops-nix.url = "github:Mic92/sops-nix";
 
@@ -46,10 +46,10 @@
   	# download-buffer-size = 524288000;
 
     extra-trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
-    extra-substituters = [ "https://cache.flox.dev" ];  
+    extra-substituters = [ "https://cache.flox.dev" ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, flox-master }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox }@inputs:
     let
 
       mkHome = hostName: system: home-manager.lib.homeManagerConfiguration {
