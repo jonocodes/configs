@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, inputs, modulesPath, ... }:
+{ pkgs, pkgs-unstable, inputs, modulesPath, config, ... }:
 let
   inherit (inputs) self;
 
@@ -36,24 +36,26 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
+          devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" "dobro" "pop-mac" ];
+          devices = [ "choco" "dobro" "jonodot" ];
         };
         configs = {
-          devices = [ "choco" "dobro" "pop-mac" ];
+          devices = [ "choco" "dobro" "jonodot" ];
           versioned = true;
         };
         savr_data = {
-          devices = [ "choco" "dobro" "galaxyS23" "pop-mac" ];
+          devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
         };
 
       };
     };
 
   };
+
+  environment.etc."nextcloud-admin-pass".text = "2YTVS1GwORVcKtAYUJLY";
 
   services = {
 
@@ -68,6 +70,53 @@ in {
 
     sanoid = {
       enable = true;
+    };
+
+
+    # needed for nextcloud video chat
+    # TODO: figure out how to connect this to nextcloud
+    coturn = {
+      enable = true;
+      # turn.turnServer.tlsCert = "/etc/coturn/cert.pem";
+      # turn.turnServer.tlsKey = "/etc/coturn/key.pem";
+      # turn.turnServer.tlsCert = "/etc/coturn/cert.pem";
+      # turn.turnServer.tlsKey = "/etc/coturn/key.pem";
+      # turn.turnServer.listeningPort = 3478;
+      # turn.turnServer.externalIp = "127.0.0.1";
+      # turn.turnServer.externalPort = 3478;
+      # turn.turnServer.realm = "wolf-typhon.ts.net";
+      # turn.turnServer.fingerprint = "b2:f0:a9:b4:c0:d0:e5:d1:a0:f4:b0:e3:c1:a5:b5:d4:c3:e0:f5";
+      # turn.turnServer.user = "jono";
+      # turn.turnServer.password = "jono";
+    };
+
+    nextcloud = {
+      enable = true;
+      configureRedis = true;
+      hostName = "localhost";
+      home = "/dpool/nextcloud/data";
+
+      https = true;
+
+      database.createLocally = true;
+
+      autoUpdateApps.enable = true;
+
+      package = pkgs.nextcloud30;
+
+      config = {
+        overwriteProtocol = "https";
+        dbtype = "mysql";
+        adminpassFile = "/etc/nextcloud-admin-pass";
+      };
+
+      settings.trusted_domains = [ "zeeba" "zeeba.wolf-typhon.ts.net"];
+      enableImagemagick = true;
+
+      extraApps = {
+        inherit (config.services.nextcloud.package.packages.apps) contacts calendar tasks mail notes spreed memories;
+      };
+      extraAppsEnable = true;
     };
 
   };

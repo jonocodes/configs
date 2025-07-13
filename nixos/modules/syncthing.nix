@@ -29,11 +29,16 @@ let
 
     orc = "LBHD5BY-O43E3DC-VTLHLMG-ZZJJRFT-A5I3TGD-OINPMXI-C4V7ARX-A2QGCQC";
 
-    pop-mac = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
+    # this does not exist any more
+    #pop-mac = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
 
+    # intel macbook pro?
     imbp = "FYNDFJD-C5GT4BD-SXKIZEP-ZYQNKK6-TCQ5UXG-XMQBRZ4-LZZGVPU-NOCOSAX";
 
     nixahi = "QKJPJZ2-H27NL23-63H2CV2-P426R26-UFOFP7Q-HOXPLVH-A6E5J3K-Y4FPMA4";
+
+    # terradot macbook
+    jonodot = "CMZWDHI-EZA4GC4-RBICS26-OBO647N-TB2WZXN-IJ5AGV2-SC7G2AF-DSYJ6QB";
 
     galaxyS23 =
       "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
@@ -127,10 +132,10 @@ in {
       default = { };
       example = {
         common = {
-          devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+          devices = [ "choco" "zeeba" "galaxyS23" ];
           versioned = true;
         };
-        more = { devices = [ "choco" "zeeba" "pop-mac" ]; };
+        more = { devices = [ "choco" "zeeba" ]; };
         camera = {
           path = "/dpool/camera/JonoCameraS23";
           devices = [ "galaxyS23" ];

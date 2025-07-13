@@ -70,7 +70,7 @@ in {
 
     inputs.nix-flatpak.nixosModules.nix-flatpak
 
-    ./apple-silicon-support
+    ./apple-silicon-support-2025-05-30
     ./hardware-configuration.nix
     
     ../../modules/common-nixos.nix

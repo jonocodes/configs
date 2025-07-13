@@ -2,10 +2,14 @@
   description = "Jono's top flake for home manager";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
+
+
+    # to run a single package from master:
+    #   NIXPKGS_ALLOW_UNFREE=1 nix run github:NixOS/nixpkgs/master#code-cursor --impure
 
     # android-nixpkgs = {
     #   url = "github:tadfisher/android-nixpkgs";
@@ -13,7 +17,7 @@
     # };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
 
       # url = "github:jonocodes/home-manager/thunderbird-gmail-oauth2";
@@ -27,7 +31,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-   flox.url = "github:flox/flox/v1.3.15";
+   flox.url = "github:flox/flox/v1.5.0";
     # flox.url = "github:flox/flox/8778414b043705d97898eaee0a427c51da859fb8";
 #    flox-master.url = "github:flox/flox/4f0624804eb9fe78c08eb2e5ac941b562c8c8fb0";  # until /v1.3.17 comes out
 

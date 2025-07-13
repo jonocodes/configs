@@ -31,7 +31,7 @@ in {
         alejandra
         nixd
 
-        chromium
+        # chromium
         element-desktop
         trayscale
         #      syncthing-tray
@@ -45,11 +45,16 @@ in {
         # (lib.hiPrio
         #   windsurf) # https://github.com/NixOS/nixpkgs/issues/356478#issuecomment-2559417152
 
-        warp-terminal
+        # warp-terminal
 
-        android-studio
+        # android-studio
 
-        yaak  # for now this brings up a blank screen
+        code-cursor
+
+        # yaak  # for now this brings up a blank screen
+
+        lazydocker
+        lazyjournal
 
         #   nix binary runner helpers
         # nix-index
@@ -68,7 +73,6 @@ in {
           # android-studio # very old version, 2023
           # android-studio-full  # this takes so long to install because it has to build arm v8 every time
 
-          # TODO: waiting on https://github.com/flox/flox/issues/2811
           inputs.flox.packages.${pkgs.system}.default
 
         ]);

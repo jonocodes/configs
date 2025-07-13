@@ -2,7 +2,7 @@
   description = "Jono's ...";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
 
@@ -17,16 +17,16 @@
     #       inputs.nixpkgs.follows = "nixpkgs";
     #     };
 
-    # TODO: can probably remove this since its in home manager now
-    # flox.url = "github:flox/flox/v1.3.15";
 
     # sops-nix.url = "github:Mic92/sops-nix";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    # pinning this because it constantly rebuild the kernel. remove the rev if I want to update 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/009b764ac98a3602d41fc68072eeec5d24fc0e49";
+    # pinning this because it constantly rebuilds the kernel. remove the rev if I want to update
+#    nixos-hardware.url = "github:NixOS/nixos-hardware/009b764ac98a3602d41fc68072eeec5d24fc0e49";
+
+    nixos-hardware.url = "github:NixOS/nixos-hardware/497ae1357f1ac97f1aea31a4cb74ad0d534ef41f";
 
   };
 

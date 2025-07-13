@@ -100,6 +100,15 @@ in {
 
         };
 
+        accountsOrder = [
+          "jono@dgt"
+          "jono@fnb"
+          "jonojuggles@g"
+          "bonjono@g"
+          "jfinger@g"
+          "lmi"
+        ];
+
       };
     };
   };
@@ -128,6 +137,23 @@ in {
         thunderbird.enable = true;
       };
 
+
+      "jono@fnb" = {
+        address = "jono@foodnotblogs.com";
+        userName = "jono@foodnotblogs.com";
+        realName = "Jono";
+        imap = {
+          host = "mail.foodnotblogs.com";
+          port = 993;
+        };
+        smtp = {
+          host = "mail.foodnotblogs.com";
+          port = 465;
+        };
+        thunderbird.enable = true;
+      };
+
+
       "lmi" = {
         address = "jono@lmi.net";
         userName = "jono@lmi.net";
@@ -144,7 +170,7 @@ in {
       };
 
 
-      "populus" = makeGmailAccount "jono.finger@populus.ai";
+#       "populus" = makeGmailAccount "jono.finger@populus.ai";
 
       "jonojuggles@g" = makeGmailAccount "jonojuggles@gmail.com";
 
@@ -168,7 +194,7 @@ in {
       # };
 
 
-      # TODO: maybe add jono@fnb, jjwf16
+      # TODO: maybe add jono@fnb, jjwf16, terra
 
     };
   };

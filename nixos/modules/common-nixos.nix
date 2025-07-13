@@ -32,7 +32,7 @@ in {
     "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
   ];
 
-  system.stateVersion = lib.mkDefault "24.11";
+  system.stateVersion = lib.mkDefault "25.05";
 
   time.timeZone = "America/Los_Angeles";
 
@@ -75,6 +75,8 @@ in {
 
   programs.fish.enable = true;
   programs.direnv.enable = true;
+
+  programs.direnv.enableFishIntegration = true;
 
   programs.command-not-found.enable = false;
 

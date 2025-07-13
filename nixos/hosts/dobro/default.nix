@@ -97,19 +97,19 @@ in {
 
       folderDevices = {
 
-        common = { devices = [ "choco" "zeeba" "orc" "galaxyS23" "pop-mac" ]; };
+        common = { devices = [ "choco" "zeeba" "orc" "galaxyS23" ]; };
         
-        more = { devices = [ "choco" "zeeba" "orc" "pop-mac" ]; };
+        more = { devices = [ "choco" "zeeba" "orc" ]; };
         
         camera = {
           path = "/dpool/camera/JonoCameraS23";
           devices = [ "galaxyS23" ];
         };
 
-        configs = { devices = [ "choco" "zeeba" "orc" "pop-mac" ]; };
+        configs = { devices = [ "choco" "zeeba" "orc" ]; };
         
         savr_data = {
-          devices = [ "choco" "zeeba" "galaxyS23" "pop-mac" ];
+          devices = [ "choco" "zeeba" "galaxyS23" ];
         };
       };
 
@@ -117,6 +117,8 @@ in {
   };
 
   services = {
+
+    davfs2.enable = true;
 
     sanoid = {
       enable = true;
@@ -170,6 +172,8 @@ in {
   environment.systemPackages = with pkgs; [
     iftop
     util-linux
+
+    e2fsprogs
 
     # these are needed for synciod (shouldnt they be included in that package?)
     lzop

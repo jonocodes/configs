@@ -74,13 +74,22 @@ in {
 
       telegram-desktop # flatpak version crashes
 
+      jetbrains.pycharm-professional
+
+      code-cursor
+
+      uv # since the flox version is not working
+
+
       # ticktick  # TODO: enable once my master change merges to unstable
 
     ] ++ (with pkgs;
       [
 
         # TODO: waiting on https://github.com/flox/flox/issues/2811
-        inputs.flox-master.packages.${pkgs.system}.default
+        # inputs.flox-master.packages.${pkgs.system}.default
+
+        inputs.flox.packages.${pkgs.system}.default
 
       ]);
 

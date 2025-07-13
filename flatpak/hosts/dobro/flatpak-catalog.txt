@@ -25,3 +25,4 @@ org.signal.Signal
 org.sqlitebrowser.sqlitebrowser
 org.videolan.VLC
 us.zoom.Zoom
+com.belmoussaoui.Decoder

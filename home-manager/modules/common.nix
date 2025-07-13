@@ -8,7 +8,7 @@ in {
   home.username = "jono";
   home.homeDirectory = "/home/jono";
 
-  home.stateVersion = lib.mkDefault "24.11";
+  home.stateVersion = lib.mkDefault "25.05";
 
   nix.gc = {
     automatic = true;
@@ -66,6 +66,10 @@ in {
       # DIFFPROG=org.gnome.meld ./syncthing-resolve-conflicts -d ./common -f
 
 
+
+      # or use git-merge! https://www.rafa.ee/articles/resolve-syncthing-conflicts-using-three-way-merge/
+
+
     };
 
     shellAliases = {
@@ -114,8 +118,9 @@ in {
       unzip
       pv
       parallel-disk-usage # pdu cli
-      fishPlugins.z #  TODO: replace with zoxide, and import history
+      fishPlugins.z # using this instead of zoxide since I prefer its tab completion
       encfs
+      lsof
 
       # editors, networking
       htop
