@@ -1,16 +1,21 @@
 
 # Management commands
 
-Here are the shell aliases to help with nixos systems:
+Here are some commands (fish aliases) to help with nixos systems:
 
-i-nixos = apply latest nixos configs
-i-home = apply latest home-manager configs
-i = apply all the configs (nixos and home-manager)
+**i-nixos** = apply latest nixos configs
 
-u-nixos = pull updates and apply nixos configs
-u-home = pull updates for home-manager and apply nixos configs
-u-flatpack = update the flatpaks. available on desktop only
-u = run all the updates
+**i-home** = apply latest home-manager configs
+
+**i** = apply all the configs (nixos and home-manager)
+
+**u-nixos** = pull updates and apply nixos configs
+
+**u-home** = pull updates for home-manager and apply nixos configs
+
+**u-flatpack** = update the flatpaks. available on desktop only
+
+**u** = run all the updates
 
 
 # To bootstrap a new Nix system
