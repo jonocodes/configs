@@ -18,6 +18,15 @@ in {
   nix.gc.dates = "daily";
   nix.gc.options = "--delete-older-than 7d";
 
+  # networking.hosts = {
+    # "198.54.114.213" = ["rokeachphoto.com"];
+  # };
+
+  networking.extraHosts = ''
+  198.54.114.213  rokeachphoto.com
+  '';
+
+
   # NOTE: sops would be a good way to handle secrets once I need it. syncthing was wonky so not using it there.
   # sops = {
   #   age.keyFile = "${jonoHome}/sync/common/private/sops-age-keys.txt";

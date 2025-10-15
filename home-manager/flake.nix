@@ -31,7 +31,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-   flox.url = "github:flox/flox/v1.5.0";
+  #  flox.url = "github:flox/flox/v1.5.0";
+   flox.url = "github:flox/flox/v1.7.2";
     # flox.url = "github:flox/flox/8778414b043705d97898eaee0a427c51da859fb8";
 #    flox-master.url = "github:flox/flox/4f0624804eb9fe78c08eb2e5ac941b562c8c8fb0";  # until /v1.3.17 comes out
 

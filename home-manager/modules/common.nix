@@ -37,6 +37,10 @@ in {
     #   sshKeys)
   ];
 
+  # home.shellAliases = {
+  #   fnb = "ssh foodjkut@199.188.200.147 -p 21098";
+  # };
+
 
   programs.fish = {
 
@@ -65,29 +69,37 @@ in {
       # TODO: clean up syncthing conflicts like so:
       # DIFFPROG=org.gnome.meld ./syncthing-resolve-conflicts -d ./common -f
 
-
-
       # or use git-merge! https://www.rafa.ee/articles/resolve-syncthing-conflicts-using-three-way-merge/
-
 
     };
 
     shellAliases = {
 
-      # to update run > i-home --update
       i-nixos = "nh os switch $FLAKE_OS";
 
-      # to update home manager, run the following with '--update'
+      u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
+
       i-home = "nh home switch $FLAKE_HOME";
 
+      u-home = "cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
+
       i = lib.mkDefault "i-nixos && i-home";
-      u = lib.mkDefault "i-nixos --update && i-home --update";
+
+      u = lib.mkDefault "u-home && u-nixos";
     };
   };
 
   programs.ssh = {
     enable = true;
     addKeysToAgent = "yes";
+
+    matchBlocks = {
+      "fnb" = {
+        hostname = "199.188.200.147";
+        port = 21098;
+        user = "foodjkut";
+      };
+    };
 
     # extraConfig = ''
     #   # Auto-include all keys
@@ -117,10 +129,12 @@ in {
       just
       unzip
       pv
-      parallel-disk-usage # pdu cli
+      # parallel-disk-usage # pdu cli
       fishPlugins.z # using this instead of zoxide since I prefer its tab completion
       encfs
       lsof
+      lazydocker
+      lazygit
 
       # editors, networking
       htop

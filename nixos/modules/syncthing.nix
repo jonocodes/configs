@@ -5,41 +5,38 @@ with lib;
 let
   cfg = config.digitus.services.syncthing;
 
-  # TODO: add ignore files
+  # TODO: Fix versioning. it is not creating any files right now.
 
-  # TODO: make my own syncthing wrapper so I can programatically manage the syncthing network: https://github.com/Yeshey/nixOS-Config/blob/468f1f63f0efa337370d317901bb92fc421b3033/modules/nixos/mySystem/syncthing.nix#L173
+  # TODO: waiting on ability to do ignore inline: https://github.com/NixOS/nixpkgs/pull/353770
 
-  # NOTE: waiting on ability to do ignore inline: https://github.com/NixOS/nixpkgs/pull/353770
-
-  # Maybe move do a different namespace like 'within' here: https://github.com/AdrielVelazquez/nixos-config/blob/main/modules/services/docker.nix
-  # how about the namespace 'digitus'
-
-  # if there are sync issues, they can often be resolved like so> /nix/store/gij0yzbyi9d64rh4f62386fqd3x4nl8g-syncthing-1.28.0/bin/syncthing --reset-database
+  # NOTE: if there are sync issues, they can often be resolved like so> /nix/store/gij0yzbyi9d64rh4f62386fqd3x4nl8g-syncthing-1.28.0/bin/syncthing --reset-database
 
   syncRoot = "/home/jono/sync";
 
   deviceMap = {
 
+    # desktop
     dobro = "QDPAOUZ-TN6RRAG-X6AJNTZ-QMXHGC4-RZPBFTG-4VS74JF-3ESV6QN-KMZTOAS";
-    # "IVBFEHN-WLC4YLP-QQ66IFS-PKTKVJD-OMFKMXM-R64H5A6-MRLY5CU-TUEYGQJ";
 
-    choco = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-
+    # server
     zeeba = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
 
+    # remote raspberry PI
+    choco = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+
+    # oracle cloud vm
     orc = "LBHD5BY-O43E3DC-VTLHLMG-ZZJJRFT-A5I3TGD-OINPMXI-C4V7ARX-A2QGCQC";
 
-    # this does not exist any more
-    #pop-mac = "N7XVA3T-WPY2XRB-P44F7KS-CEFRIDX-KK6DEYQ-UM2URKO-DVA2G2O-FLO6IAV";
-
-    # intel macbook pro?
+    # intel macbook pro
     imbp = "FYNDFJD-C5GT4BD-SXKIZEP-ZYQNKK6-TCQ5UXG-XMQBRZ4-LZZGVPU-NOCOSAX";
 
+    # asahi macbook pro
     nixahi = "QKJPJZ2-H27NL23-63H2CV2-P426R26-UFOFP7Q-HOXPLVH-A6E5J3K-Y4FPMA4";
 
     # terradot macbook
     jonodot = "CMZWDHI-EZA4GC4-RBICS26-OBO647N-TB2WZXN-IJ5AGV2-SC7G2AF-DSYJ6QB";
 
+    # phone
     galaxyS23 =
       "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
 

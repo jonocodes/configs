@@ -22,6 +22,10 @@ in {
   	settings.General.EnableNetworkConfiguration = true;
   };
 
+  networking.hosts = {
+    "198.54.114.213" = ["rokeachphoto.com"];
+  };
+
   # TODO: switch command and control? probably with .xmodmap
   # https://github.com/NixOS/nixos-hardware/tree/master/apple#switching-cmd-and-altaltgr
   # boot.kernelParams = [
@@ -32,13 +36,15 @@ in {
 
   environment.systemPackages = with pkgs-unstable; [
 
+    # postgresql
+    libpq
+
   ] ++ (with pkgs; [
     asahi-nvram
 
     vim
 
   ]);
-
 
 
   digitus.services = {

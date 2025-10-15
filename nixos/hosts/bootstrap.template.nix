@@ -20,41 +20,22 @@ in {
     vim
   ];
 
-  services = {
 
-    tailscale.enable = true;
+  digitus.services = {
 
     syncthing = {
-
       enable = true;
-      user = "jono";
-      dataDir = "/home/jono/sync";
-      configDir = "/home/jono/.config/syncthing";
-
-      overrideDevices = true;
-      overrideFolders = true;
-
-      guiAddress = "0.0.0.0:8384";
-
-      settings = {
-        
-        folders = {
-          "configs" = {
-            path = "/home/jono/sync/configs";
-            devices = [ "choco" ];
-          };
+      folderDevices = {
+        common = {
+          devices = [ "choco" ];
+          versioned = true;
         };
-
-        devices = {
-          "choco" = {
-            id =
-              "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
-          };
-        };
-
       };
-
     };
+  };
+
+  services = {
+    tailscale.enable = true;
   };
 
   # networking.hostId = "6c5d7bdd"; # only needed for zfs support

@@ -12,21 +12,16 @@
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
-    #     android-nixpkgs = {
-    #       url = "github:tadfisher/android-nixpkgs";
-    #       inputs.nixpkgs.follows = "nixpkgs";
-    #     };
-
-
     # sops-nix.url = "github:Mic92/sops-nix";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    # pinning this because it constantly rebuilds the kernel. remove the rev if I want to update
-#    nixos-hardware.url = "github:NixOS/nixos-hardware/009b764ac98a3602d41fc68072eeec5d24fc0e49";
+    # pinning this because it constantly rebuilds the kernel. remove the rev if I want to update. then copy it from flake.lock
+    # nixos-hardware.url = "github:NixOS/nixos-hardware/497ae1357f1ac97f1aea31a4cb74ad0d534ef41f";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/497ae1357f1ac97f1aea31a4cb74ad0d534ef41f";
+    # I uncommented the rev here on 7/13/25 and there was no rebuild ??
+    nixos-hardware.url = "github:NixOS/nixos-hardware";
 
   };
 
@@ -50,6 +45,20 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
+            overlays = [ # TODO: remove this once the issue is fixed https://github.com/nixos/nixpkgs/issues/438765
+              (_: prev: {
+                tailscale = prev.tailscale.overrideAttrs (old: {
+                  checkFlags =
+                    builtins.map (
+                      flag:
+                        if prev.lib.hasPrefix "-skip=" flag
+                        then flag + "|^TestGetList$|^TestIgnoreLocallyBoundPorts$|^TestPoller$"
+                        else flag
+                    )
+                    old.checkFlags;
+                });
+              })
+            ];
           };
 
           specialArgs = {

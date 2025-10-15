@@ -127,11 +127,11 @@ in {
         userName = "jono@dgt.is";
         realName = "Jono";
         imap = {
-          host = "gemini.sslcatacombnetworking.com";
+          host = "dgt.is";
           port = 993;
         };
         smtp = {
-          host = "gemini.sslcatacombnetworking.com";
+          host = "dgt.is";
           port = 465;
         };
         thunderbird.enable = true;
@@ -143,11 +143,11 @@ in {
         userName = "jono@foodnotblogs.com";
         realName = "Jono";
         imap = {
-          host = "mail.foodnotblogs.com";
+          host = "foodnotblogs.com";
           port = 993;
         };
         smtp = {
-          host = "mail.foodnotblogs.com";
+          host = "foodnotblogs.com";
           port = 465;
         };
         thunderbird.enable = true;
@@ -170,7 +170,7 @@ in {
       };
 
 
-#       "populus" = makeGmailAccount "jono.finger@populus.ai";
+      "terradot" = makeGmailAccount "jono@terradot.earth";
 
       "jonojuggles@g" = makeGmailAccount "jonojuggles@gmail.com";
 
@@ -194,7 +194,7 @@ in {
       # };
 
 
-      # TODO: maybe add jono@fnb, jjwf16, terra
+      # TODO: maybe add jjwf16
 
     };
   };

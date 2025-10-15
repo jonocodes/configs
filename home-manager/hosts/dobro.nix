@@ -20,7 +20,7 @@ in {
         flyctl
 
         rclone
-        rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://github.com/nix-community/home-manager/pull/6101
+
         # pcmanfm # lightweight file manager, with right click tar
         numix-icon-theme
         numix-icon-theme-square
@@ -45,10 +45,6 @@ in {
         # (lib.hiPrio
         #   windsurf) # https://github.com/NixOS/nixpkgs/issues/356478#issuecomment-2559417152
 
-        # warp-terminal
-
-        # android-studio
-
         code-cursor
 
         # yaak  # for now this brings up a blank screen
@@ -56,13 +52,23 @@ in {
         lazydocker
         lazyjournal
 
+        distrobox
+
         #   nix binary runner helpers
         # nix-index
         # nix-locate
         steam-run # x86 only
         # nodejs_22
+
       ] ++ (with pkgs;
         [
+
+          # moved here becaues of tauri mismatch error
+          # devpod
+          # devpod-desktop
+
+          # temp moved here because of cmake error. https://github.com/NixOS/nixpkgs/issues/445447
+          rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://github.com/nix-community/home-manager/pull/6101
 
           tilix # temp moved here because compile problem on 9/15/24
 

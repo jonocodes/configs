@@ -49,7 +49,7 @@ in {
 
       u-flatpak = "flatpak update --assumeyes";
 
-      u = "i-nixos --update && i-home --update && u-flatpak";
+      u = "u-home && u-nixos && u-flatpak";
     };
   };
 

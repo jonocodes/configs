@@ -2,12 +2,6 @@
 let
   inherit (inputs) self;
 
-  # jonoHome = "/home/jono";
-
-  # syncthingGuiPass = "$2a$10$ucKVjnQbOk9E//OmsllITuuDkQKkPBaL0x39Zuuc1b8Kkn2tmkwHm";
-
-  # syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
-
 in {
 
   boot = {
@@ -31,17 +25,6 @@ in {
       PasswordAuthentication = false;
     };
   };
-
-  # environment.etc."nextcloud-admin-pass".text = "b8d3ad290bfa6fe407280587181a5167d71a2617";
-
-  # services.nextcloud = {
-  #   enable = true;
-  #   package = pkgs.nextcloud30;
-  #   hostName = "localhost";
-  #   # database.createLocally = true;
-  #   config.adminpassFile = "/etc/nextcloud-admin-pass";
-  #   config.dbtype = "sqlite";
-  # };
 
   # services.headscale = {
   #   enable = true;

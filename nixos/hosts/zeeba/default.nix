@@ -91,7 +91,7 @@ in {
     };
 
     nextcloud = {
-      enable = true;
+      enable = false;
       configureRedis = true;
       hostName = "localhost";
       home = "/dpool/nextcloud/data";
@@ -127,6 +127,7 @@ in {
 
   imports = [ 
     ./hardware-configuration.nix
+    ./web.nix
     ../../modules/common-nixos.nix
     ../../modules/syncthing.nix
   ];

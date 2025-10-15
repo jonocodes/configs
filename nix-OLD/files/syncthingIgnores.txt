@@ -1,8 +1,0 @@
-.direnv
-.devenv
-.flox
-.git
-.venv
-.DS_Store
-node_modules
-result
