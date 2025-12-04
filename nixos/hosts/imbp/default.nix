@@ -77,9 +77,9 @@ in {
           devices = [ "choco" "dobro" ];
           versioned = true;
         };
-        savr_data = {
-          devices = [ "choco" "dobro" ];
-        };
+        # savr_data = {
+        #   devices = [ "choco" "dobro" ];
+        # };
 
       };
     };

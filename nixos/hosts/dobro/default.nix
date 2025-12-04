@@ -22,9 +22,12 @@ in {
     # "198.54.114.213" = ["rokeachphoto.com"];
   # };
 
-  networking.extraHosts = ''
-  198.54.114.213  rokeachphoto.com
-  '';
+  # networking.extraHosts = ''
+  #   198.54.114.213  rokeachphoto.com
+  # '';
+
+
+  boot.supportedFilesystems."fuse.sshfs" = true;
 
 
   # NOTE: sops would be a good way to handle secrets once I need it. syncthing was wonky so not using it there.
@@ -80,24 +83,55 @@ in {
   #   "datadrive UUID=a8271935-0b31-44a6-8ed8-5627626ea945 /home/jono/sync/configs/nix/hosts/dobro/files/secondary-hd.keyfile luks";
 
   # local nas
-  fileSystems."/media/nas_backup" = {
-    device = "nas.alb:/shares/backup";
-    fsType = "nfs";
+  fileSystems = {
+
+    "/media/nas_backup" = {
+      device = "nas.alb:/shares/backup";
+      fsType = "nfs";
+    };
+
+    # offsite backup drive (routed through matcha)
+    "/media/berk_nas" = {
+      device = "//192.168.1.140/jono";
+      fsType = "cifs";
+      options = let
+        # this line prevents hanging on network split
+        automount_opts =
+          "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=15s,x-systemd.mount-timeout=15s";
+
+      in [
+        "${automount_opts},nofail,uid=jono,gid=users,credentials=/etc/samba/credentials/berk"
+      ];
+    };
+
+    "/media/matcha_home" = {
+      device = "jono@matcha:/home/jono";
+      fsType = "fuse.sshfs";
+      options = [
+        "reconnect"
+        "allow_other"
+        "x-systemd.automount"  # mount on first access?
+        "IdentityFile=${jonoHome}/.ssh/id_ed25519"
+      ];
+    };
+
+    # offsite backup via direct ssh (more stable)
+    # "/media/berk_nas_ssh" = {
+    #   device = "sshd@192.168.1.140:/HD/HD_a2";
+    #   fsType = "fuse.sshfs";
+    #   options = [
+    #     # "reconnect"
+    #     # "allow_other"
+    #     "IdentityFile=${jonoHome}/.ssh/id_ed25519"
+    #     # "StrictHostKeyChecking=no"
+    #     # "UserKnownHostsFile=/dev/null"
+    #     # "uid=jono"
+    #     # "gid=users"
+    #   ];
+    # };
+
   };
 
-  # offsite backup drive
-  fileSystems."/media/berk_nas" = {
-    device = "//192.168.1.140/jono";
-    fsType = "cifs";
-    options = let
-      # this line prevents hanging on network split
-      automount_opts =
-        "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=15s,x-systemd.mount-timeout=15s";
-
-    in [
-      "${automount_opts},nofail,uid=jono,gid=users,credentials=/etc/samba/credentials/berk"
-    ];
-  };
 
   digitus.services = {
     syncthing = {
@@ -106,20 +140,20 @@ in {
 
       folderDevices = {
 
-        common = { devices = [ "choco" "zeeba" "orc" "galaxyS23" ]; };
+        common = { devices = [ "choco" "zeeba" "orc" "galaxyS23" "matcha" ]; };
         
-        more = { devices = [ "choco" "zeeba" "orc" ]; };
+        more = { devices = [ "choco" "zeeba" "orc" "matcha" ]; };
         
         camera = {
           path = "/dpool/camera/JonoCameraS23";
           devices = [ "galaxyS23" ];
         };
 
-        configs = { devices = [ "choco" "zeeba" "orc" ]; };
+        configs = { devices = [ "choco" "zeeba" "orc" "matcha" ]; };
         
-        savr_data = {
-          devices = [ "choco" "zeeba" "galaxyS23" ];
-        };
+        # savr_data = {
+        #   devices = [ "choco" "zeeba" "galaxyS23" ];
+        # };
       };
 
     };

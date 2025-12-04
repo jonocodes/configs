@@ -45,20 +45,6 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
-            overlays = [ # TODO: remove this once the issue is fixed https://github.com/nixos/nixpkgs/issues/438765
-              (_: prev: {
-                tailscale = prev.tailscale.overrideAttrs (old: {
-                  checkFlags =
-                    builtins.map (
-                      flag:
-                        if prev.lib.hasPrefix "-skip=" flag
-                        then flag + "|^TestGetList$|^TestIgnoreLocallyBoundPorts$|^TestPoller$"
-                        else flag
-                    )
-                    old.checkFlags;
-                });
-              })
-            ];
           };
 
           specialArgs = {
@@ -96,6 +82,7 @@
         orc = mkHost "orc" "aarch64-linux";
         imbp = mkHost "imbp" "x86_64-linux";
         nixahi = mkHost "nixahi" "aarch64-linux";
+        matcha = mkHost "matcha" "x86_64-linux";
       };
 
     };

@@ -80,7 +80,7 @@
             then ./hosts/${hostName}.nix
             else ./hosts/_base.nix)
 
-          nix-index-database.hmModules.nix-index
+          nix-index-database.homeModules.nix-index
 
           {
             # TODO: this section can be removed when home manager 25.05 is stable
@@ -99,6 +99,7 @@
         "jono@orc" = mkHome "orc" "aarch64-linux";
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
+        "jono@matcha" = mkHome "matcha" "x86_64-linux";
       };
 
     };

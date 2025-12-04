@@ -60,8 +60,9 @@ in {
   services.envfs.enable = true;
 
   services.tailscale.enable = true;
+  services.tailscale.extraSetFlags = [ "--accept-routes" ];
   # trying unstable to see if it works around the test errors in 1.82.5
-  services.tailscale.package = pkgs-unstable.tailscale;
+  # services.tailscale.package = pkgs-unstable.tailscale;
 
   services.openssh = {
     enable = true;

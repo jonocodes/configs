@@ -75,7 +75,8 @@ in {
 
     shellAliases = {
 
-      i-nixos = "nh os switch $FLAKE_OS";
+      # using impure to source secrets from the filesystem
+      i-nixos = "nh os switch $FLAKE_OS --impure";
 
       u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
 
@@ -94,10 +95,19 @@ in {
     addKeysToAgent = "yes";
 
     matchBlocks = {
-      "fnb" = {
+      "fnb" = { # namecheap
         hostname = "199.188.200.147";
         port = 21098;
         user = "foodjkut";
+      };
+      "rokeachphoto" = { # namecheap
+        hostname = "198.54.114.213";
+        port = 21098;
+        user = "rokeeued";
+      };
+      "berk_nas" = { # WD My Cloud Nas
+        hostname = "192.168.1.140";
+        user = "sshd";
       };
     };
 

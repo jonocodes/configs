@@ -63,9 +63,9 @@ in {
           devices = [ "choco" ];
           versioned = true;
         };
-        savr_data = {
-          devices = [ "choco" ];
-        };
+        # savr_data = {
+        #   devices = [ "choco" ];
+        # };
 
       };
     };

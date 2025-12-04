@@ -11,6 +11,17 @@ let
     # Serve static files
     file_server
   '';
+
+  # Function to read a secret from a file
+  # The secret file should be created manually on the system at the specified path
+  # and should NOT be tracked in git
+  readSecretFile = path:
+    let
+      secret = builtins.readFile path;
+      # Trim whitespace (including newlines) from the secret
+      trimmedSecret = builtins.replaceStrings ["\n"] [""] secret;
+    in
+    builtins.toString trimmedSecret;
 in
 {
 
@@ -30,10 +41,27 @@ in
         image = "aspencloud/triplit-server";
         ports = [ "8080:8080" ];
         environment = {
-          LOCAL_DATABASE_URL = "./app.db";
+          LOCAL_DATABASE_URL = "/data/sfcarpool.db";
+          # Read secret from file - the file should be created at /etc/triplit-jwt-secret
+          # and should NOT be tracked in git
+          JWT_SECRET = readSecretFile /etc/triplit-jwt-secret;
         };
-        # volumes = [ "/host/path:/container/path" ];
+        # name = "triplit-server";
+        # volumes = [ "/run/sfcarpool/sfcarpool.db:/app/sfcarpool.db" ];
+        volumes = [ "/run/sfcarpool:/data" ];
       };
+
+      triplit-dev = {
+        image = "aspencloud/triplit-server";
+        ports = [ "8082:8080" ];
+        environment = {
+          LOCAL_DATABASE_URL = "/data/sfcarpool-dev.db";
+          JWT_SECRET = readSecretFile /etc/triplit-jwt-secret;
+        };
+        # name = "triplit-server";
+        volumes = [ "/run/sfcarpool:/data" ];
+      };
+
     };
   };
 
@@ -180,6 +208,18 @@ in
       '';
 
       virtualHosts."zeeba.dgt.is".extraConfig = ''
+
+          route /sfc* {
+            uri strip_prefix /sfc
+            reverse_proxy localhost:8080
+          }
+
+          route /sfc-stage* {
+            uri strip_prefix /sfc-stage
+            reverse_proxy localhost:8082
+          }
+          
+          # Default response for other routes
           respond "Hello, zeeba world!"
       '';
 

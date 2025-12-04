@@ -46,13 +46,21 @@ in {
           devices = [ "choco" "dobro" "jonodot" ];
           versioned = true;
         };
-        savr_data = {
-          devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
-        };
+        # savr_data = {
+        #   devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
+        # };
 
       };
     };
 
+  };
+
+  services.tailscale = {
+    extraSetFlags = [
+      # "--advertise-routes=192.168.100.0/24"
+      "--advertise-exit-node"
+    ];
+    useRoutingFeatures = "server";
   };
 
   environment.etc."nextcloud-admin-pass".text = "2YTVS1GwORVcKtAYUJLY";

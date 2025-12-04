@@ -16,8 +16,10 @@ in {
     home.packages = with pkgs-unstable;
       [
 
+    		killall
+
         hunspellDicts.en_US
-        flyctl
+        # flyctl
 
         rclone
 
@@ -46,6 +48,7 @@ in {
         #   windsurf) # https://github.com/NixOS/nixpkgs/issues/356478#issuecomment-2559417152
 
         code-cursor
+        claude-code
 
         # yaak  # for now this brings up a blank screen
 
@@ -59,6 +62,10 @@ in {
         # nix-locate
         steam-run # x86 only
         # nodejs_22
+
+        handbrake
+        digikam
+        smartmontools
 
       ] ++ (with pkgs;
         [

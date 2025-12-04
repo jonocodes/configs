@@ -21,17 +21,57 @@ in {
   ];
 
 
-  digitus.services = {
+  services = {
 
-    syncthing = {
-      enable = true;
-      folderDevices = {
-        common = {
-          devices = [ "choco" ];
-          versioned = true;
+    # syncthing = {
+    #   enable = true;
+    #   folderDevices = {
+    #     common = {
+    #       devices = [ "choco" ];
+    #       versioned = true;
+    #     };
+    #   };
+    # };
+
+
+  syncthing = {
+
+      enable = true; 
+
+      guiAddress = "0.0.0.0:8388";
+
+      user = "jono";
+      dataDir = "/home/jono/sync";
+      configDir = "/home/jono/sync/.config/syncthing";
+
+      settings = {
+
+        gui = {
+          tls = false;
+          theme = "default";
+        };
+        options = {
+          listenAddresses = [ "tcp://0.0.0.0:22001" "quic://0.0.0.0:22001" ];
+        };
+
+        devices = {  # NOT WORKING. this should break
+          "choco" = {
+            id = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
+          };
+
+          # zeeba.id = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
+        };
+
+        folders = {
+          "confings" = {
+            path = "/home/jono/sync/configs";
+            devices = [ "choco" ];
+          };
         };
       };
     };
+
+
   };
 
   services = {
