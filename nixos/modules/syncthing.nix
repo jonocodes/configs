@@ -21,7 +21,7 @@ let
     # home server
     zeeba = "FHJMBVS-QFCCTVG-XQCQTCB-RTX6I37-B76EXZ7-Y7VSFBZ-YT5QWFK-4XQVGAH";
 
-    # remote raspberry PI (SD)
+    # remote raspberry PI (SD) - Not NixOS
     choco = "ITAESBW-TIKWVEX-ITJPOWT-PM7LSDA-O23Q2FO-6L5VSY2-3UW5VM6-I6YQAAR";
 
     # oracle cloud vm
@@ -33,15 +33,17 @@ let
     # asahi macbook pro
     nixahi = "QKJPJZ2-H27NL23-63H2CV2-P426R26-UFOFP7Q-HOXPLVH-A6E5J3K-Y4FPMA4";
 
-    # work macbook
+    # work macbook, OS X
     jonodot = "CMZWDHI-EZA4GC4-RBICS26-OBO647N-TB2WZXN-IJ5AGV2-SC7G2AF-DSYJ6QB";
 
     # phone
-    galaxyS23 =
-      "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
+    galaxyS23 = "GNT4UMD-JUYX45B-ODZXIZL-Q4JBCN5-DR5FEEI-LKLP667-VYEEJLP-GF4UCQO";
 
     # berkeley server
     matcha = "ACH3VIT-VQV6YMF-VSLTHE5-U6KWXTV-7HNHS42-TQC33L3-XYWBS3Z-CYVONAP";
+
+    # plex server
+    plex = "IT4Q6RP-BPRUXMB-6IBKWQC-CHC43OU-GTMKII5-OBEX2NA-MY45WTD-YZ72TAC";
 
   };
 

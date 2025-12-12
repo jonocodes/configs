@@ -29,7 +29,7 @@ in {
     "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
   ];
 
-  system.stateVersion = lib.mkDefault "25.05";
+  system.stateVersion = lib.mkDefault "25.11";
 
   time.timeZone = "America/Los_Angeles";
 
@@ -75,7 +75,7 @@ in {
     openFirewall = true;
   };
 
-  networking.firewall.enable = false;
+  networking.firewall.enable = lib.mkDefault false;
 
   programs.fish.enable = true;
   programs.direnv.enable = true;

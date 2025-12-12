@@ -8,11 +8,11 @@ in {
   home.username = "jono";
   home.homeDirectory = "/home/jono";
 
-  home.stateVersion = lib.mkDefault "25.05";
+  home.stateVersion = lib.mkDefault "25.11";
 
   nix.gc = {
     automatic = true;
-    frequency = "daily";
+    dates = "daily";
     options = "--delete-older-than 7d";
   };
 
@@ -36,11 +36,6 @@ in {
     #   })
     #   sshKeys)
   ];
-
-  # home.shellAliases = {
-  #   fnb = "ssh foodjkut@199.188.200.147 -p 21098";
-  # };
-
 
   programs.fish = {
 
@@ -92,22 +87,24 @@ in {
 
   programs.ssh = {
     enable = true;
-    addKeysToAgent = "yes";
 
     matchBlocks = {
       "fnb" = { # namecheap
         hostname = "199.188.200.147";
         port = 21098;
         user = "foodjkut";
+        addKeysToAgent = "yes";
       };
       "rokeachphoto" = { # namecheap
         hostname = "198.54.114.213";
         port = 21098;
         user = "rokeeued";
+        addKeysToAgent = "yes";
       };
       "berk_nas" = { # WD My Cloud Nas
         hostname = "192.168.1.140";
         user = "sshd";
+        addKeysToAgent = "yes";
       };
     };
 
@@ -119,9 +116,14 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "Jono";
-    userEmail = "jono@foodnotblogs.com";
     lfs.enable = true;
+
+    settings = {
+      user = {
+        name = "Jono";
+        email = "jono@foodnotblogs.com";
+      };
+    };
   };
   
 

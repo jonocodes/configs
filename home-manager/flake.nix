@@ -2,7 +2,7 @@
   description = "Jono's top flake for home manager";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-25.05";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
@@ -17,7 +17,7 @@
     # };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
 
       # url = "github:jonocodes/home-manager/thunderbird-gmail-oauth2";
@@ -100,6 +100,7 @@
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
         "jono@matcha" = mkHome "matcha" "x86_64-linux";
+        "jono@plex" = mkHome "plex" "x86_64-linux";
       };
 
     };
