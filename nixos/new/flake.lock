@@ -1,0 +1,146 @@
+{
+  "nodes": {
+    "disko": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765326679,
+        "narHash": "sha256-fTLX9kDwLr9Y0rH/nG+h1XG5UU+jBcy0PFYn5eneRX8=",
+        "owner": "nix-community",
+        "repo": "disko",
+        "rev": "d64e5cdca35b5fad7c504f615357a7afe6d9c49e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "disko",
+        "type": "github"
+      }
+    },
+    "lib": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765587782,
+        "narHash": "sha256-FcUna7Y5Y+tPuncVmQxmcBbt3N0HVmXVGTCRM88ukN4=",
+        "path": "/home/jono/sync/configs/nixos/lib",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/jono/sync/configs/nixos/lib",
+        "type": "path"
+      }
+    },
+    "nix-flatpak": {
+      "locked": {
+        "lastModified": 1754777568,
+        "narHash": "sha256-0bBqT+3XncgF8F03RFAamw9vdf0VmaDoIJLTGkjfQZs=",
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "rev": "62f636b87ef6050760a8cb325cadb90674d1e23e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gmodena",
+        "repo": "nix-flatpak",
+        "type": "github"
+      }
+    },
+    "nixos-hardware": {
+      "locked": {
+        "lastModified": 1764440730,
+        "narHash": "sha256-ZlJTNLUKQRANlLDomuRWLBCH5792x+6XUJ4YdFRjtO4=",
+        "owner": "NixOS",
+        "repo": "nixos-hardware",
+        "rev": "9154f4569b6cdfd3c595851a6ba51bfaa472d9f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1765311797,
+        "narHash": "sha256-mSD5Ob7a+T2RNjvPvOA1dkJHGVrNVl8ZOrAwBjKBDQo=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "09eb77e94fa25202af8f3e81ddc7353d9970ac1b",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-25.11",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1765186076,
+        "narHash": "sha256-hM20uyap1a0M9d344I692r+ik4gTMyj60cQWO+hAYP8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "addf7cf5f383a3101ecfba091b98d0a1263dc9b8",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-unstable",
+        "type": "indirect"
+      }
+    },
+    "plex": {
+      "inputs": {
+        "disko": [
+          "disko"
+        ],
+        "nix-flatpak": [
+          "nix-flatpak"
+        ],
+        "nixos-hardware": [
+          "nixos-hardware"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "nixpkgs-unstable": [
+          "nixpkgs-unstable"
+        ],
+        "parent": [
+          "lib"
+        ]
+      },
+      "locked": {
+        "lastModified": 1765588345,
+        "narHash": "sha256-2eX877eolxrtQFWgyQr6HWfUIxhEEZ1EtI2lvU1j7NA=",
+        "path": "/home/jono/sync/configs/nixos/hosts/plex",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/jono/sync/configs/nixos/hosts/plex",
+        "type": "path"
+      }
+    },
+    "root": {
+      "inputs": {
+        "disko": "disko",
+        "lib": "lib",
+        "nix-flatpak": "nix-flatpak",
+        "nixos-hardware": "nixos-hardware",
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "plex": "plex"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
