@@ -228,50 +228,49 @@ in
     };
 
     phpfpm.pools.rokeachphoto = {
-        user = "caddy";
-        group = "caddy";
-        phpPackage = pkgs.php83;
-        settings = {
-          "listen" = "127.0.0.1:9000";
-          "pm" = "dynamic";
-          "pm.max_children" = 5;
-          "pm.start_servers" = 2;
-          "pm.min_spare_servers" = 1;
-          "pm.max_spare_servers" = 3;
-        };
+      user = "caddy";
+      group = "caddy";
+      phpPackage = pkgs.php83;
+      settings = {
+        "listen" = "127.0.0.1:9000";
+        "pm" = "dynamic";
+        "pm.max_children" = 5;
+        "pm.start_servers" = 2;
+        "pm.min_spare_servers" = 1;
+        "pm.max_spare_servers" = 3;
       };
+    };
   };
 
   environment.etc."alloy/config.alloy".text = ''
+      loki.write "default" {
+        endpoint {
+          url = "http://127.0.0.1:3100/loki/api/v1/push"
+        }
+      }
+      loki.relabel "zeeba_journal" {
+        forward_to = []
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label = "systemd_unit"
+        }
+        rule {
+          source_labels = ["__journal_syslog_identifier"]
+          target_label = "syslog_identifier"
+        }
+      }
 
-        loki.write "default" {
-          endpoint {
-            url = "http://127.0.0.1:3100/loki/api/v1/push"
-          }
-        }
-        loki.relabel "zeeba_journal" {
-          forward_to = []
-          rule {
-            source_labels = ["__journal__systemd_unit"]
-            target_label = "systemd_unit"
-          }
-          rule {
-            source_labels = ["__journal_syslog_identifier"]
-            target_label = "syslog_identifier"
-          }
-        }
+      loki.source.journal "zeeba_journal" {
+        forward_to = [loki.write.default.receiver]
+        relabel_rules = loki.relabel.zeeba_journal.rules
+        // format_as_json = true
+      }
 
-        loki.source.journal "zeeba_journal" {
-          forward_to = [loki.write.default.receiver]
-          relabel_rules = loki.relabel.zeeba_journal.rules
-          // format_as_json = true
-        }
-
-        loki.source.journal "systemd" {
-          max_age    = "24h"
-          forward_to = [loki.write.default.receiver]
-        }
-     '';
+      loki.source.journal "systemd" {
+        max_age    = "24h"
+        forward_to = [loki.write.default.receiver]
+      }
+    '';
 
   environment.systemPackages = with pkgs; [
     php83

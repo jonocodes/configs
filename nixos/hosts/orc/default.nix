@@ -75,6 +75,8 @@ in {
 
     ../../modules/common-nixos.nix
     ../../modules/syncthing.nix
+
+    ./web.nix
   ];
 
 }

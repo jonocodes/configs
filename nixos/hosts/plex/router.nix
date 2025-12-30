@@ -29,6 +29,12 @@
     ethtool
   ];
 
+  services.duckdns = {
+    enable = true;
+    domains = [ "digitus" ];
+    tokenFile = "/etc/duckdns.token";
+  };
+
   services.kea.dhcp4 = {
     enable = true;
     settings = {
@@ -55,10 +61,19 @@
             name = "routers";
             data = "192.168.200.1";  # router IP on LAN
           }
+          # {
+          #   name = "domain-name-servers";
+          #   # KEA expects comma-separated IP addresses for domain-name-servers
+          #   data = "1.1.1.1,8.8.8.8";
+          # }
+        ];
+
+        # Static IP reservations
+        reservations = [
           {
-            name = "domain-name-servers";
-            # KEA expects comma-separated IP addresses for domain-name-servers
-            data = "1.1.1.1,8.8.8.8";
+            hw-address = "00:25:90:7a:b6:26";
+            ip-address = "192.168.200.114";
+            hostname = "zeeba";
           }
         ];
       }];
@@ -164,12 +179,30 @@
       internalInterfaces = [ "enp1s0" ];
     };
 
-    # Firewall disabled for testing - re-enable after verifying NAT works
+    # Firewall with port forwarding
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 ]; # SSH to the router from LAN
-      trustedInterfaces = [ "enp1s0" ];
+      allowedTCPPorts = [ 22 ]; # SSH to router only
+      trustedInterfaces = [ "enp1s0" ]; # Trust LAN interface
+      
+      # The checkReversePath option can interfere with NAT
+      # Setting to "loose" allows forwarded packets through
+      checkReversePath = "loose";
     };
+
+    # Port forwarding from external ports 80 and 443 to zeeba (192.168.200.114)
+    nat.forwardPorts = [
+      {
+        sourcePort = 80;
+        destination = "192.168.200.114:80";
+        proto = "tcp";
+      }
+      {
+        sourcePort = 443;
+        destination = "192.168.200.114:443";
+        proto = "tcp";
+      }
+    ];
   };
 
 }

@@ -1,65 +1,21 @@
+# NixOS Configuration
 
-# Management commands
+Single `flake.nix` managing all hosts with shared `flake.lock`.
 
-Here are some commands (fish aliases) to help with nixos systems:
+**Deploy:** `sudo nixos-rebuild switch --flake .#hostname`
 
-**i-nixos** = apply latest nixos configs
+**Update:** `nix flake update` (updates all hosts)
 
-**i-home** = apply latest home-manager configs
+## Hosts
 
-**i** = apply all the configs (nixos and home-manager)
+- dobro, zeeba, plex, orc, imbp, nixahi, matcha
 
-**u-nixos** = pull updates and apply nixos configs
+## Per-Host Independent Locks
 
-**u-home** = pull updates for home-manager and apply nixos configs
+Due to Nix flake limitations (paths, directory requirements), achieving truly independent per-host lock files requires trade-offs:
 
-**u-flatpack** = update the flatpaks. available on desktop only
+1. **Subdirectory flakes** - Path issues with `../../modules` imports
+2. **Absolute paths** - Not portable
+3. **Duplicate modules** - Maintenance overhead
 
-**u** = run all the updates
-
-
-# To bootstrap a new Nix system
-
-On a fresh system start by copy the syncthing config from default.template.nix into configuration.nix
-
-> sudo nixos-rebuild --upgrade switch
-
-This should bring down the config share via syncthing.
-
-
-Now you can create a new host in the config and switch to the flake setup.
-
-
-> mkdir ~/sync/configs/nix/hosts/(hostname)/
-> cp /etc/nixos/* ~/sync/configs/nix/hosts/(hostname)/
-> cd ~/sync/configs/nix/hosts/
-> cp bootstrap.template.nix (hostname)/default.nix
-
-copy over whatever looks critical from configuration.nix to default.nix. it should not be much
-
-in default.nix
-    replace 'nixhost' with new hostname
-    generate a hostid (if using zfs)
-        https://search.nixos.org/options?channel=23.11&show=networking.hostId
-
-add new host to the bottom of configs/nix/flake.nix
-
-    cd $HOME/sync/configs/nixos
-
-    nix build --out-link /tmp/result .#nixosConfigurations.$hostname.config.system.build.toplevel --experimental-features 'nix-command flakes'
-    
-    sudo nixos-rebuild switch -v --flake . --impure
-
-now set up home manager
-
-    cd $HOME/sync/configs/home-manager
-
-    home-manager switch --flake .
-
-
-manually run the os-switch alias
-
-now log out and in. your shell should be updated and aliases set
-
-delete configuration.nix since its not being used any more.
-
+**Conclusion:** Shared lock file is the simplest working solution. Update hosts individually by testing on one host first, then rolling out to others.

@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, inputs, modulesPath, sharedModulesPath ? ../../modules, ... }:
+{ pkgs, pkgs-unstable, inputs, modulesPath, ... }:
 let
   inherit (inputs) self;
 
@@ -43,8 +43,8 @@ in {
   imports = [ 
     ./hardware-configuration.nix
     ./router.nix
-    (sharedModulesPath + "/common-nixos.nix")
-    (sharedModulesPath + "/syncthing.nix")
+    ../../modules/common-nixos.nix
+    ../../modules/syncthing.nix
   ];
 
 }
