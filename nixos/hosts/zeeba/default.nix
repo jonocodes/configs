@@ -29,7 +29,6 @@ in {
   boot.zfs.extraPools = [ "dpool" ];
   boot.zfs.forceImportRoot = false; # mounts datasets instead of pools
 
-
   digitus.services = {
 
     syncthing = {
@@ -56,8 +55,11 @@ in {
   };
 
   services.tailscale = {
+
+    # this gives access from berk to alb nas
     extraSetFlags = [
       # "--advertise-routes=192.168.100.0/24"
+      "--advertise-routes=192.168.200.0/24"
       "--advertise-exit-node"
     ];
     useRoutingFeatures = "server";
@@ -137,6 +139,7 @@ in {
     ./hardware-configuration.nix
     ./web.nix
     ../../modules/common-nixos.nix
+    ../../modules/home-lan.nix
     ../../modules/syncthing.nix
   ];
 

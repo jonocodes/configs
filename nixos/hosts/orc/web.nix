@@ -84,13 +84,13 @@ in
 
         {
           name = "alb ping (IP)";
-          url = "icmp://23.93.93.159";
+          url = "icmp://23.93.90.200";
+          # url = "icmp://23.93.93.159";
           # interval = "2m";
           conditions = [
             "[CONNECTED] == true"
           ];
         }
-
 
         {
           name = "alb ping (DNS)";

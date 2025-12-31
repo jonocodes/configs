@@ -250,6 +250,7 @@ in {
     ./fileSystems.nix
 
     ../../modules/common-nixos.nix
+    ../../modules/home-lan.nix
     ../../modules/linux-desktop.nix
     ../../modules/syncthing.nix
 
