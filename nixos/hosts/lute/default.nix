@@ -2,8 +2,8 @@
 let
   inherit (inputs) self;
 
-  vars = import ../vars.nix;
-  jonoHome = vars.jonoHome;
+  # vars = import ../vars.nix;
+  # jonoHome = vars.jonoHome;
 
 in {
 

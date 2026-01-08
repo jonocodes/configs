@@ -18,6 +18,7 @@ in {
   environment.systemPackages = with pkgs; [
     librewolf # a browser is only needed for first time syncthing config
     vim
+    nh
   ];
 
 

@@ -66,7 +66,116 @@ in
   };
 
 
+  # just for samba
+  users.users.ron = {
+    isSystemUser = true;
+    # group = "samba-users";
+    group = "ron";
+  };
+  users.groups.ron = {};
+
+
+
   services = {
+
+    # TODO: maybe move this out of web.nix
+    samba = {
+      enable = true;
+      securityType = "user";
+      openFirewall = true;
+
+      # shares = {
+      #   jono-share = {
+      #     path = "/dpool/samba/jono";
+      #     browseable = "yes";
+      #     "read only" = "no";
+      #     "guest ok" = "no";
+      #     "valid users" = "jono";
+      #     comment = "Jono's share";
+      #   };
+      # #   ron-share = {
+      # #     path = "/srv/samba/ron";
+      # #     browseable = "yes";
+      # #     "read only" = "no";
+      # #     "guest ok" = "no";
+      # #     "valid users" = "ron";
+      # #     comment = "Ron's share";
+      # #   };
+      # };
+
+      settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "smbnix";
+          "netbios name" = "smbnix";
+          "security" = "user";
+          #"use sendfile" = "yes";
+          #"max protocol" = "smb2";
+          # note: localhost is the ipv6 localhost ::1
+          # "hosts allow" = "192.168.1. 192.168.200. 192.168.100.127.0.0.1 localhost";
+          # "hosts deny" = "0.0.0.0/0";
+          # "guest account" = "nobody";
+          # "map to guest" = "bad user";
+        };
+        "public" = {
+          "path" = "/dpool/samba/Public";
+          "browseable" = "yes";
+          "read only" = "no";
+          "guest ok" = "yes";
+          "guest only" = "yes";  # Optional: Enforce guests only, no auth
+          "create mask" = "0644";
+          "directory mask" = "0755";
+          # "force user" = "username";
+          # "force group" = "groupname";
+        };
+        # "private" = {
+        #   "path" = "/dpool/samba/Private";
+        #   "browseable" = "yes";
+        #   "read only" = "no";
+        #   "guest ok" = "no";
+        #   "create mask" = "0644";
+        #   "directory mask" = "0755";
+        #   "force user" = "username";
+        #   "force group" = "groupname";
+        # };
+
+        # "my_share" = {
+        #   "path" = "/home/jono";
+        #   "valid users" = "jono";
+        #   "force user" = "jono";
+        #   "public" = "no";
+        #   "writeable" = "yes";
+        # };
+
+        "jono" = {
+          path = "/dpool/samba/jono";
+          browseable = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "valid users" = "jono";
+          comment = "Jono's share";
+        };
+
+        "ron" = {
+          path = "/dpool/samba/ron";
+          browseable = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "valid users" = "ron";
+          comment = "Ron's share";
+        };
+
+      };
+    };
+
+    # used to advertise the shares to Windows hosts
+    samba-wsdd = {
+      enable = true;
+      openFirewall = true;
+    };
+
+    avahi.publish.userServices = true;
+
 
     postgresql = {
       enable = true;

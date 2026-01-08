@@ -1,3 +1,4 @@
+
 { pkgs, pkgs-unstable, inputs, modulesPath, config, ... }:
 let
   inherit (inputs) self;
@@ -59,7 +60,7 @@ in {
     # this gives access from berk to alb nas
     extraSetFlags = [
       # "--advertise-routes=192.168.100.0/24"
-      "--advertise-routes=192.168.200.0/24"
+      # "--advertise-routes=192.168.200.0/24" # this broke my local network. not sure why
       "--advertise-exit-node"
     ];
     useRoutingFeatures = "server";

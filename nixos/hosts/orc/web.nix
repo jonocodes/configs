@@ -64,6 +64,18 @@ in
           ];
         }
 
+
+        {
+          name = "zeeba external";
+          url = "https://zeeba.dgt.is/";
+          interval = "1m";
+          conditions = [
+            # "[TITLE] == Jono&#39;s Corner"
+            "[STATUS] == 200"
+          ];
+        }
+
+
         {
           name = "matcha ping (tailnet)";
           url = "icmp://matcha";
