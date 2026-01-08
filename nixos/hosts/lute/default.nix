@@ -215,6 +215,7 @@ in {
 
   # import preconfigured profiles
   imports = [
+    ./hardware-configuration.nix
     inputs.nix-flatpak.nixosModules.nix-flatpak
 
     # ./boot.nix
