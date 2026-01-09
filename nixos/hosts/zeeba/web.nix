@@ -66,7 +66,116 @@ in
   };
 
 
+  # just for samba
+  users.users.ron = {
+    isSystemUser = true;
+    # group = "samba-users";
+    group = "ron";
+  };
+  users.groups.ron = {};
+
+
+
   services = {
+
+    # TODO: maybe move this out of web.nix
+    samba = {
+      enable = true;
+      securityType = "user";
+      openFirewall = true;
+
+      # shares = {
+      #   jono-share = {
+      #     path = "/dpool/samba/jono";
+      #     browseable = "yes";
+      #     "read only" = "no";
+      #     "guest ok" = "no";
+      #     "valid users" = "jono";
+      #     comment = "Jono's share";
+      #   };
+      # #   ron-share = {
+      # #     path = "/srv/samba/ron";
+      # #     browseable = "yes";
+      # #     "read only" = "no";
+      # #     "guest ok" = "no";
+      # #     "valid users" = "ron";
+      # #     comment = "Ron's share";
+      # #   };
+      # };
+
+      settings = {
+        global = {
+          "workgroup" = "WORKGROUP";
+          "server string" = "smbnix";
+          "netbios name" = "smbnix";
+          "security" = "user";
+          #"use sendfile" = "yes";
+          #"max protocol" = "smb2";
+          # note: localhost is the ipv6 localhost ::1
+          # "hosts allow" = "192.168.1. 192.168.200. 192.168.100.127.0.0.1 localhost";
+          # "hosts deny" = "0.0.0.0/0";
+          # "guest account" = "nobody";
+          # "map to guest" = "bad user";
+        };
+        "public" = {
+          "path" = "/dpool/samba/Public";
+          "browseable" = "yes";
+          "read only" = "no";
+          "guest ok" = "yes";
+          "guest only" = "yes";  # Optional: Enforce guests only, no auth
+          "create mask" = "0644";
+          "directory mask" = "0755";
+          # "force user" = "username";
+          # "force group" = "groupname";
+        };
+        # "private" = {
+        #   "path" = "/dpool/samba/Private";
+        #   "browseable" = "yes";
+        #   "read only" = "no";
+        #   "guest ok" = "no";
+        #   "create mask" = "0644";
+        #   "directory mask" = "0755";
+        #   "force user" = "username";
+        #   "force group" = "groupname";
+        # };
+
+        # "my_share" = {
+        #   "path" = "/home/jono";
+        #   "valid users" = "jono";
+        #   "force user" = "jono";
+        #   "public" = "no";
+        #   "writeable" = "yes";
+        # };
+
+        "jono" = {
+          path = "/dpool/samba/jono";
+          browseable = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "valid users" = "jono";
+          comment = "Jono's share";
+        };
+
+        "ron" = {
+          path = "/dpool/samba/ron";
+          browseable = "yes";
+          "read only" = "no";
+          "guest ok" = "no";
+          "valid users" = "ron";
+          comment = "Ron's share";
+        };
+
+      };
+    };
+
+    # used to advertise the shares to Windows hosts
+    samba-wsdd = {
+      enable = true;
+      openFirewall = true;
+    };
+
+    avahi.publish.userServices = true;
+
 
     postgresql = {
       enable = true;
@@ -228,50 +337,49 @@ in
     };
 
     phpfpm.pools.rokeachphoto = {
-        user = "caddy";
-        group = "caddy";
-        phpPackage = pkgs.php83;
-        settings = {
-          "listen" = "127.0.0.1:9000";
-          "pm" = "dynamic";
-          "pm.max_children" = 5;
-          "pm.start_servers" = 2;
-          "pm.min_spare_servers" = 1;
-          "pm.max_spare_servers" = 3;
-        };
+      user = "caddy";
+      group = "caddy";
+      phpPackage = pkgs.php83;
+      settings = {
+        "listen" = "127.0.0.1:9000";
+        "pm" = "dynamic";
+        "pm.max_children" = 5;
+        "pm.start_servers" = 2;
+        "pm.min_spare_servers" = 1;
+        "pm.max_spare_servers" = 3;
       };
+    };
   };
 
   environment.etc."alloy/config.alloy".text = ''
+      loki.write "default" {
+        endpoint {
+          url = "http://127.0.0.1:3100/loki/api/v1/push"
+        }
+      }
+      loki.relabel "zeeba_journal" {
+        forward_to = []
+        rule {
+          source_labels = ["__journal__systemd_unit"]
+          target_label = "systemd_unit"
+        }
+        rule {
+          source_labels = ["__journal_syslog_identifier"]
+          target_label = "syslog_identifier"
+        }
+      }
 
-        loki.write "default" {
-          endpoint {
-            url = "http://127.0.0.1:3100/loki/api/v1/push"
-          }
-        }
-        loki.relabel "zeeba_journal" {
-          forward_to = []
-          rule {
-            source_labels = ["__journal__systemd_unit"]
-            target_label = "systemd_unit"
-          }
-          rule {
-            source_labels = ["__journal_syslog_identifier"]
-            target_label = "syslog_identifier"
-          }
-        }
+      loki.source.journal "zeeba_journal" {
+        forward_to = [loki.write.default.receiver]
+        relabel_rules = loki.relabel.zeeba_journal.rules
+        // format_as_json = true
+      }
 
-        loki.source.journal "zeeba_journal" {
-          forward_to = [loki.write.default.receiver]
-          relabel_rules = loki.relabel.zeeba_journal.rules
-          // format_as_json = true
-        }
-
-        loki.source.journal "systemd" {
-          max_age    = "24h"
-          forward_to = [loki.write.default.receiver]
-        }
-     '';
+      loki.source.journal "systemd" {
+        max_age    = "24h"
+        forward_to = [loki.write.default.receiver]
+      }
+    '';
 
   environment.systemPackages = with pkgs; [
     php83

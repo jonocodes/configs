@@ -1,5 +1,7 @@
+
 # https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html
 # https://github.com/ne9z/dotfiles-flake/tree/2e39ad6ee4edebf7f00e4bf76d35c56d98f78fd7
+
 
 { pkgs, pkgs-unstable, inputs, ... }:
 let
@@ -85,10 +87,11 @@ in {
   # local nas
   fileSystems = {
 
-    "/media/nas_backup" = {
-      device = "nas.alb:/shares/backup";
-      fsType = "nfs";
-    };
+    # NOTE: turned this off for a bit while I mess with different routers
+    # "/media/nas_backup" = {
+    #   device = "nas.alb:/shares/backup";
+    #   fsType = "nfs";
+    # };
 
     # offsite backup drive (routed through matcha)
     "/media/berk_nas" = {
@@ -250,6 +253,7 @@ in {
     ./fileSystems.nix
 
     ../../modules/common-nixos.nix
+    ../../modules/home-lan.nix
     ../../modules/linux-desktop.nix
     ../../modules/syncthing.nix
 

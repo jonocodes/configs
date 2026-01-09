@@ -16,6 +16,9 @@ let inherit (inputs) self;
     # nixahi
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHpHvDJmCp1AzPORZMCWbjC8yRGRUSzsUNoI+geHb3OI jono@foodnotblogs.com"
 
+    # lute
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHtvmzsB56mBwRt+dAqhNXOiY87FjLTlz2ImdPFHzpj1 your_jono@foodnotblogs.com"
+
     # orc
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW4SMTIQQChTCFL/SJKkOp9mejFiCih0cNjT3mirFLcuuGPiH/jlp/h6312238Piea737cgbt0c70Jt1S7F/zmsKVU9rQPk/kluOoE5jMJLoOqZeUxxRmZVYs1ebxeSoI2MHQGv+9U0YjKMCvKfQfT5IDm9sjRtcfodo81RbUOayCvc3Kq4B6iUe1A4/UbNXlHEzsbIVpn3fcgzAYynuzCkQ/rzMfNwIz8JTs4oxs4WVo0hmCyqcrpQqsXUQ8OXrIim/EQaJgQp+1Y7c7r9eMjV3HzQBWfd4sKTROcAUXgff0uW6ieArIuugOnDjE/ipxI0n1b9PQGg1b0ZkqZo2Nj ssh-key-2025-02-18"
   ];          
@@ -61,8 +64,6 @@ in {
 
   services.tailscale.enable = true;
   services.tailscale.extraSetFlags = [ "--accept-routes" ];
-  # trying unstable to see if it works around the test errors in 1.82.5
-  # services.tailscale.package = pkgs-unstable.tailscale;
 
   services.openssh = {
     enable = true;

@@ -24,10 +24,83 @@
     ACTION=="add", SUBSYSTEM=="net", KERNEL=="eno1", RUN+="${pkgs.ethtool}/bin/ethtool -A %k autoneg off rx off tx off 2>/dev/null || true"
   '';
 
-  # Install ethtool for udev rules
+  # Install ethtool for udev rules and helper scripts
   environment.systemPackages = with pkgs; [
     ethtool
+    socat  # For querying Kea control socket
+    # jq     # For parsing JSON responses
+    
+    # # Helper script to list DHCP leases
+    # (writeShellScriptBin "kea-leases" ''
+    #   echo '{ "command": "lease4-get-all" }' | \
+    #     sudo ${socat}/bin/socat - UNIX-CONNECT:/run/kea/kea4-ctrl-socket 2>/dev/null | \
+    #     ${jq}/bin/jq -r '
+    #       if .[0].result == 0 then
+    #         .[0].arguments.leases[] | 
+    #         "\(.["ip-address"])\t\(.hostname // "N/A")\t\(.["hw-address"])"
+    #       else
+    #         "Error: " + (.[0].text // "Unknown error")
+    #       end
+    #     '
+    # '')
   ];
+
+  services.duckdns = {
+    # TODO: fix error: curl: option -K-: is unknown
+    enable = true;
+    domains = [ "digitus" ];
+    tokenFile = "/etc/duckdns.token";
+  };
+  
+  # services.netdata = {
+  #   # access this at http://plex:19999
+  #   enable = true;
+  #   config = {
+  #     global = {
+  #       "memory mode" = "ram";
+  #       "debug log" = "none";
+  #       "access log" = "none";
+  #       "error log" = "syslog";
+  #     };
+  #   };
+
+  #   # TODO: show dhcp leases https://www.netdata.cloud/integrations/data-collection/dns-and-dhcp-servers/isc-dhcp/
+  #   # though is looks like this only supports ISC DHCP (The Legacy), and not kea, so I wont get all the leases. boo
+  #   # could try this complex python solution: https://www.perplexity.ai/search/i-installed-netdata-on-my-nix-c2w0clxUS6OKpI7yJ946Kg#4
+  # };
+
+  # services.netdata.package = pkgs.netdata.override {
+  #   withCloudUi = true;
+  # };
+
+  ## SPLIT-HORIZON DNS APPROACH (Active)
+  # Internal clients get zeeba's internal IP directly via DNS resolution
+  # Pros: Clean, simple, direct LAN traffic to zeeba without going through router NAT
+  # Cons: Requires DHCP clients to use router DNS, causes cosmetic D-Bus timeout during rebuilds
+  #
+  # Note: NAT hairpinning was attempted but broke general internet access (couldn't ping 1.1.1.1)
+  # The PREROUTING DNAT rules interfered with normal traffic routing despite specific matching.
+  # Split-horizon DNS is the cleaner, more maintainable solution.
+  
+  services.dnsmasq = {
+    enable = true;
+    settings = {
+      no-resolv = true;
+      server = [ "1.1.1.1" "8.8.8.8" ];
+      interface = "enp1s0";
+      bind-interfaces = true;
+      cache-size = 1000;
+      
+      # Split-horizon DNS entries - resolve to zeeba's internal IP for LAN clients
+      address = [
+        "/digitus.duckdns.org/192.168.200.114"
+        "/dgt.rokeachphoto.com/192.168.200.114"
+        "/a.dgt.is/192.168.200.114"
+      ];
+      
+      log-queries = true;
+    };
+  };
 
   services.kea.dhcp4 = {
     enable = true;
@@ -35,6 +108,19 @@
       interfaces-config = {
         interfaces = [ "enp1s0" ];  # your LAN NIC
       };
+
+      # Control socket for querying leases via API
+      control-socket = {
+        socket-type = "unix";
+        socket-name = "/run/kea/kea4-ctrl-socket";
+      };
+
+      # Load hook library for lease commands
+      hooks-libraries = [
+        {
+          library = "${pkgs.kea}/lib/kea/hooks/libdhcp_lease_cmds.so";
+        }
+      ];
 
       lease-database = {
         type = "memfile";
@@ -57,8 +143,17 @@
           }
           {
             name = "domain-name-servers";
-            # KEA expects comma-separated IP addresses for domain-name-servers
-            data = "1.1.1.1,8.8.8.8";
+            # Point DHCP clients to plex for split-horizon DNS
+            data = "192.168.200.1";
+          }
+        ];
+
+        # Static IP reservations
+        reservations = [
+          {
+            hw-address = "00:25:90:7a:b6:26";
+            ip-address = "192.168.200.114";
+            hostname = "zeeba";
           }
         ];
       }];
@@ -164,12 +259,31 @@
       internalInterfaces = [ "enp1s0" ];
     };
 
-    # Firewall disabled for testing - re-enable after verifying NAT works
+    # Firewall with port forwarding
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 ]; # SSH to the router from LAN
-      trustedInterfaces = [ "enp1s0" ];
+      allowedTCPPorts = [ 22 53 ]; # SSH and DNS for split-horizon
+      allowedUDPPorts = [ 53 ]; # DNS for split-horizon
+      trustedInterfaces = [ "enp1s0" ]; # Trust LAN interface
+      
+      # The checkReversePath option can interfere with NAT
+      # Setting to "loose" allows forwarded packets through
+      checkReversePath = "loose";
     };
+
+    # Port forwarding from external ports 80 and 443 to zeeba (192.168.200.114)
+    nat.forwardPorts = [
+      {
+        sourcePort = 80;
+        destination = "192.168.200.114:80";
+        proto = "tcp";
+      }
+      {
+        sourcePort = 443;
+        destination = "192.168.200.114:443";
+        proto = "tcp";
+      }
+    ];
   };
 
 }

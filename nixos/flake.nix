@@ -1,10 +1,10 @@
 {
-  description = "Jono's ...";
+  description = "Jono's NixOS configurations (old method - monolithic flake)";
 
   inputs = {
+    # Default inputs for non-plex hosts
     nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
-
 
     # TODO: replace this with the offical service once merged
     #   https://github.com/NixOS/nixpkgs/pull/347605
@@ -23,6 +23,10 @@
     # I uncommented the rev here on 7/13/25 and there was no rebuild ??
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    # Per-host flakes (for independent lock files)
+    plex-flake.url = "path:./hosts/plex";
+    zeeba-flake.url = "path:./hosts/zeeba";
+    lute-flake.url = "path:./hosts/lute";
   };
 
   nixConfig = {
@@ -36,9 +40,10 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware }@inputs:
+    , nixos-hardware, plex-flake, zeeba-flake, lute-flake }@inputs:
     let
 
+      # Standard host builder (for hosts without per-host flakes)
       mkHost = hostName: system:
         nixpkgs.lib.nixosSystem {
 
@@ -72,12 +77,51 @@
 
           ];
         };
+
+      # Per-host flake builder (uses inputs from the host's own flake)
+      mkHostWithFlake = hostName: system: hostFlake:
+        let
+          # Use the host's own inputs from its flake
+          hostInputs = hostFlake.inputs;
+          
+          # Conditionally include modules based on available inputs
+          optionalModules = 
+            (if hostInputs ? disko then [ hostInputs.disko.nixosModules.disko ] else []);
+        in
+        hostInputs.nixpkgs.lib.nixosSystem {
+
+          pkgs = import hostInputs.nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+
+          specialArgs = {
+            inputs = hostInputs;
+
+            pkgs-unstable = import hostInputs.nixpkgs-unstable {
+              inherit system;
+              config.allowUnfree = true;
+            };
+
+          };
+
+          modules = [
+
+            ./hosts/${hostName}
+
+          ] ++ optionalModules;
+        };
+
     in {
       nixosConfigurations = {
         dobro = mkHost "dobro" "x86_64-linux";
-        zeeba = mkHost "zeeba" "x86_64-linux";
+        
+        # Hosts with independent flakes
+        zeeba = mkHostWithFlake "zeeba" "x86_64-linux" zeeba-flake;
+        plex = mkHostWithFlake "plex" "x86_64-linux" plex-flake;
+        lute = mkHostWithFlake "lute" "x86_64-linux" lute-flake;
+        
         # x200 = mkHost "x200" "x86_64-linux";
-        plex = mkHost "plex" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
         orc = mkHost "orc" "aarch64-linux";
         imbp = mkHost "imbp" "x86_64-linux";
