@@ -17,9 +17,9 @@ in {
   # nix.settings.trusted-users = [ "root" "jono" ];
 
   # root/system garbage collector
-  nix.gc.automatic = true;
-  nix.gc.dates = "daily";
-  nix.gc.options = "--delete-older-than 7d";
+  # nix.gc.automatic = true;
+  # nix.gc.dates = "daily";
+  # nix.gc.options = "--delete-older-than 7d";
 
   # networking.hosts = {
     # "198.54.114.213" = ["rokeachphoto.com"];
@@ -30,7 +30,9 @@ in {
   # '';
 
 
-  boot.supportedFilesystems."fuse.sshfs" = true;
+  # boot.supportedFilesystems."fuse.sshfs" = true;
+
+  boot.supportedFilesystems = [ "zfs" ];
 
   # users.groups.backup = {};
 
@@ -209,7 +211,7 @@ in {
     [ "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.kernelParams = [ ];
 
-  # networking.hostId = "6dce6507";
+  networking.hostId = "5943eb19";
 
   networking.hostName = "lute";
 

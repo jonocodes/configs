@@ -4,6 +4,12 @@ Single `flake.nix` managing all hosts with shared `flake.lock`.
 
 **Deploy:** `sudo nixos-rebuild switch --flake .#hostname`
 
+
+or somethign like
+
+nix --extra-experimental-features "nix-command flakes" build .#nixosConfigurations.hostname.config.system.build.toplevel
+
+
 **Update:** `nix flake update` (updates all hosts)
 
 ## Hosts

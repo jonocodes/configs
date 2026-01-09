@@ -44,92 +44,108 @@ in
           maximum-number-of-events = 500;
         };
         
-        endpoints = [{
-          name = "barrie bridge";
-          url = "https://dgt.rokeachphoto.com/bridge/";
-          interval = "1m";
-          conditions = [
-            "[STATUS] == 200"
-            # "[TITLE] == bridge [150]"
-            # "[RESPONSE_TIME] < 300"
-          ];
-        }
-        {
-          name = "blog";
-          url = "https://www.dgt.is/";
-          interval = "5m";
-          conditions = [
-            # "[TITLE] == Jono&#39;s Corner"
-            "[STATUS] == 200"
-          ];
-        }
+        endpoints = [
+          {
+            name = "rokeachphoto";
+            url = "https://rokeachphoto.com/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+          {
+            name = "rokeachphoto dgt";
+            url = "https://dgt.rokeachphoto.com/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+          {
+            name = "rokeachphoto dgt bridge";
+            url = "https://dgt.rokeachphoto.com/bridge/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+              # "[TITLE] == bridge [150]"
+              # "[RESPONSE_TIME] < 300"
+            ];
+          }
+          {
+            name = "blog";
+            url = "https://www.dgt.is/";
+            interval = "5m";
+            conditions = [
+              # "[TITLE] == Jono&#39;s Corner"
+              "[STATUS] == 200"
+            ];
+          }
+
+          {
+            name = "zeeba external";
+            url = "https://zeeba.dgt.is/";
+            interval = "1m";
+            conditions = [
+              # "[TITLE] == Jono&#39;s Corner"
+              "[STATUS] == 200"
+            ];
+          }
 
 
-        {
-          name = "zeeba external";
-          url = "https://zeeba.dgt.is/";
-          interval = "1m";
-          conditions = [
-            # "[TITLE] == Jono&#39;s Corner"
-            "[STATUS] == 200"
-          ];
-        }
+          {
+            name = "matcha ping (tailnet)";
+            url = "icmp://matcha";
+            # interval = "2m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+          }
 
+          {
+            name = "zeeba ping (tailnet)";
+            url = "icmp://zeeba";
+            # interval = "2m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+          }
 
-        {
-          name = "matcha ping (tailnet)";
-          url = "icmp://matcha";
-          # interval = "2m";
-          conditions = [
-            "[CONNECTED] == true"
-          ];
-        }
+          {
+            name = "alb ping (IP)";
+            url = "icmp://23.93.90.200";
+            # url = "icmp://23.93.93.159";
+            # interval = "2m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+          }
 
-        {
-          name = "zeeba ping (tailnet)";
-          url = "icmp://zeeba";
-          # interval = "2m";
-          conditions = [
-            "[CONNECTED] == true"
-          ];
-        }
+          {
+            name = "alb ping (DNS)";
+            url = "icmp://a.foodnotblogs.com";
+            # interval = "2m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+          }
 
-        {
-          name = "alb ping (IP)";
-          url = "icmp://23.93.90.200";
-          # url = "icmp://23.93.93.159";
-          # interval = "2m";
-          conditions = [
-            "[CONNECTED] == true"
-          ];
-        }
+          {
+            name = "berk NAS IP ping";
+            url = "icmp://192.168.1.140";
+            # interval = "2m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+          }
 
-        {
-          name = "alb ping (DNS)";
-          url = "icmp://a.foodnotblogs.com";
-          # interval = "2m";
-          conditions = [
-            "[CONNECTED] == true"
-          ];
-        }
-
-        {
-          name = "berk NAS IP ping";
-          url = "icmp://192.168.1.140";
-          # interval = "2m";
-          conditions = [
-            "[CONNECTED] == true"
-          ];
-        }
-
-        {
-          name = "triplit public prod";
-          url = "https://zeeba.dgt.is/sfc";
-          # interval = "2m";
-          conditions = [
-            "[STATUS] == 401"
-          ];
-        }
+          {
+            name = "triplit public prod";
+            url = "https://zeeba.dgt.is/sfc";
+            # interval = "2m";
+            conditions = [
+              "[STATUS] == 401"
+            ];
+          }
 
         ];
       };
