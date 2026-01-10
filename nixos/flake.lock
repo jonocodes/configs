@@ -62,6 +62,24 @@
         "type": "github"
       }
     },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": "nixpkgs-lib"
+      },
+      "locked": {
+        "lastModified": 1765835352,
+        "narHash": "sha256-XswHlK/Qtjasvhd1nOa1e8MgZ8GS//jBoTqWtrS1Giw=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "a34fae9c08a15ad73f295041fec82323541400a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
     "lute-flake": {
       "inputs": {
         "disko": "disko_2",
@@ -125,6 +143,25 @@
         "type": "github"
       }
     },
+    "nix-topology": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1768054122,
+        "narHash": "sha256-n8EmBvvgrZnUwaXTXcPtXems1flB7lWX6B/j1t45gyQ=",
+        "owner": "oddlama",
+        "repo": "nix-topology",
+        "rev": "7e9ac2213f1ac00e84f8058dd5c65062dc1612f5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oddlama",
+        "repo": "nix-topology",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1767185284,
@@ -183,6 +220,21 @@
         "id": "nixpkgs",
         "ref": "nixos-25.11",
         "type": "indirect"
+      }
+    },
+    "nixpkgs-lib": {
+      "locked": {
+        "lastModified": 1765674936,
+        "narHash": "sha256-k00uTP4JNfmejrCLJOwdObYC9jHRrr/5M/a/8L2EIdo=",
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "rev": "2075416fcb47225d9b68ac469a5c4801a9c4dd85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixpkgs.lib",
+        "type": "github"
       }
     },
     "nixpkgs-unstable": {
@@ -247,26 +299,27 @@
     },
     "nixpkgs_2": {
       "locked": {
+        "lastModified": 1766651565,
+        "narHash": "sha256-QEhk0eXgyIqTpJ/ehZKg9IKS7EtlWxF3N7DXy42zPfU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3e2499d5539c16d0d173ba53552a4ff8547f4539",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_3": {
+      "locked": {
         "lastModified": 1767799921,
         "narHash": "sha256-r4GVX+FToWVE2My8VVZH4V0pTIpnu2ZE8/Z4uxGEMBE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
         "rev": "d351d0653aeb7877273920cd3e823994e7579b0b",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-25.11",
-        "type": "indirect"
-      }
-    },
-    "nixpkgs_3": {
-      "locked": {
-        "lastModified": 1765311797,
-        "narHash": "sha256-mSD5Ob7a+T2RNjvPvOA1dkJHGVrNVl8ZOrAwBjKBDQo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "09eb77e94fa25202af8f3e81ddc7353d9970ac1b",
         "type": "github"
       },
       "original": {
@@ -290,12 +343,27 @@
         "type": "indirect"
       }
     },
+    "nixpkgs_5": {
+      "locked": {
+        "lastModified": 1765311797,
+        "narHash": "sha256-mSD5Ob7a+T2RNjvPvOA1dkJHGVrNVl8ZOrAwBjKBDQo=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "09eb77e94fa25202af8f3e81ddc7353d9970ac1b",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-25.11",
+        "type": "indirect"
+      }
+    },
     "plex-flake": {
       "inputs": {
         "disko": "disko_3",
         "nix-flatpak": "nix-flatpak_3",
         "nixos-hardware": "nixos-hardware_3",
-        "nixpkgs": "nixpkgs_3",
+        "nixpkgs": "nixpkgs_4",
         "nixpkgs-unstable": "nixpkgs-unstable_3"
       },
       "locked": {
@@ -313,8 +381,9 @@
         "disko": "disko",
         "lute-flake": "lute-flake",
         "nix-flatpak": "nix-flatpak_2",
+        "nix-topology": "nix-topology",
         "nixos-hardware": "nixos-hardware_2",
-        "nixpkgs": "nixpkgs_2",
+        "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable_2",
         "plex-flake": "plex-flake",
         "zeeba-flake": "zeeba-flake"
@@ -322,7 +391,7 @@
     },
     "zeeba-flake": {
       "inputs": {
-        "nixpkgs": "nixpkgs_4",
+        "nixpkgs": "nixpkgs_5",
         "nixpkgs-unstable": "nixpkgs-unstable_4"
       },
       "locked": {
