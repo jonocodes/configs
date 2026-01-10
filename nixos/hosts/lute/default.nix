@@ -2,37 +2,19 @@
 let
   inherit (inputs) self;
 
-  # vars = import ../vars.nix;
-  # jonoHome = vars.jonoHome;
+  vars = import ../vars.nix;
+  jonoHome = vars.jonoHome;
 
 in {
 
-  # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd.luks.devices."luks-c8bb8fca-3b35-485a-9e71-e872bf697719".device = "/dev/disk/by-uuid/c8bb8fca-3b35-485a-9e71-e872bf697719";
 
-  # not sure why, but I needed to do this to use caches in devenv with php ?
-  # nix.settings.trusted-users = [ "root" "jono" ];
-
-  # root/system garbage collector
-  # nix.gc.automatic = true;
-  # nix.gc.dates = "daily";
-  # nix.gc.options = "--delete-older-than 7d";
-
-  # networking.hosts = {
-    # "198.54.114.213" = ["rokeachphoto.com"];
-  # };
-
-  # networking.extraHosts = ''
-  #   198.54.114.213  rokeachphoto.com
-  # '';
-
-
   # boot.supportedFilesystems."fuse.sshfs" = true;
 
-  boot.supportedFilesystems = [ "zfs" ];
+  boot.supportedFilesystems = [ "zfs" "fuse.sshfs" ];
 
   # users.groups.backup = {};
 
@@ -48,9 +30,9 @@ in {
   #   };
   # };
 
-  # boot.zfs.extraPools = [ "dpool" ];
+  boot.zfs.extraPools = [ "dpool" ];
 
-  boot.zfs.forceImportRoot = false;
+  # boot.zfs.forceImportRoot = false;
   boot.initrd.systemd.enable = true;
 
   services.duplicati = {
@@ -68,30 +50,30 @@ in {
     #   fsType = "nfs";
     # };
 
-    # # offsite backup drive (routed through matcha)
-    # "/media/berk_nas" = {
-    #   device = "//192.168.1.140/jono";
-    #   fsType = "cifs";
-    #   options = let
-    #     # this line prevents hanging on network split
-    #     automount_opts =
-    #       "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=15s,x-systemd.mount-timeout=15s";
+    # offsite backup drive (routed through matcha)
+    "/media/berk_nas" = {
+      device = "//192.168.1.140/jono";
+      fsType = "cifs";
+      options = let
+        # this line prevents hanging on network split
+        automount_opts =
+          "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=15s,x-systemd.mount-timeout=15s";
 
-    #   in [
-    #     "${automount_opts},nofail,uid=jono,gid=users,credentials=/etc/samba/credentials/berk"
-    #   ];
-    # };
+      in [
+        "${automount_opts},nofail,uid=jono,gid=users,credentials=/etc/samba/credentials/berk"
+      ];
+    };
 
-    # "/media/matcha_home" = {
-    #   device = "jono@matcha:/home/jono";
-    #   fsType = "fuse.sshfs";
-    #   options = [
-    #     "reconnect"
-    #     "allow_other"
-    #     "x-systemd.automount"  # mount on first access?
-    #     "IdentityFile=${jonoHome}/.ssh/id_ed25519"
-    #   ];
-    # };
+    "/media/matcha_home" = {
+      device = "jono@matcha:/home/jono";
+      fsType = "fuse.sshfs";
+      options = [
+        "reconnect"
+        "allow_other"
+        "x-systemd.automount"  # mount on first access?
+        "IdentityFile=${jonoHome}/.ssh/id_ed25519"
+      ];
+    };
 
     # offsite backup via direct ssh (more stable)
     # "/media/berk_nas_ssh" = {

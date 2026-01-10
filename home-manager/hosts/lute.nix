@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, inputs, modulesPath, ... }:
+{ pkgs, pkgs-unstable, inputs, config, ... }:
 let
   inherit (inputs) self;
 
@@ -6,8 +6,8 @@ in {
 
     fonts.fontconfig.enable = false;
 
-    # home.file.".thunderbird".source =
-    #   config.lib.file.mkOutOfStoreSymlink /dpool/thunderbird_data;
+    home.file.".thunderbird".source =
+      config.lib.file.mkOutOfStoreSymlink /dpool/thunderbird_data;
 
     # apps specific to this host
     home.packages = with pkgs-unstable;
@@ -36,6 +36,7 @@ in {
         # vscode # needed for dev containers
         thunderbird-bin
         # jetbrains.pycharm-professional
+        gnome-tweaks
 
         ghostty
 

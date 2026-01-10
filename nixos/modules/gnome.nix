@@ -16,13 +16,11 @@ in
   # requires a logout of gnome after an install to show the launcher?
   # home-manager.users.jono.home.packages = with pkgs-unstable; [
 
-  #   aisleriot # solitare
+  #   # aisleriot # solitare
 
   # ] ++ (with pkgs; [
 
   #   gnome-tweaks
-  #   transmission_3-gtk
-  #   gnome-screenshot
 
   # ]);
 
