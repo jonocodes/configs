@@ -12,6 +12,17 @@ let
 
 in {
 
+  # Topology metadata for nix-topology diagram generation
+  topology.self = {
+    hardware.info = "Desktop i7-6700K, 64GB RAM, ZFS";
+    # Services shown on the diagram
+    services.syncthing = {};
+    services.sanoid = {};
+    services.syncoid = {};
+    services.duplicati = {};
+    services.steam = {};
+  };
+
   # not sure why, but I needed to do this to use caches in devenv with php ?
   nix.settings.trusted-users = [ "root" "jono" ];
 

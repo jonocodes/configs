@@ -23,6 +23,9 @@
     # I uncommented the rev here on 7/13/25 and there was no rebuild ??
     nixos-hardware.url = "github:NixOS/nixos-hardware";
 
+    # Infrastructure diagram generation
+    nix-topology.url = "github:oddlama/nix-topology";
+
     # Per-host flakes (for independent lock files)
     plex-flake.url = "path:./hosts/plex";
     zeeba-flake.url = "path:./hosts/zeeba";
@@ -40,7 +43,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware, plex-flake, zeeba-flake, lute-flake }@inputs:
+    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake }@inputs:
     let
 
       # Standard host builder (for hosts without per-host flakes)
@@ -50,6 +53,7 @@
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
+            overlays = [ nix-topology.overlays.default ];
           };
 
           specialArgs = {
@@ -74,6 +78,7 @@
 
             #             sops-nix.nixosModules.sops
             disko.nixosModules.disko
+            nix-topology.nixosModules.default
 
           ];
         };
@@ -115,18 +120,32 @@
     in {
       nixosConfigurations = {
         dobro = mkHost "dobro" "x86_64-linux";
-        
+
         # Hosts with independent flakes
         zeeba = mkHostWithFlake "zeeba" "x86_64-linux" zeeba-flake;
         plex = mkHostWithFlake "plex" "x86_64-linux" plex-flake;
         lute = mkHostWithFlake "lute" "x86_64-linux" lute-flake;
-        
+
         # x200 = mkHost "x200" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
         orc = mkHost "orc" "aarch64-linux";
         imbp = mkHost "imbp" "x86_64-linux";
         nixahi = mkHost "nixahi" "aarch64-linux";
         matcha = mkHost "matcha" "x86_64-linux";
+      };
+
+      # Infrastructure topology diagrams
+      # Build with: nix build .#topology.x86_64-linux.config.output
+      # Output SVGs will be in ./result/
+      topology.x86_64-linux = import nix-topology {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          overlays = [ nix-topology.overlays.default ];
+        };
+        modules = [
+          ./topology.nix
+          { inherit (self) nixosConfigurations; }
+        ];
       };
 
     };
