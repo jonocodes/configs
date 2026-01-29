@@ -75,7 +75,6 @@ in
   users.groups.ron = {};
 
 
-
   services = {
 
     # TODO: maybe move this out of web.nix
@@ -83,25 +82,6 @@ in
       enable = true;
       securityType = "user";
       openFirewall = true;
-
-      # shares = {
-      #   jono-share = {
-      #     path = "/dpool/samba/jono";
-      #     browseable = "yes";
-      #     "read only" = "no";
-      #     "guest ok" = "no";
-      #     "valid users" = "jono";
-      #     comment = "Jono's share";
-      #   };
-      # #   ron-share = {
-      # #     path = "/srv/samba/ron";
-      # #     browseable = "yes";
-      # #     "read only" = "no";
-      # #     "guest ok" = "no";
-      # #     "valid users" = "ron";
-      # #     comment = "Ron's share";
-      # #   };
-      # };
 
       settings = {
         global = {
@@ -167,6 +147,102 @@ in
 
       };
     };
+
+    gatus = {
+      enable = true;
+
+      settings = {
+  
+        web.port = 8005;
+
+        alerting = {
+          telegram = {
+            token = readSecretFile /etc/gatus-secret-token;
+            id = "345186623";
+          };
+        };
+
+        storage = {
+          # persistence defaults to memory, so every rebuld loses data
+          type = "sqlite";
+          path = "/var/lib/gatus/gatus.db";
+
+          maximum-number-of-results = 1000;
+          maximum-number-of-events = 500;
+        };
+
+        endpoints = [
+          {
+            name = "rokeachphoto";
+            url = "https://rokeachphoto.com/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+          {
+            name = "rokeachphoto dgt";
+            url = "https://dgt.rokeachphoto.com/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+            alerts = [{
+              type = "telegram";
+              description = "healthcheck failed";
+              send-on-resolved = true;
+            }];
+          }
+          # {
+          #   name = "rokeachphoto bogus";
+          #   url = "https://bogus.rokeachphoto.com/";
+          #   interval = "1m";
+          #   conditions = [
+          #     "[STATUS] == 200"
+          #   ];
+          #   alerts = [{
+          #     type = "telegram";
+          #     description = "r bogus service healthcheck failed";
+          #     send-on-resolved = true;
+          #   }];
+          # }
+          {
+            name = "rokeachphoto dgt bridge";
+            url = "https://dgt.rokeachphoto.com/bridge/";
+            interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+            alerts = [{
+              type = "telegram";
+              description = "healthcheck failed";
+              send-on-resolved = true;
+            }];
+          }
+          {
+            name = "google";
+            url = "https://www.google.com/";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+          {
+            name = "ping 1.1.1.1";
+            url = "icmp://1.1.1.1";
+            interval = "1m";
+            conditions = [
+              "[CONNECTED] == true"
+            ];
+            alerts = [{
+              type = "telegram";
+              description = "healthcheck failed";
+              send-on-resolved = true;
+            }];
+          }
+        ];
+      };
+    };
+
 
     # used to advertise the shares to Windows hosts
     samba-wsdd = {

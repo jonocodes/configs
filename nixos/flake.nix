@@ -30,6 +30,7 @@
     plex-flake.url = "path:./hosts/plex";
     zeeba-flake.url = "path:./hosts/zeeba";
     lute-flake.url = "path:./hosts/lute";
+    ocarina-flake.url = "path:./hosts/ocarina";
   };
 
   nixConfig = {
@@ -43,7 +44,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake }@inputs:
+    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake, ocarina-flake }@inputs:
     let
 
       # Standard host builder (for hosts without per-host flakes)
@@ -125,6 +126,7 @@
         zeeba = mkHostWithFlake "zeeba" "x86_64-linux" zeeba-flake;
         plex = mkHostWithFlake "plex" "x86_64-linux" plex-flake;
         lute = mkHostWithFlake "lute" "x86_64-linux" lute-flake;
+        ocarina = mkHostWithFlake "ocarina" "x86_64-linux" ocarina-flake;
 
         # x200 = mkHost "x200" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";

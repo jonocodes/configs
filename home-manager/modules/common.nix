@@ -147,6 +147,7 @@ in {
       lsof
       lazydocker
       lazygit
+      witr
 
       # editors, networking
       htop

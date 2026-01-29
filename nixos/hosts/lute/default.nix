@@ -30,6 +30,26 @@ in {
   #   };
   # };
 
+
+  # this came from the original hardware config. it does work without it.
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
+
+
+
   boot.zfs.extraPools = [ "dpool" ];
 
   # boot.zfs.forceImportRoot = false;
@@ -101,22 +121,22 @@ in {
 
       folderDevices = {
 
-        common = { devices = [ "choco" 
-        #"zeeba" "orc" "galaxyS23" "matcha" 
+        common = { devices = [ "choco" "zeeba" 
+        #"orc" "galaxyS23" "matcha" 
         ]; };
         
-        more = { devices = [ "choco" 
-        #"zeeba" "orc" "matcha" 
+        more = { devices = [ "choco" "zeeba"
+         "orc" "matcha" 
         ]; };
         
-        # camera = {
-        #   path = "/dpool/camera/JonoCameraS23";
-        #   devices = [ "galaxyS23" ];
-        # };
+        camera = {
+          path = "/dpool/camera/JonoCameraS23";
+          devices = [ "galaxyS23" ];
+        };
 
-        configs = { devices = [ "choco"
-        # "zeeba" "orc" "matcha"
-         ]; };
+        configs = { devices = [ "choco" "zeeba"
+         # "orc" "matcha"
+        ]; };
         
       };
 

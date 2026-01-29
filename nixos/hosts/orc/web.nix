@@ -12,7 +12,7 @@ in
       "services": {
         "svc:uptime": {
           "endpoints": {
-            "tcp:80": "http://localhost:8080"
+            "tcp:80": "http://localhost:9000"
           }
         }
       }
@@ -35,6 +35,8 @@ in
       enable = true;
       settings = {
 
+        web.port=9000;
+        
         storage = {
           # persistence defaults to memory, so every rebuld loses data
           type = "sqlite";
@@ -43,7 +45,7 @@ in
           maximum-number-of-results = 1000;
           maximum-number-of-events = 500;
         };
-        
+
         endpoints = [
           {
             name = "rokeachphoto";
@@ -90,7 +92,6 @@ in
               "[STATUS] == 200"
             ];
           }
-
 
           {
             name = "matcha ping (tailnet)";
@@ -147,36 +148,43 @@ in
             ];
           }
 
+          {
+            name = "stashcast demo";
+            url = "https://demo.stashcast.dgt.is/";
+            # interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+
         ];
       };
     };
 
-    # caddy = {
-    #   enable = true;
-    #   # virtualHosts."localhost".extraConfig = ''
-    #   #   respond "Hello, local!"
-    #   # '';
+    caddy = {
+      enable = true;
 
-    #   # virtualHosts."http://orc".extraConfig = ''
-    #   #   respond "Hello, orc!"
-    #   # '';
 
-    #   virtualHosts."http://orc".extraConfig = ''
+      virtualHosts."http://localhost".extraConfig = ''
+        # respond "Hello, local!"
+        reverse_proxy 127.0.0.1:8000
+      '';
 
-    #       # running at root since the app does not seem to work well in a subpath
-    #       route /* {
-    #         reverse_proxy localhost:8080
-    #       }
+      # TODO: set ddns up for orc, in case the IP is not static. not sure.
+      virtualHosts = {
+        "demo.stashcast.dgt.is" = {
+          extraConfig = ''
+            reverse_proxy 127.0.0.1:8000
+          '';
+        };
+      };
+      
 
-    #       # # Default response for other routes
-    #       # respond "Hello, world!"
-    #   '';
-
-    # };
+    };
 
   };
 
   environment.systemPackages = with pkgs; [
-    # php83
+
   ];
 }

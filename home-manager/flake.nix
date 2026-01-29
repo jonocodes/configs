@@ -92,6 +92,7 @@
         "jono@matcha" = mkHome "matcha" "x86_64-linux";
         "jono@plex" = mkHome "plex" "x86_64-linux";
         "jono@lute" = mkHome "lute" "x86_64-linux";
+        "jono@ocarina" = mkHome "ocarina" "x86_64-linux";
       };
 
     };

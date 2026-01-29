@@ -45,13 +45,18 @@
     # '')
   ];
 
-  services.duckdns = {
-    # TODO: fix error: curl: option -K-: is unknown
+  # services.duckdns = {
+  #   # TODO: fix error: curl: option -K-: is unknown
+  #   enable = true;
+  #   domains = [ "digitus" ];
+  #   tokenFile = "/etc/duckdns.token";
+  # };
+
+  services.inadyn = {
     enable = true;
-    domains = [ "digitus" ];
-    tokenFile = "/etc/duckdns.token";
+    configFile = "/etc/inadyn.conf";
   };
-  
+
   # services.netdata = {
   #   # access this at http://plex:19999
   #   enable = true;
@@ -93,8 +98,10 @@
       
       # Split-horizon DNS entries - resolve to zeeba's internal IP for LAN clients
       address = [
-        "/digitus.duckdns.org/192.168.200.114"
+        # "/digitus.duckdns.org/192.168.200.114"
+        "/digit.us.to/192.168.200.114"
         "/dgt.rokeachphoto.com/192.168.200.114"
+        "/zeeba.dgt.is/192.168.200.114"
         "/a.dgt.is/192.168.200.114"
       ];
       

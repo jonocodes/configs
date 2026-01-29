@@ -49,6 +49,8 @@ in {
 
   networking.networkmanager.enable = true;
   virtualisation.docker.enable = true;
+
+  programs.mosh.enable = true;
   
   virtualisation.podman = {
     enable = true;
@@ -60,7 +62,8 @@ in {
     sudo.enable = true;
   };
 
-  services.envfs.enable = true;
+  # services.envfs.enable = true;
+  # this was causing /bin and /usr/bin do hang df
 
   services.tailscale.enable = true;
   services.tailscale.extraSetFlags = [ "--accept-routes" ];

@@ -21,21 +21,14 @@ in {
     nh
   ];
 
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
 
   services = {
 
-    # syncthing = {
-    #   enable = true;
-    #   folderDevices = {
-    #     common = {
-    #       devices = [ "choco" ];
-    #       versioned = true;
-    #     };
-    #   };
-    # };
+    tailscale.enable = true;
 
-
-  syncthing = {
+    syncthing = {
 
       enable = true; 
 
@@ -64,7 +57,7 @@ in {
         };
 
         folders = {
-          "confings" = {
+          "configs" = {
             path = "/home/jono/sync/configs";
             devices = [ "choco" ];
           };
@@ -75,9 +68,6 @@ in {
 
   };
 
-  services = {
-    tailscale.enable = true;
-  };
 
   # networking.hostId = "6c5d7bdd"; # only needed for zfs support
 
