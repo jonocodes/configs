@@ -1,7 +1,7 @@
 { pkgs, pkgs-unstable, inputs, modulesPath, nixos-hardware, ... }:
 let
 
-  syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
+  # syncthingIgnores = builtins.readFile ../../files/syncthingIgnores.txt;
 
 in {
 
@@ -77,9 +77,6 @@ in {
           devices = [ "choco" "dobro" ];
           versioned = true;
         };
-        # savr_data = {
-        #   devices = [ "choco" "dobro" ];
-        # };
 
       };
     };

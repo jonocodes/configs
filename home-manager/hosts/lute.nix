@@ -54,7 +54,7 @@ in {
         steam-run # x86 only
         # nodejs_22
 
-        handbrake
+        # handbrake
         digikam
         smartmontools
 

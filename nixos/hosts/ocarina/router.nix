@@ -122,13 +122,13 @@
         ];
 
         # Static IP reservations
-        # reservations = [
-        #   {
-        #     hw-address = "00:25:90:7a:b6:26";
-        #     ip-address = "192.168.30.114";
-        #     hostname = "zeeba";
-        #   }
-        # ];
+        reservations = [
+          {
+            hw-address = "00:25:90:7a:b6:26";
+            ip-address = "192.168.30.114";
+            hostname = "zeeba";
+          }
+        ];
       }];
     };
   };
@@ -136,37 +136,33 @@
   # Make KEA wait for the network interface to be ready
   # This ensures enp2s0 is configured before KEA tries to bind to it
   systemd.services.kea-dhcp4-server = {
-    after = [ "network-online.target" "network.target" ];
-    wants = [ "network-online.target" ];
+    after = [ "network-addresses-enp2s0.service" ];
+    wants = [ "network-addresses-enp2s0.service" ];
     # Wait for the interface to be up and have an IP address
-    # Check for LOWER_UP (link is up) and the IP address, with a timeout
-    # Use iproute2 package to ensure ip command is available
-    # serviceConfig.ExecStartPre = [
-    #   (pkgs.writeShellScript "wait-for-enp2s0" ''
-    #     set -e
-    #     export PATH="${pkgs.iproute2}/bin:${pkgs.gnugrep}/bin:${pkgs.coreutils}/bin:$PATH"
-    #     timeout=30
-    #     count=0
-        
-    #     # Wait for interface to exist and be UP with link
-    #     while [ $count -lt $timeout ]; do
-    #       if ${pkgs.iproute2}/bin/ip link show enp2s0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "LOWER_UP" && \
-    #          ${pkgs.iproute2}/bin/ip addr show enp2s0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "192.168.30.1"; then
-    #         echo "enp2s0 is ready (link up, IP configured)"
-    #         exit 0
-    #       fi
-    #       echo "Waiting for enp2s0 (link up and IP configured)... ($count/$timeout)"
-    #       ${pkgs.coreutils}/bin/sleep 1
-    #       count=$((count + 1))
-    #     done
-        
-    #     echo "Timeout waiting for enp2s0 to be ready"
-    #     echo "Current state:"
-    #     ${pkgs.iproute2}/bin/ip link show enp2s0 2>&1 || echo "Interface not found"
-    #     ${pkgs.iproute2}/bin/ip addr show enp2s0 2>&1 || echo "No IP address"
-    #     exit 1
-    #   '')
-    # ];
+    serviceConfig.ExecStartPre = [
+      (pkgs.writeShellScript "wait-for-enp2s0" ''
+        set -e
+        timeout=30
+        count=0
+
+        # Wait for interface to have link up and IP configured
+        while [ $count -lt $timeout ]; do
+          if ${pkgs.iproute2}/bin/ip link show enp2s0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "LOWER_UP" && \
+             ${pkgs.iproute2}/bin/ip addr show enp2s0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "192.168.30.1"; then
+            echo "enp2s0 is ready (link up, IP configured)"
+            exit 0
+          fi
+          echo "Waiting for enp2s0 (link up and IP configured)... ($count/$timeout)"
+          sleep 1
+          count=$((count + 1))
+        done
+
+        echo "Timeout waiting for enp2s0 to be ready"
+        ${pkgs.iproute2}/bin/ip link show enp2s0 2>&1 || echo "Interface not found"
+        ${pkgs.iproute2}/bin/ip addr show enp2s0 2>&1 || echo "No IP address"
+        exit 1
+      '')
+    ];
   };
 
   # Ensure NAT service starts after network is ready
