@@ -16,11 +16,11 @@ in {
   topology.self = {
     hardware.info = "Desktop i7-6700K, 64GB RAM, ZFS";
     # Services shown on the diagram
-    services.syncthing = {};
-    services.sanoid = {};
-    services.syncoid = {};
-    services.duplicati = {};
-    services.steam = {};
+    services.syncthing.name = "Syncthing";
+    services.sanoid.name = "Sanoid";
+    services.syncoid.name = "Syncoid";
+    services.duplicati.name = "Duplicati";
+    services.steam.name = "Steam";
   };
 
   # not sure why, but I needed to do this to use caches in devenv with php ?

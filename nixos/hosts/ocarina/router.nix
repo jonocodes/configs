@@ -5,6 +5,22 @@
     "net.ipv4.conf.all.forwarding" = true;
     # enable if you also want IPv6 routing:
     # "net.ipv6.conf.all.forwarding" = true;
+
+    # Disable reverse path filtering - required for NAT to work properly
+    # Tailscale sets this to strict (2) which breaks forwarding
+    # Must be set on ALL interfaces to override Tailscale's settings
+    "net.ipv4.conf.all.rp_filter" = 0;
+    "net.ipv4.conf.default.rp_filter" = 0;
+    "net.ipv4.conf.enp1s0.rp_filter" = 0;
+    "net.ipv4.conf.enp2s0.rp_filter" = 0;
+    "net.ipv4.conf.tailscale0.rp_filter" = 0;
+    "net.ipv4.conf.lo.rp_filter" = 0;
+
+    # Increase network performance for router workload
+    # Helps reduce RX packet drops and time_squeeze events
+    "net.core.netdev_budget" = 600;        # default 300
+    "net.core.netdev_budget_usecs" = 4000; # default 2000
+    "net.core.netdev_max_backlog" = 5000;  # default 1000
   };
 
   # # Fix e1000e hardware unit hang on enp1s0 (WAN interface)
@@ -45,28 +61,30 @@
     # '')
   ];
 
-  # services.inadyn = {
-  #   enable = true;
-  #   configFile = "/etc/inadyn.conf";
-  # };
+  services.inadyn = {
+    enable = true;
+    configFile = "/etc/inadyn.conf";
+  };
   
   services.dnsmasq = {
     enable = true;
     settings = {
       no-resolv = true;
+      # Don't read /etc/hosts - prevents returning 127.0.0.2 for local hostname
+      no-hosts = true;
       server = [ "1.1.1.1" "8.8.8.8" ];
       interface = "enp2s0";
       bind-interfaces = true;
       cache-size = 1000;
-      
+
       # Split-horizon DNS entries - resolve to zeeba's internal IP for LAN clients
-      # address = [
-      #   "/digit.us.to/192.168.30.114"
-      #   "/dgt.rokeachphoto.com/192.168.30.114"
-      #   "/zeeba.dgt.is/192.168.30.114"
-      #   "/a.dgt.is/192.168.30.114"
-      # ];
-      
+      address = [
+        "/digit.us.to/192.168.30.114"
+        "/dgt.rokeachphoto.com/192.168.30.114"
+        "/zeeba.dgt.is/192.168.30.114"
+        "/a.dgt.is/192.168.30.114"
+      ];
+
       log-queries = true;
     };
   };
@@ -104,6 +122,7 @@
       subnet4 = [{
         id = 1;
         subnet = "192.168.30.0/24";
+        interface = "enp2s0";
 
         pools = [{
           pool = "192.168.30.100 - 192.168.30.200";
@@ -165,10 +184,20 @@
     ];
   };
 
-  # Ensure NAT service starts after network is ready
-  systemd.services.nat = {
-    after = [ "network-online.target" "network.target" ];
-    wants = [ "network-online.target" ];
+  # Note: The nat.service is handled by the firewall service in NixOS.
+  # No separate nat.service customization needed.
+
+  # Ensure rp_filter stays disabled even after Tailscale starts
+  # Tailscale tends to set rp_filter=2 which breaks NAT forwarding
+  systemd.services.fix-rp-filter = {
+    description = "Fix rp_filter after Tailscale";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.procps}/bin/sysctl -w net.ipv4.conf.all.rp_filter=0 net.ipv4.conf.default.rp_filter=0 net.ipv4.conf.enp1s0.rp_filter=0 net.ipv4.conf.enp2s0.rp_filter=0 net.ipv4.conf.tailscale0.rp_filter=0 net.ipv4.conf.lo.rp_filter=0";
+    };
   };
 
 
@@ -204,24 +233,25 @@
       allowedUDPPorts = [ 53 ]; # DNS for split-horizon
       trustedInterfaces = [ "enp2s0" ]; # Trust LAN interface
       
-      # The checkReversePath option can interfere with NAT
-      # Setting to "loose" allows forwarded packets through
-      checkReversePath = "loose";
+      # Disable reverse path filtering entirely
+      # Both the sysctl AND iptables rpfilter can interfere with NAT
+      # when Tailscale is running on the router
+      checkReversePath = false;
     };
 
     # Port forwarding from external ports 80 and 443 to zeeba (192.168.30.114)
-    # nat.forwardPorts = [
-    #   {
-    #     sourcePort = 80;
-    #     destination = "192.168.30.114:80";
-    #     proto = "tcp";
-    #   }
-    #   {
-    #     sourcePort = 443;
-    #     destination = "192.168.30.114:443";
-    #     proto = "tcp";
-    #   }
-    # ];
+    nat.forwardPorts = [
+      {
+        sourcePort = 80;
+        destination = "192.168.30.114:80";
+        proto = "tcp";
+      }
+      {
+        sourcePort = 443;
+        destination = "192.168.30.114:443";
+        proto = "tcp";
+      }
+    ];
   };
 
 }

@@ -10,6 +10,7 @@ in {
       # atuin
       # helix
       # devenv
+		claude-code
     ] ++ (with pkgs; [
 
       # lzop # for syncoid compression

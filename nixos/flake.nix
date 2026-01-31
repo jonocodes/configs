@@ -1,18 +1,16 @@
 {
-  description = "Jono's NixOS configurations (old method - monolithic flake)";
+  description = "Jono's NixOS configurations";
 
   inputs = {
-    # Default inputs for non-plex hosts
+
     nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
-    # TODO: replace this with the offical service once merged
+    # TODO: replace this with the offical flatpak service once merged
     #   https://github.com/NixOS/nixpkgs/pull/347605
 
     nix-flatpak.url =
       "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
-
-    # sops-nix.url = "github:Mic92/sops-nix";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
@@ -37,11 +35,6 @@
   nixConfig = {
     # Bypass Git dirty checks
     bash-prompt = "";  # Disable purity checks for flakes
-
-    # dont know if this does anything
-    # extra-trusted-public-keys = [ "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs=" ];
-    # extra-substituters = [ "https://cache.flox.dev" ];  
-  
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
@@ -64,12 +57,6 @@
             pkgs-unstable = import nixpkgs-unstable {
               inherit system;
               config.allowUnfree = true;
-
-              # gnome with drm video
-              # config.chromium.enableWideVine = true;
-
-              # config.android_sdk.accept_license = true;
-
             };
 
           };
@@ -78,7 +65,6 @@
 
             ./hosts/${hostName}
 
-            #             sops-nix.nixosModules.sops
             disko.nixosModules.disko
             nix-topology.nixosModules.default
 
@@ -90,9 +76,9 @@
         let
           # Use the host's own inputs from its flake
           hostInputs = hostFlake.inputs;
-          
+
           # Conditionally include modules based on available inputs
-          optionalModules = 
+          optionalModules =
             (if hostInputs ? disko then [ hostInputs.disko.nixosModules.disko ] else []);
         in
         hostInputs.nixpkgs.lib.nixosSystem {
@@ -100,6 +86,8 @@
           pkgs = import hostInputs.nixpkgs {
             inherit system;
             config.allowUnfree = true;
+            # Use main flake's nix-topology overlay for consistent topology support
+            overlays = [ nix-topology.overlays.default ];
           };
 
           specialArgs = {
@@ -116,6 +104,9 @@
 
             ./hosts/${hostName}
 
+            # Include nix-topology from main flake for topology diagram support
+            nix-topology.nixosModules.default
+
           ] ++ optionalModules;
         };
 
@@ -130,12 +121,12 @@
         ocarina = mkHostWithFlake "ocarina" "x86_64-linux" ocarina-flake;
         imbp = mkHostWithFlake "imbp" "x86_64-linux" imbp-flake;
 
-        # x200 = mkHost "x200" "x86_64-linux";
-        # t430 = mkHost "t430" "x86_64-linux";
+        # Hosts managed directly from main flake
         orc = mkHost "orc" "aarch64-linux";
-        # imbp = mkHost "imbp" "x86_64-linux";
         nixahi = mkHost "nixahi" "aarch64-linux";
         matcha = mkHost "matcha" "x86_64-linux";
+        # x200 = mkHost "x200" "x86_64-linux";
+        # t430 = mkHost "t430" "x86_64-linux";
       };
 
       # Infrastructure topology diagrams

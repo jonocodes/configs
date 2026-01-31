@@ -12,7 +12,7 @@
 
   networks.home = {
     name = "Home Network";
-    cidrv4 = "192.168.1.0/24";
+    cidrv4 = "192.168.30.0/24";
   };
 
   networks.berk = {
@@ -39,6 +39,7 @@
 
   nodes.internet = {
     deviceType = "internet";
+    interfaces.eth0 = {};
   };
 
   # ============================================================================
@@ -61,6 +62,8 @@
       ];
     };
   };
+
+  # TODO: add access point, cameras, 
 
   # Home NAS (no tailscale)
   nodes.nas = {
@@ -85,7 +88,7 @@
     hardware.info = "Raspberry Pi 3B - Arch Linux";
     interfaces.eth0.network = "lemon";
     interfaces.tailscale0.network = "tailscale";
-    services.syncthing = {};
+    services.syncthing.name = "Syncthing";
   };
 
   # Work laptop (macOS)
@@ -93,7 +96,7 @@
     deviceType = "device";
     hardware.info = "Apple M4 - macOS";
     interfaces.tailscale0.network = "tailscale";
-    services.syncthing = {};
+    services.syncthing.name = "Syncthing";
   };
 
   # Phone
@@ -101,7 +104,7 @@
     deviceType = "device";
     hardware.info = "Samsung Galaxy S23";
     interfaces.tailscale0.network = "tailscale";
-    services.syncthing = {};
+    services.syncthing.name = "Syncthing";
   };
 
   # ============================================================================
@@ -167,6 +170,7 @@
   nodes.lute = {
     deviceType = "nixos";
     hardware.info = "Lute Host";
+    interfaces.eth0.network = "home";
     interfaces.tailscale0.network = "tailscale";
   };
 
