@@ -38,18 +38,29 @@ sudo systemctl start coolify-setup   # first time only
 # Coolify is now at http://zeeba:8000
 ```
 
-## Manual usage
+## Running with docker compose directly (no NixOS config)
 
-If you prefer to run things by hand (or need to debug), the supporting files
-are copied to `/data/coolify/source/` during setup:
+You can skip the nix module entirely and run everything with plain docker
+compose. This assumes you already have the standard Coolify install at
+`/data/coolify/source/` (compose files, `.env`, SSH keys, etc.).
+
+**1. Copy the overlay files into the Coolify source directory:**
 
 ```bash
 cd /data/coolify/source
+cp ~/configs/nixos/hosts/zeeba/coolify/Dockerfile.overlay .
+cp ~/configs/nixos/hosts/zeeba/coolify/docker-compose.override.yml .
+```
 
-# Build the overlay image
+**2. Build the overlay image:**
+
+```bash
 docker build -t coolify-nixos:local -f Dockerfile.overlay .
+```
 
-# Start everything
+**3. Start everything:**
+
+```bash
 docker compose --env-file .env \
   -f docker-compose.yml \
   -f docker-compose.prod.yml \
@@ -57,7 +68,49 @@ docker compose --env-file .env \
   up -d --remove-orphans --force-recreate
 ```
 
-## Upgrading
+**To upgrade later**, rebuild with `--pull` to grab the latest base image:
+
+```bash
+docker build --pull -t coolify-nixos:local -f Dockerfile.overlay .
+docker compose --env-file .env \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  -f docker-compose.override.yml \
+  up -d --remove-orphans --force-recreate
+```
+
+**To roll back to stock** (once PR #7170 ships), just stop using the override:
+
+```bash
+rm /data/coolify/source/Dockerfile.overlay
+rm /data/coolify/source/docker-compose.override.yml
+docker compose --env-file .env \
+  -f docker-compose.yml \
+  -f docker-compose.prod.yml \
+  up -d --pull always --remove-orphans --force-recreate
+docker rmi coolify-nixos:local
+```
+
+## Activating via NixOS (alternative)
+
+If you prefer the nix-managed approach, swap the import in
+`nixos/hosts/zeeba/default.nix`:
+
+```nix
+# before
+imports = [ ./coolify-opus46.nix ... ];
+
+# after
+imports = [ ./coolify-next.nix ... ];
+```
+
+Then rebuild and start:
+
+```bash
+sudo nixos-rebuild switch
+sudo systemctl start coolify-setup   # first time only
+# Coolify is now at http://zeeba:8000
+```
 
 A weekly timer (`coolify-upgrade.timer`) re-downloads compose files from the
 CDN, rebuilds the overlay on top of the latest official image, and recreates
