@@ -72,7 +72,7 @@
       no-resolv = true;
       # Don't read /etc/hosts - prevents returning 127.0.0.2 for local hostname
       no-hosts = true;
-      server = [ "1.1.1.1" "8.8.8.8" ];
+      server = [ "/ts.net/100.100.100.100" "1.1.1.1" "8.8.8.8" ];
       interface = "enp2s0";
       bind-interfaces = true;
       cache-size = 1000;

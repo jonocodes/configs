@@ -75,6 +75,8 @@ in
   users.groups.ron = {};
 
 
+  # TODO: add https://netalertx.com/ and coolify
+
   services = {
 
     # TODO: maybe move this out of web.nix
@@ -298,60 +300,60 @@ in
     };
 
 
-    grafana = {
-      enable = true;
-      settings = {
-        server = {
-          serve_from_sub_path = true;
-          http_port = 2342;
-          http_addr = "0.0.0.0";
-        };
-      };
-    };
+    # grafana = {
+    #   enable = true;
+    #   settings = {
+    #     server = {
+    #       serve_from_sub_path = true;
+    #       http_port = 2342;
+    #       http_addr = "0.0.0.0";
+    #     };
+    #   };
+    # };
 
 
-    prometheus = {
-      enable = true;
+    # prometheus = {
+    #   enable = true;
 
-      globalConfig.scrape_interval = "10s"; # "1m"
-      port = 9001;
+    #   globalConfig.scrape_interval = "10s"; # "1m"
+    #   port = 9001;
 
-      exporters = {
-        postgres = {
-          enable = true;
-          listenAddress = "0.0.0.0";
-          port = 9187;
-        };
-        node = {
-          enable = true;
-          enabledCollectors = [ "systemd" ];
-          port = 9002;
-          extraFlags = [
-            "--collector.ethtool"
-            "--collector.softirqs"
-            "--collector.tcpstat"
-          ];
-        };
-      };
-      scrapeConfigs = [
-        {
-          job_name = "node";
-          static_configs = [{
-            targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
-          }];
-        }
-      ];
+    #   exporters = {
+    #     postgres = {
+    #       enable = true;
+    #       listenAddress = "0.0.0.0";
+    #       port = 9187;
+    #     };
+    #     node = {
+    #       enable = true;
+    #       enabledCollectors = [ "systemd" ];
+    #       port = 9002;
+    #       extraFlags = [
+    #         "--collector.ethtool"
+    #         "--collector.softirqs"
+    #         "--collector.tcpstat"
+    #       ];
+    #     };
+    #   };
+    #   scrapeConfigs = [
+    #     {
+    #       job_name = "node";
+    #       static_configs = [{
+    #         targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+    #       }];
+    #     }
+    #   ];
 
-    };
+    # };
 
-    loki = {
-      enable = true;
-      configFile = ./files/loki.yaml;
-    };
+    # loki = {
+    #   enable = true;
+    #   configFile = ./files/loki.yaml;
+    # };
 
-    alloy = {
-      enable = true;
-    };
+    # alloy = {
+    #   enable = true;
+    # };
 
     #  umami = { # only in unstable. so wait for 25.11 or use docker. or use plausable in nix
     #    enable = true;

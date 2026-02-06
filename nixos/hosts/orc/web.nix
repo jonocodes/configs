@@ -172,6 +172,9 @@ in
 
       # TODO: set ddns up for orc, in case the IP is not static. not sure.
       virtualHosts = {
+
+        # for now this service is running in docker compose from home dir
+
         "demo.stashcast.dgt.is" = {
           extraConfig = ''
             reverse_proxy 127.0.0.1:8000

@@ -10,6 +10,10 @@ in {
       # atuin
       # helix
       # devenv
+      # docker-network-coolify
+      docker-compose
+      claude-code
+      
     ] ++ (with pkgs; [
 
       lzop # for syncoid compression

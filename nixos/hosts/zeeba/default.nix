@@ -139,6 +139,7 @@ in {
   imports = [ 
     ./hardware-configuration.nix
     ./web.nix
+    ./coolify-opus46.nix
     ../../modules/common-nixos.nix
     ../../modules/home-lan.nix
     ../../modules/syncthing.nix
