@@ -41,8 +41,46 @@ sudo systemctl start coolify-setup   # first time only
 ## Running with docker compose directly (no NixOS config)
 
 You can skip the nix module entirely and run everything with plain docker
-compose. This assumes you already have the standard Coolify install at
-`/data/coolify/source/` (compose files, `.env`, SSH keys, etc.).
+compose.
+
+### Prerequisites
+
+You need the standard Coolify directory layout at `/data/coolify/source/`.
+This is what Coolify's official
+[manual install](https://coolify.io/docs/get-started/installation#manual-installation)
+creates. If you don't have it yet:
+
+```bash
+# Create the directory structure
+mkdir -p /data/coolify/{source,ssh/keys,ssh/mux,applications,databases,backups,services,proxy/dynamic,webhooks-during-maintenance}
+
+# Download compose files and env template from Coolify's CDN
+cd /data/coolify/source
+curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.yml    -o docker-compose.yml
+curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.prod.yml -o docker-compose.prod.yml
+curl -fsSL https://cdn.coollabs.io/coolify/.env.production         -o .env
+
+# Generate an SSH key for Coolify to manage the host
+ssh-keygen -t ed25519 -N "" -C "root@coolify" \
+  -f /data/coolify/ssh/keys/id.root@host.docker.internal
+cat /data/coolify/ssh/keys/id.root@host.docker.internal.pub >> /root/.ssh/authorized_keys
+
+# Fill in empty secrets in .env (APP_ID, APP_KEY, DB_PASSWORD, etc.)
+# You can generate them with: openssl rand -hex 16  (or -base64 32)
+
+# Create the docker network
+docker network create --attachable coolify
+
+# Set ownership
+chown -R 9999:root /data/coolify
+chmod -R 700 /data/coolify
+```
+
+This is not a git clone -- the compose files are standalone downloads from
+Coolify's CDN. They reference the official Docker images which get pulled
+on first `docker compose up`.
+
+### Steps
 
 **1. Copy the overlay files into the Coolify source directory:**
 
