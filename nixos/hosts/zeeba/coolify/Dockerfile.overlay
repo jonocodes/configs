@@ -1,0 +1,42 @@
+# Overlay: patch the official Coolify image with NixOS support from PR #7170
+# https://github.com/coollabsio/coolify/pull/7170
+#
+# Clones the PR branch, copies only the changed files on top of the
+# official release image.  Builds in seconds (no full recompile).
+#
+# Remove this once PR #7170 is merged and ships in a Coolify release.
+
+ARG COOLIFY_VERSION=latest
+
+# ── Stage 1: grab patched source files from the PR branch ────────────
+FROM alpine/git:latest AS nixos-patch
+ARG NIXOS_PR_REF=feature/nixos-support
+RUN git clone --depth 1 -b "${NIXOS_PR_REF}" \
+      https://github.com/rockofox/coolify.git /src
+
+# ── Stage 2: layer patches onto the official image ───────────────────
+FROM ghcr.io/coollabsio/coolify:${COOLIFY_VERSION}
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/bootstrap/helpers/constants.php \
+  /var/www/html/bootstrap/helpers/constants.php
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/app/Actions/Server/CheckUpdates.php \
+  /var/www/html/app/Actions/Server/CheckUpdates.php
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/app/Actions/Server/InstallDocker.php \
+  /var/www/html/app/Actions/Server/InstallDocker.php
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/app/Actions/Server/UpdatePackage.php \
+  /var/www/html/app/Actions/Server/UpdatePackage.php
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/app/Livewire/Server/ValidateAndInstall.php \
+  /var/www/html/app/Livewire/Server/ValidateAndInstall.php
+
+COPY --from=nixos-patch --chown=9999:9999 \
+  /src/resources/views/livewire/server/security/patches.blade.php \
+  /var/www/html/resources/views/livewire/server/security/patches.blade.php
