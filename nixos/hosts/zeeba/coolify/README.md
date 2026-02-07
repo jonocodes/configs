@@ -10,9 +10,13 @@ Instead of building Coolify from source, we patch the official Docker image:
 
 1. `Dockerfile.overlay` clones the PR branch in a throwaway stage, then copies
    only the 6 changed PHP/Blade files on top of `ghcr.io/coollabsio/coolify:latest`.
-2. `docker-compose.override.yml` tells compose to use our local `coolify-nixos:local`
+2. `patch-prerequisites.php` fixes a gap in the PR: `InstallPrerequisites.php`
+   is not patched by PR #7170, so NixOS passes OS validation but then hits
+   "Unsupported OS type for prerequisites installation". This script adds a
+   NixOS branch to that file at Docker build time.
+3. `docker-compose.override.yml` tells compose to use our local `coolify-nixos:local`
    image instead of pulling from the registry.
-3. `coolify-next.nix` wires this into systemd so the image is built during
+4. `coolify-next.nix` wires this into systemd so the image is built during
    `coolify-setup` and the override file is included in every compose invocation.
 
 The overlay build takes seconds -- it just downloads the git branch and copies
@@ -87,6 +91,7 @@ on first `docker compose up`.
 ```bash
 cd /data/coolify/source
 cp ~/configs/nixos/hosts/zeeba/coolify/Dockerfile.overlay .
+cp ~/configs/nixos/hosts/zeeba/coolify/patch-prerequisites.php .
 cp ~/configs/nixos/hosts/zeeba/coolify/docker-compose.override.yml .
 ```
 
@@ -121,6 +126,7 @@ docker compose --env-file .env \
 
 ```bash
 rm /data/coolify/source/Dockerfile.overlay
+rm /data/coolify/source/patch-prerequisites.php
 rm /data/coolify/source/docker-compose.override.yml
 docker compose --env-file .env \
   -f docker-compose.yml \
@@ -172,9 +178,10 @@ needed. To go back to stock:
    sudo nixos-rebuild switch
    sudo systemctl restart coolify
    ```
-3. Clean up the local image and override (optional):
+3. Clean up the local image and overlay files (optional):
    ```bash
    rm /data/coolify/source/Dockerfile.overlay
+   rm /data/coolify/source/patch-prerequisites.php
    rm /data/coolify/source/docker-compose.override.yml
    docker rmi coolify-nixos:local
    ```
@@ -187,6 +194,7 @@ official image (now with NixOS support baked in), so everything just works.
 | File | Purpose |
 |------|---------|
 | `Dockerfile.overlay` | Multi-stage build: clones PR, copies patches onto official image |
+| `patch-prerequisites.php` | Fixes `InstallPrerequisites.php` (gap in PR #7170) |
 | `docker-compose.override.yml` | Points compose at `coolify-nixos:local` |
 | `README.md` | This file |
 | `../coolify-next.nix` | NixOS module that integrates the above into systemd |
