@@ -15,6 +15,7 @@
 let
   dockerfileOverlay = ./coolify/Dockerfile.overlay;
   composeOverride = ./coolify/docker-compose.override.yml;
+  patchPrerequisites = ./coolify/patch-prerequisites.php;
 in
 {
   # ── Directory structure (same as official manual install) ───────────
@@ -114,6 +115,7 @@ in
       # ── Build NixOS overlay image (PR #7170) ───────────────────────
       echo "Installing NixOS overlay files..."
       cp ${dockerfileOverlay} "$SOURCE/Dockerfile.overlay"
+      cp ${patchPrerequisites} "$SOURCE/patch-prerequisites.php"
       cp ${composeOverride} "$SOURCE/docker-compose.override.yml"
 
       echo "Building coolify-nixos:local overlay image..."

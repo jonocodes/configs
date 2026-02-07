@@ -4,7 +4,10 @@
 # Clones the PR branch, copies only the changed files on top of the
 # official release image.  Builds in seconds (no full recompile).
 #
-# Remove this once PR #7170 is merged and ships in a Coolify release.
+# PR #7170 misses InstallPrerequisites.php, so we apply an additional
+# patch for that file (patch-prerequisites.php).
+#
+# Remove this once Coolify ships native NixOS support.
 
 ARG COOLIFY_VERSION=latest
 
@@ -40,3 +43,9 @@ COPY --from=nixos-patch --chown=9999:9999 \
 COPY --from=nixos-patch --chown=9999:9999 \
   /src/resources/views/livewire/server/security/patches.blade.php \
   /var/www/html/resources/views/livewire/server/security/patches.blade.php
+
+# ── Additional patch: InstallPrerequisites.php (not covered by PR #7170) ─
+# Adds a NixOS elseif branch so prerequisites installation doesn't throw
+# "Unsupported OS type for prerequisites installation".
+COPY patch-prerequisites.php /tmp/patch-prerequisites.php
+RUN php /tmp/patch-prerequisites.php && rm /tmp/patch-prerequisites.php
