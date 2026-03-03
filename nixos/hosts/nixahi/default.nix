@@ -1,7 +1,11 @@
 { lib, pkgs, pkgs-unstable, inputs, modulesPath, nixos-hardware, ... }:
 let
-
-
+  # Build asahi packages against 25.05 nixpkgs to avoid LLVM/Rust incompatibilities
+  pkgs-asahi = import inputs.nixpkgs-asahi {
+    system = "aarch64-linux";
+    config.allowUnfree = true;
+    overlays = [ (import ./apple-silicon-support-2025-05-30/packages/overlay.nix) ];
+  };
 in {
 
   networking.hostName = "nixahi";
@@ -13,6 +17,7 @@ in {
 
   hardware.asahi = {
     useExperimentalGPUDriver = true;
+    pkgs = lib.mkForce pkgs-asahi;
   };
 
   # pin syncthing to unstable to avoid config version downgrade issues
@@ -46,7 +51,7 @@ in {
     libpq
 
   ] ++ (with pkgs; [
-    asahi-nvram
+    pkgs-asahi.asahi-nvram
 
     vim
 

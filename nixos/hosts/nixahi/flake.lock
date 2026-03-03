@@ -32,6 +32,21 @@
     },
     "nixpkgs": {
       "locked": {
+        "lastModified": 1772465433,
+        "narHash": "sha256-ywy9troNEfpgh0Ee+zaV1UTgU8kYBVKtvPSxh6clYGU=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c581273b8d5bdf1c6ce7e0a54da9841e6a763913",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "ref": "nixos-25.11",
+        "type": "indirect"
+      }
+    },
+    "nixpkgs-asahi": {
+      "locked": {
         "lastModified": 1767313136,
         "narHash": "sha256-16KkgfdYqjaeRGBaYsNrhPRRENs0qzkQVUooNHtoy2w=",
         "owner": "NixOS",
@@ -65,6 +80,7 @@
         "nix-flatpak": "nix-flatpak",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-asahi": "nixpkgs-asahi",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
     }
