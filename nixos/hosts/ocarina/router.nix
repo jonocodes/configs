@@ -81,8 +81,23 @@
       address = [
         "/digit.us.to/192.168.30.114"
         "/dgt.rokeachphoto.com/192.168.30.114"
+        "/rokeachphoto.dgt.is/192.168.30.114"
         "/zeeba.dgt.is/192.168.30.114"
         "/a.dgt.is/192.168.30.114"
+        "/savr.dgt.is/192.168.30.114"
+        "/deploy.dgt.is/192.168.30.114"
+        # "/*.savr.dgt.is/192.168.30.114"
+        "/dev.preview.savr.link/192.168.30.114"
+        # "/preview.savr.link/192.168.30.114"
+        "/*.preview.savr.link/192.168.30.114"
+        "/demo.stash.dgt.is/192.168.30.114"
+        "/jono.stash.dgt.is/192.168.30.114"
+        "/*.preview.stash.dgt.is/192.168.30.114"
+        "/demo.stashcast.net/192.168.30.114"
+        "/jono.stashcast.net/192.168.30.114"
+        "/*.preview.stashcast.net/192.168.30.114"
+        "/*.coolup.stashcast.net/192.168.30.114"
+        "/*.todo.stashcast.net/192.168.30.114"
       ];
 
       log-queries = true;

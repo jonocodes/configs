@@ -134,6 +134,10 @@ in {
           devices = [ "galaxyS23" ];
         };
 
+        mobile = {
+          devices = [ "galaxyS23" ];
+        };
+
         configs = { devices = [ "choco" "zeeba"
          # "orc" "matcha"
         ]; };
@@ -205,6 +209,12 @@ in {
     # these are needed for synciod (shouldnt they be included in that package?)
     lzop
     mbuffer
+
+    # for video thumbnails in gnome
+    ffmpeg-headless
+    ffmpegthumbnailer
+
+    opencode
 
   ];
 

@@ -26,6 +26,10 @@ in {
     };
   };
 
+  environment.systemPackages = with pkgs; [
+    claude-code
+  ];
+
   # services.headscale = {
   #   enable = true;
   #   address = "0.0.0.0";

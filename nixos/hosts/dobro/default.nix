@@ -31,15 +31,6 @@ in {
   nix.gc.dates = "daily";
   nix.gc.options = "--delete-older-than 7d";
 
-  # networking.hosts = {
-    # "198.54.114.213" = ["rokeachphoto.com"];
-  # };
-
-  # networking.extraHosts = ''
-  #   198.54.114.213  rokeachphoto.com
-  # '';
-
-
   boot.supportedFilesystems."fuse.sshfs" = true;
 
 

@@ -132,14 +132,22 @@ in {
 
   };
 
+  environment.systemPackages = with pkgs;
+  [
+    git
+    docker-compose
+  ];
+
+
   networking.hostId = "796e3c6a"; # needed for zfs support
 
   networking.hostName = "zeeba";
 
-  imports = [ 
+  imports = [
     ./hardware-configuration.nix
     ./web.nix
-    ./coolify-opus46.nix
+    # ./pr-dns.nix
+    # ./coolify
     ../../modules/common-nixos.nix
     ../../modules/home-lan.nix
     ../../modules/syncthing.nix

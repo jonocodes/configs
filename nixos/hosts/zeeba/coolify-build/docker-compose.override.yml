@@ -1,0 +1,6 @@
+# Override the official Coolify image with our locally-built image from source.
+# Place this alongside docker-compose.yml in /data/coolify/source/.
+
+services:
+  coolify:
+    image: coolify-nixos:jono

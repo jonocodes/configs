@@ -11,9 +11,9 @@ in {
       # helix
       # devenv
       # docker-network-coolify
-      docker-compose
+      docker-compose  # installed this because 'docker compose' is not working?
       claude-code
-      
+
     ] ++ (with pkgs; [
 
       lzop # for syncoid compression

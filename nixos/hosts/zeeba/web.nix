@@ -79,6 +79,8 @@ in
 
   services = {
 
+    cloudflared.enable = true;
+
     # TODO: maybe move this out of web.nix
     samba = {
       enable = true;
@@ -386,6 +388,17 @@ in
 
     caddy = {
       enable = true;
+
+      # Build Caddy with deSEC DNS plugin for wildcard certs
+      package = pkgs.caddy.withPlugins {
+        plugins = [
+          "github.com/caddy-dns/desec@v1.0.1"
+          "github.com/caddy-dns/cloudflare@v0.2.3"
+        ];
+
+        hash = "sha256-cDd8gWUO0WvaEfRr0md4F8ljFQA5TDEbLCmfcf264r4=";
+      };
+
       # virtualHosts."localhost".extraConfig = ''
       #   respond "Hello, local!"
       # '';
@@ -395,19 +408,101 @@ in
       '';
 
       virtualHosts."zeeba.dgt.is".extraConfig = ''
+        
+        route /sfc* {
+          uri strip_prefix /sfc
+          reverse_proxy localhost:8080
+        }
 
-          route /sfc* {
-            uri strip_prefix /sfc
-            reverse_proxy localhost:8080
-          }
+        route /sfc-stage* {
+          uri strip_prefix /sfc-stage
+          reverse_proxy localhost:8082
+        }
+        
+        # Default response for other routes
+        respond "Hello, zeeba world!"
+    
+      '';
 
-          route /sfc-stage* {
-            uri strip_prefix /sfc-stage
-            reverse_proxy localhost:8082
+      # coolify deploys
+      # virtualHosts."savr.dgt.is".extraConfig = ''
+      #   reverse_proxy localhost:82
+      # '';
+
+      virtualHosts."deploy.dgt.is".extraConfig = ''
+        reverse_proxy localhost:8000
+      '';
+
+      # Coolify preview deployments - wildcard for dev and PR branches
+
+      # virtualHosts."preview.savr.link".extraConfig = ''
+      #   reverse_proxy localhost:82
+      # '';
+
+      virtualHosts."*.preview.savr.link".extraConfig = ''
+        tls {
+          issuer acme {
+            dns desec {                              
+              token {env.DESEC_API_TOKEN} 
+            }
           }
-          
-          # Default response for other routes
-          respond "Hello, zeeba world!"
+        }
+        reverse_proxy localhost:82 {
+          header_up X-Forwarded-Proto https
+        }
+      '';
+
+      virtualHosts."demo.stash.dgt.is".extraConfig = ''
+        reverse_proxy localhost:82 {
+          # header_up X-Forwarded-Proto https
+        }
+      '';
+
+      virtualHosts."demo.stashcast.net" = {
+        useACMEHost = null;  # Cloudflare handles TLS
+        extraConfig = ''
+          reverse_proxy localhost:82
+        '';
+      };
+
+      virtualHosts."jono.stashcast.net" = {
+        useACMEHost = null;  # Cloudflare handles TLS
+        extraConfig = ''
+          reverse_proxy localhost:82
+        '';
+      };
+
+      virtualHosts."*.preview.stashcast.net".extraConfig = ''
+        tls {
+          issuer acme {
+            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          }
+        }
+        reverse_proxy localhost:82
+      '';
+
+      virtualHosts."*.coolup.stashcast.net".extraConfig = ''
+        tls {
+          issuer acme {
+            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          }
+        }
+        reverse_proxy localhost:82
+      '';
+
+      virtualHosts."*.todo.stashcast.net".extraConfig = ''
+        tls {
+          issuer acme {
+            dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+          }
+        }
+        reverse_proxy localhost:82
+      '';
+
+      virtualHosts."jono.stash.dgt.is".extraConfig = ''
+        reverse_proxy localhost:82 {
+          header_up X-Forwarded-Proto https
+        }
       '';
 
       virtualHosts."rokeachphoto.dgt.is".extraConfig = rokeachphotoPhp;
@@ -462,5 +557,11 @@ in
   environment.systemPackages = with pkgs; [
     php83
     php83Packages.composer
+  ];
+
+  # Pass deSEC API token to Caddy for DNS-01 challenge
+  systemd.services.caddy.serviceConfig.EnvironmentFile = [
+    "/etc/caddy-desec-token"
+    "/etc/caddy-cloudflare-token"
   ];
 }

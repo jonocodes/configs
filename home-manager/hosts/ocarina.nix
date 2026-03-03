@@ -6,10 +6,6 @@ in {
 
   home.packages = with pkgs-unstable;
     [
-      # cloudflared # tried to get cloudflare tunnel working, but no success
-      # atuin
-      # helix
-      # devenv
 		claude-code
     ] ++ (with pkgs; [
 

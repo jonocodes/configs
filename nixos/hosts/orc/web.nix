@@ -5,28 +5,28 @@ let
 in
 {
   
-  # expose 'http://uptime' service on tailnet
-  environment.etc."tailscale/serveconfig.json".text = ''
-    {
-      "version": "0.0.1",
-      "services": {
-        "svc:uptime": {
-          "endpoints": {
-            "tcp:80": "http://localhost:9000"
-          }
-        }
-      }
-    }
-  '';
+  # expose 'http://uptime' service on tailnet. tried 88 so it would not conflict with dokploy
+  # environment.etc."tailscale/serveconfig.json".text = ''
+  #   {
+  #     "version": "0.0.1",
+  #     "services": {
+  #       "svc:uptime": {
+  #         "endpoints": {
+  #           "tcp:88": "http://localhost:9000"
+  #         },
+  #       }
+  #     }
+  #   }
+  # '';
 
-  systemd.services.tailscale-serve-web = {
-    wantedBy = [ "multi-user.target" ];
-    after = [ "tailscaled.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.tailscale}/bin/tailscale serve set-config --all /etc/tailscale/serveconfig.json";
-    };
-  };
+  # systemd.services.tailscale-serve-web = {
+  #   wantedBy = [ "multi-user.target" ];
+  #   after = [ "tailscaled.service" ];
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     ExecStart = "${pkgs.tailscale}/bin/tailscale serve set-config --all /etc/tailscale/serveconfig.json";
+  #   };
+  # };
 
 
   services = {
@@ -112,16 +112,6 @@ in
           }
 
           {
-            name = "alb ping (IP)";
-            url = "icmp://23.93.90.200";
-            # url = "icmp://23.93.93.159";
-            # interval = "2m";
-            conditions = [
-              "[CONNECTED] == true"
-            ];
-          }
-
-          {
             name = "alb ping (DNS)";
             url = "icmp://a.foodnotblogs.com";
             # interval = "2m";
@@ -150,8 +140,16 @@ in
 
           {
             name = "stashcast demo";
-            url = "https://demo.stashcast.dgt.is/";
+            url = "https://demo.stashcast.net/";
             # interval = "1m";
+            conditions = [
+              "[STATUS] == 200"
+            ];
+          }
+
+          {
+            name = "stashcast jono";
+            url = "https://jono.stashcast.net/";
             conditions = [
               "[STATUS] == 200"
             ];
@@ -161,29 +159,31 @@ in
       };
     };
 
-    caddy = {
-      enable = true;
+    # caddy = {
+    #   enable = true;
 
 
-      virtualHosts."http://localhost".extraConfig = ''
-        # respond "Hello, local!"
-        reverse_proxy 127.0.0.1:8000
-      '';
+    #   virtualHosts."http://localhost".extraConfig = ''
+    #     # respond "Hello, local!"
+    #     reverse_proxy 127.0.0.1:8000
+    #   '';
 
-      # TODO: set ddns up for orc, in case the IP is not static. not sure.
-      virtualHosts = {
+    #   # TODO: set ddns up for orc, in case the IP is not static. not sure.
+    #   virtualHosts = {
 
-        # for now this service is running in docker compose from home dir
+    #     # for now this service is running in docker compose from home dir
 
-        "demo.stashcast.dgt.is" = {
-          extraConfig = ''
-            reverse_proxy 127.0.0.1:8000
-          '';
-        };
-      };
+    #     "demo.stashcast.dgt.is" = {
+    #       extraConfig = ''
+    #         reverse_proxy 127.0.0.1:8000
+    #       '';
+    #     };
+
+
+    #   };
       
 
-    };
+    # };
 
   };
 

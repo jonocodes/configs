@@ -54,6 +54,8 @@ in {
 
   home.packages = with pkgs-unstable;
     [
+
+  		claude-code
       lazydocker
 
       lazygit
