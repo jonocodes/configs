@@ -1,4 +1,4 @@
-{ pkgs, pkgs-unstable, inputs, modulesPath, nixos-hardware, ... }:
+{ lib, pkgs, pkgs-unstable, inputs, modulesPath, nixos-hardware, ... }:
 let
 
 
@@ -14,6 +14,14 @@ in {
   hardware.asahi = {
     useExperimentalGPUDriver = true;
   };
+
+  # pin syncthing to unstable to avoid config version downgrade issues
+  services.syncthing.package = pkgs-unstable.syncthing;
+
+  # fix service flags for syncthing 2.x (25.05 module generates 1.x-style flags)
+  systemd.services.syncthing.serviceConfig.ExecStart = lib.mkForce (
+    "${pkgs-unstable.syncthing}/bin/syncthing serve --no-browser --no-restart --gui-address=0.0.0.0:8388 --config=/home/jono/sync/.config/syncthing --data=/home/jono/sync/.config/syncthing"
+  );
 
   networking.wireless.iwd = {
 	  enable = true;

@@ -30,6 +30,7 @@
     lute-flake.url = "path:./hosts/lute";
     ocarina-flake.url = "path:./hosts/ocarina";
     imbp-flake.url = "path:./hosts/imbp";
+    nixahi-flake.url = "path:./hosts/nixahi";
   };
 
   nixConfig = {
@@ -38,7 +39,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake, ocarina-flake, imbp-flake }@inputs:
+    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake, ocarina-flake, imbp-flake, nixahi-flake }@inputs:
     let
 
       # Standard host builder (for hosts without per-host flakes)
@@ -121,9 +122,10 @@
         ocarina = mkHostWithFlake "ocarina" "x86_64-linux" ocarina-flake;
         imbp = mkHostWithFlake "imbp" "x86_64-linux" imbp-flake;
 
+        nixahi = mkHostWithFlake "nixahi" "aarch64-linux" nixahi-flake;
+
         # Hosts managed directly from main flake
         orc = mkHost "orc" "aarch64-linux";
-        nixahi = mkHost "nixahi" "aarch64-linux";
         matcha = mkHost "matcha" "x86_64-linux";
         # x200 = mkHost "x200" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
