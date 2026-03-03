@@ -11,6 +11,15 @@ in {
 
   hardware.asahi.peripheralFirmwareDirectory = ./firmware;
 
+  # services.xserver = {
+
+  #   desktopManager={
+  #     xfce.enable=true;
+  #   };
+  # };
+
+  # programs.hyprland.enable = true; # enable Hyprland
+
   hardware.asahi = {
     useExperimentalGPUDriver = true;
   };
@@ -20,9 +29,6 @@ in {
   	settings.General.EnableNetworkConfiguration = true;
   };
 
-  networking.hosts = {
-    "198.54.114.213" = ["rokeachphoto.com"];
-  };
 
   # TODO: switch command and control? probably with .xmodmap
   # https://github.com/NixOS/nixos-hardware/tree/master/apple#switching-cmd-and-altaltgr
@@ -36,6 +42,8 @@ in {
 
     # postgresql
     libpq
+
+    kitty
 
   ] ++ (with pkgs; [
     asahi-nvram
