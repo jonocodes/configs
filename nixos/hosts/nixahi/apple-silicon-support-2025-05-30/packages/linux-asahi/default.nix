@@ -94,6 +94,7 @@ let
       };
 
       kernelPatches = [
+        { name = "rust-edition-2024"; patch = ./rust-edition-2024.patch; }
       ] ++ _kernelPatches;
 
       inherit configfile;

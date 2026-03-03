@@ -1,11 +1,15 @@
 { lib
 , fetchFromGitLab
 , mesa
+, llvmPackages_19
+, spirv-llvm-translator
 }:
 
 (mesa.override {
   galliumDrivers = [ "softpipe" "llvmpipe" "asahi" ];
   vulkanDrivers = [ "swrast" "asahi" ];
+  llvmPackages = llvmPackages_19;
+  spirv-llvm-translator = spirv-llvm-translator.override { llvm = llvmPackages_19.llvm; };
 }).overrideAttrs (oldAttrs: {
   version = "25.1.0-asahi";
   src = fetchFromGitLab {
@@ -13,8 +17,8 @@
     domain = "gitlab.freedesktop.org";
     owner = "asahi";
     repo = "mesa";
-    tag = "asahi-20250425";
-    hash = "sha256-3c3uewzKv5wL9BRwaVL4E3FnyA04veQwAPxfHiL7wII=";
+    tag = "asahi-20250723";
+    hash = "sha256-6awfLOy0pmNHw6JK0hEMWv9FswYlZyEG2o9/aB+OU/o=";
   };
 
   mesonFlags =
@@ -22,6 +26,8 @@
       badFlags = [
         "-Dinstall-mesa-clc"
         "-Dgallium-nine"
+        "-Dgallium-mediafoundation"
+        "-Dgallium-rusticl"
         "-Dtools"
       ];
       isBadFlagList = f: builtins.map (b: lib.hasPrefix b f) badFlags;
@@ -33,6 +39,7 @@
       "-Dgallium-vdpau=disabled"
       "-Dgallium-xa=disabled"
       "-Dtools=asahi"
+      "-Dgallium-rusticl=false"
     ];
 
   # replace patches with ones tweaked slightly to apply to this version
@@ -40,9 +47,16 @@
     ./opencl.patch
   ];
 
+  postFixup = let
+    lines = lib.splitString "\n" (oldAttrs.postFixup or "");
+    filtered = builtins.filter (l: !(lib.hasInfix "RusticlOpenCL" l)) lines;
+  in lib.concatStringsSep "\n" filtered;
+
   postInstall = (oldAttrs.postInstall or "") + ''
     # we don't build anything to go in this output but it needs to exist
     touch $spirv2dxil
     touch $cross_tools
+    mkdir -p $opencl/lib
+    touch $opencl/lib/.keep
   '';
 })
