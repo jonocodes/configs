@@ -15,6 +15,29 @@ in {
 
   hardware.asahi.peripheralFirmwareDirectory = ./firmware;
 
+  # enabled bluetooth for wifi networking issues
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        # Shows battery charge of connected devices on supported
+        # Bluetooth adapters. Defaults to 'false'.
+        Experimental = true;
+        # When enabled other devices can connect faster to us, however
+        # the tradeoff is increased power consumption. Defaults to
+        # 'false'.
+        FastConnectable = true;
+      };
+      Policy = {
+        # Enable all controllers when they are found. This includes
+        # adapters present on start as well as adapters that are plugged
+        # in later on. Defaults to 'true'.
+        AutoEnable = true;
+      };
+    };
+  };
+
   hardware.asahi = {
     useExperimentalGPUDriver = true;
     pkgs = lib.mkForce pkgs-asahi;
@@ -32,6 +55,12 @@ in {
 	  enable = true;
   	settings.General.EnableNetworkConfiguration = true;
   };
+
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=60
+    Defaults timestamp_type=global
+  '';
+#   security.doas.enable = lib.mkForce false;
 
   networking.hosts = {
     "198.54.114.213" = ["rokeachphoto.com"];
@@ -52,9 +81,6 @@ in {
 
   ] ++ (with pkgs; [
     pkgs-asahi.asahi-nvram
-
-    vim
-
   ]);
 
 

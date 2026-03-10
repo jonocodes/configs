@@ -27,6 +27,7 @@ in {
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.warn-dirty = false;
+  nix.settings.trusted-users = [ "jono" ];
 
   nix.settings.trusted-public-keys = [
     "flox-cache-public-1:7F4OyH7ZCnFhcze3fJdfyXYLQw/aV7GEed86nQ7IsOs="
@@ -58,7 +59,7 @@ in {
   };
 
   security = {
-    doas.enable = true;
+#     doas.enable = true;
     sudo.enable = true;
   };
 

@@ -1,0 +1,19 @@
+{
+  "skipDangerousModePermissionPrompt": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sudo-check.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "web_fetch": {
+    "allowed_domains": ["*"]
+  }
+}

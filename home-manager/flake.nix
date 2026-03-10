@@ -26,12 +26,17 @@
     # flox.url = "github:flox/flox/8778414b043705d97898eaee0a427c51da859fb8";
 #    flox-master.url = "github:flox/flox/4f0624804eb9fe78c08eb2e5ac941b562c8c8fb0";  # until /v1.3.17 comes out
 
+    # pinned nixpkgs for specific playwright browser versions
+    # nixpkgs-playwright-1541.url = "github:NixOS/nixpkgs/ae1aa6751ce85669124f7ad4fd5fd67cb91b52e4";  # moved to flox
+
     # sops-nix.url = "github:Mic92/sops-nix";
 
     # package index for use with comma
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Per-host flakes (for independent lock files)
+    matcha-flake.url = "path:./hosts/matcha";
   };
 
   nixConfig = {
@@ -44,7 +49,7 @@
     extra-substituters = [ "https://cache.flox.dev" ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, ... }@inputs:
     let
 
       mkHome = hostName: system: home-manager.lib.homeManagerConfiguration {
@@ -82,6 +87,50 @@
 
         ];
       };
+
+      # Per-host flake builder (uses inputs from the host's own flake)
+      mkHomeWithFlake = hostName: system: hostFlake:
+        let
+          hostInputs = hostFlake.inputs;
+
+          optionalModules =
+            (if hostInputs ? nix-index-database then [ hostInputs.nix-index-database.homeModules.nix-index ] else [])
+            ++ (if hostInputs ? home-manager-master then [{
+              # TODO: this section can be removed when home manager 25.05 is stable
+              disabledModules = [ "services/syncthing.nix" ];
+              imports = [
+                (hostInputs.home-manager-master + "/modules/services/syncthing.nix")
+              ];
+            }] else []);
+        in
+        hostInputs.home-manager.lib.homeManagerConfiguration {
+
+          pkgs = import hostInputs.nixpkgs {
+            inherit system;
+            config.allowUnfree = true;
+          };
+
+          extraSpecialArgs = {
+
+            pkgs-unstable = import hostInputs.nixpkgs-unstable {
+              inherit system;
+              config.allowUnfree = true;
+            };
+
+            inputs = hostInputs;
+          };
+
+          modules = [
+
+            (if builtins.pathExists ./hosts/${hostName}/default.nix
+              then ./hosts/${hostName}/default.nix
+              else if builtins.pathExists ./hosts/${hostName}.nix
+              then ./hosts/${hostName}.nix
+              else ./hosts/_base.nix)
+
+          ] ++ optionalModules;
+        };
+
     in {
       homeConfigurations = {
         "jono@dobro" = mkHome "dobro" "x86_64-linux";
@@ -89,7 +138,7 @@
         "jono@orc" = mkHome "orc" "aarch64-linux";
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
-        "jono@matcha" = mkHome "matcha" "x86_64-linux";
+        "jono@matcha" = mkHomeWithFlake "matcha" "x86_64-linux" matcha-flake;
         "jono@plex" = mkHome "plex" "x86_64-linux";
         "jono@lute" = mkHome "lute" "x86_64-linux";
         "jono@ocarina" = mkHome "ocarina" "x86_64-linux";

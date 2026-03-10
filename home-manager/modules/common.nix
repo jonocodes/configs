@@ -27,6 +27,15 @@ in {
       # ".ssh/authorized_keys" = {
       #   text = pubKeys;
       # };
+
+      ".claude/hooks/sudo-check.sh" = {
+        executable = true;
+        source = ../files/claude-sudo-check.sh;
+      };
+
+      ".claude/settings.json".source = ../files/claude-settings.json;
+
+      ".config/opencode/plugins/sudo-check.ts".source = ../files/opencode-sudo-check.ts;
     }
 
     # (lib.mapAttrs'
@@ -82,11 +91,15 @@ in {
       i = lib.mkDefault "i-nixos && i-home";
 
       u = lib.mkDefault "u-home && u-nixos";
+
+      cl = "sudo -v && claude --dangerously-skip-permissions";
+      fa = "flox activate";
     };
   };
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
 
     matchBlocks = {
       "fnb" = { # namecheap

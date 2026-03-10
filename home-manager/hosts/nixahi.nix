@@ -3,6 +3,17 @@ let
 
   syncRoot = "/home/jono/syncHome";
 
+  # pkgs-playwright-1541 = import inputs.nixpkgs-playwright-1541 {  # moved to flox
+  #   system = pkgs.system;
+  # };
+
+  # node wrapper with playwright available via NODE_PATH and browsers pre-configured
+  playwright-node = pkgs-unstable.writeShellScriptBin "playwright-node" ''
+    export PLAYWRIGHT_BROWSERS_PATH="${pkgs-unstable.playwright-driver.browsers}"
+    export NODE_PATH="${pkgs-unstable.playwright-test}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
+    exec ${pkgs-unstable.nodejs}/bin/node "$@"
+  '';
+
 in {
 
   # Not yet working
@@ -55,7 +66,6 @@ in {
   home.packages = with pkgs-unstable;
     [
 
-  		claude-code
       lazydocker
 
       lazygit
@@ -79,7 +89,19 @@ in {
 
       uv # since the flox version is not working
 
-      # ticktick  # TODO: enable once my master change merges to unstable
+      ticktick  # TODO: enable once my master change merges to unstable
+
+      vim
+
+      # for AI
+      gh
+      opencode
+
+      claude-code
+      nodejs
+      playwright-mcp
+      playwright-test
+      playwright-node
 
     ] ++ (with pkgs;
       [
@@ -90,6 +112,11 @@ in {
         inputs.flox.packages.${pkgs.system}.default
 
       ]);
+
+  programs.fish.shellInit = ''
+    set -gx PLAYWRIGHT_BROWSERS_PATH "${pkgs-unstable.playwright-driver.browsers}"
+    # set -gx PLAYWRIGHT_BROWSERS_PATH_1541 "..."  # moved to flox
+  '';
 
   imports = [
 
