@@ -2,6 +2,8 @@
 let
   inherit (inputs) self;
 
+  coolify-cli = pkgs.callPackage ../packages/coolify-cli {};
+
 in {
 
   home.packages = with pkgs-unstable;
@@ -13,6 +15,8 @@ in {
       # docker-network-coolify
       docker-compose  # installed this because 'docker compose' is not working?
       claude-code
+
+      coolify-cli
 
     ] ++ (with pkgs; [
 

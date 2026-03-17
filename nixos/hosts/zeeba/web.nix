@@ -433,6 +433,15 @@ in
         reverse_proxy localhost:8000
       '';
 
+
+      virtualHosts."hubsnub.dgt.is".extraConfig = ''
+        reverse_proxy localhost:82 {
+          header_up X-Forwarded-Proto https
+          # header_up X-Forwarded-Proto {scheme}
+          # header_up X-Forwarded-Host {host}
+        }
+      '';
+
       # Coolify preview deployments - wildcard for dev and PR branches
 
       # virtualHosts."preview.savr.link".extraConfig = ''

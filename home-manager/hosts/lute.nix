@@ -40,9 +40,6 @@ in {
 
         ghostty
 
-        code-cursor
-        claude-code
-
         lazydocker
         lazyjournal
 
@@ -57,6 +54,20 @@ in {
         # handbrake
         digikam
         smartmontools
+
+        # AI tools
+        gh
+        opencode
+
+        code-cursor
+        codex
+        happy-coder
+
+        claude-code
+        # nodejs
+        playwright-mcp
+        playwright-test
+        # playwright-node
 
       ] ++ (with pkgs;
         [

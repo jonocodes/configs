@@ -1,0 +1,8 @@
+# Override the official Coolify image with our locally-built NixOS overlay.
+# Place this alongside docker-compose.yml in /data/coolify/source/.
+#
+# Remove this once PR #7170 is merged and ships in a Coolify release.
+
+services:
+  coolify:
+    image: coolify-nixos:local

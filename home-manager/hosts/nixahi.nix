@@ -3,6 +3,8 @@ let
 
   syncRoot = "/home/jono/syncHome";
 
+  coolify-cli = pkgs.callPackage ../packages/coolify-cli {};
+
   # pkgs-playwright-1541 = import inputs.nixpkgs-playwright-1541 {  # moved to flox
   #   system = pkgs.system;
   # };
@@ -102,6 +104,8 @@ in {
       playwright-mcp
       playwright-test
       playwright-node
+
+      coolify-cli
 
     ] ++ (with pkgs;
       [

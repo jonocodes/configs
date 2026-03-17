@@ -98,6 +98,7 @@
         "/*.preview.stashcast.net/192.168.30.114"
         "/*.coolup.stashcast.net/192.168.30.114"
         "/*.todo.stashcast.net/192.168.30.114"
+        "/hubsnub.dgt.is/192.168.30.114"
       ];
 
       log-queries = true;

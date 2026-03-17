@@ -243,6 +243,13 @@ in {
     ../../modules/gnome.nix
     #../../modules/kde.nix
 
+    ../../modules/coolify
+
   ];
+
+  services.coolify = {
+    enable = true;
+    openFirewall = true;
+  };
 
 }

@@ -108,6 +108,12 @@ in {
 #       options = "--delete-older-than 7d";
 #     };
 
+  # this is here mostly to help LLMs run sudo commands when needed
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=60
+    Defaults timestamp_type=global
+  '';
+
   users.users = {
 
     jono = {
