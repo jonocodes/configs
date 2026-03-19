@@ -7,6 +7,8 @@
     
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
 
+    llm-agents.url = "github:numtide/llm-agents.nix";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -37,6 +39,7 @@
 
     # Per-host flakes (for independent lock files)
     matcha-flake.url = "path:./hosts/matcha";
+    lute-flake.url = "path:./hosts/lute";
   };
 
   nixConfig = {
@@ -49,7 +52,7 @@
     extra-substituters = [ "https://cache.flox.dev" ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, lute-flake, ... }@inputs:
     let
 
       mkHome = hostName: system: home-manager.lib.homeManagerConfiguration {
@@ -140,7 +143,7 @@
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
         "jono@matcha" = mkHomeWithFlake "matcha" "x86_64-linux" matcha-flake;
         "jono@plex" = mkHome "plex" "x86_64-linux";
-        "jono@lute" = mkHome "lute" "x86_64-linux";
+        "jono@lute" = mkHomeWithFlake "lute" "x86_64-linux" lute-flake;
         "jono@ocarina" = mkHome "ocarina" "x86_64-linux";
       };
 

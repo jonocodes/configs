@@ -1,24 +1,98 @@
-# NixOS module for self-hosting Coolify v4.x
+# NixOS module for self-hosting Coolify v4.x (v2 — pinned source)
 #
 # Follows the official manual installation layout at /data/coolify/.
-# Compose files are downloaded from Coolify's CDN at first boot, so they
-# live on disk and can be managed with plain `docker compose` as well.
+# Source is pinned via fetchFromGitHub — compose files and the .env
+# template come from the pinned checkout, not the CDN.
 #
-# The nixosOverlay option (default: true) applies the NixOS OS-detection
-# patch from upstream PR #7170 on top of the official image. Set it to
-# false once Coolify ships native NixOS support.
+# NixOS patches (OS detection + prerequisites) are pre-built PHP files
+# in ./patched/ that match the pinned version. To upgrade Coolify,
+# bump `version` + `hash` and update the patched files if needed.
+#
+# TODO: This module is a work-in-progress. Remaining work:
+#
+#   - The patched PHP files in ./patched/ are full copies of the upstream
+#     files from v4.0.0-beta.468 with NixOS branches added. When bumping
+#     `version`, diff the new upstream files against these and re-apply
+#     the NixOS additions. Consider generating a proper .patch file to
+#     make version bumps easier.
+#
+#   - The docker build still happens at service start (needs the daemon).
+#     Explore using pkgs.dockerTools.buildLayeredImage to build the
+#     overlay image as a Nix derivation (no Docker daemon needed at boot).
+#
+#   - Add a `version` option so hosts can override the pinned version
+#     without editing the module.
+#
+#   - Add a verification step that compares the patched files against the
+#     upstream originals at build time (e.g. diff the unpatched sections)
+#     to catch drift when the version is bumped.
+#
+#   - Once PR #7170 lands upstream, remove the NixOS patches entirely
+#     and simplify to just pinned source + compose files.
 #
 # Minimal usage:
-#   imports = [ ../../modules/coolify ];
+#   imports = [ ../../modules/coolify/from-source ];
 #   services.coolify.enable = true;
 
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.services.coolify;
-  dockerfileOverlay = ./Dockerfile.overlay;
-  composeOverride   = ./docker-compose.override.yml;
-  patchPrereqs      = ./patch-prerequisites.php;
+
+  # ── Pinned Coolify source ────────────────────────────────────────────
+  version = "4.0.0-beta.468";
+  gitTag  = "v${version}";          # git uses "v" prefix, Docker does not
+
+  coolify-src = pkgs.fetchFromGitHub {
+    owner = "coollabsio";
+    repo  = "coolify";
+    rev   = gitTag;
+    hash  = "sha256-xRwNEKBLJ/YtNaboWX/5JVp5pWr1JYCxxxHYjAT1Yio=";
+  };
+
+  # ── Build derivation: compose files from source + patched PHP ────────
+  coolify-patched = pkgs.stdenv.mkDerivation {
+    name = "coolify-patched-${gitTag}";
+    src  = coolify-src;
+
+    phases = [ "unpackPhase" "installPhase" ];
+
+    installPhase = ''
+      mkdir -p $out/compose $out/patched-php
+
+      # Compose files and .env template from pinned source
+      cp docker-compose.yml       $out/compose/
+      cp docker-compose.prod.yml  $out/compose/
+      cp .env.production          $out/compose/.env.production
+
+      # Pre-patched PHP files with NixOS support
+      cp ${./patched/constants.php}            $out/patched-php/constants.php
+      cp ${./patched/InstallPrerequisites.php} $out/patched-php/InstallPrerequisites.php
+      cp ${./patched/InstallDocker.php}        $out/patched-php/InstallDocker.php
+    '';
+  };
+
+  # ── Dockerfile (generated, layers patches onto official image) ───────
+  dockerfileContent = ''
+    FROM ghcr.io/coollabsio/coolify:${version}
+
+    COPY --chown=9999:9999 constants.php \
+      /var/www/html/bootstrap/helpers/constants.php
+
+    COPY --chown=9999:9999 InstallPrerequisites.php \
+      /var/www/html/app/Actions/Server/InstallPrerequisites.php
+
+    COPY --chown=9999:9999 InstallDocker.php \
+      /var/www/html/app/Actions/Server/InstallDocker.php
+  '';
+
+  # ── Compose override (use local patched image) ──────────────────────
+  composeOverrideContent = ''
+    services:
+      coolify:
+        image: coolify-nixos:local
+  '';
+
 in {
 
   options.services.coolify = {
@@ -71,7 +145,6 @@ in {
     ];
 
     # ── One-shot first-time setup ────────────────────────────────────────
-    # Idempotent: skips any step that is already done.
     systemd.services.coolify-setup = {
       description = "Coolify first-time setup";
       after       = [ "docker.service" "network-online.target" ];
@@ -80,7 +153,7 @@ in {
         Type            = "oneshot";
         RemainAfterExit = true;
       };
-      path   = with pkgs; [ openssl docker coreutils gnused gnugrep bash openssh curl ];
+      path   = with pkgs; [ openssl docker coreutils gnused gnugrep bash openssh ];
       script = ''
         set -euo pipefail
 
@@ -98,20 +171,14 @@ in {
           chmod 600 /root/.ssh/authorized_keys
         fi
 
-        # Compose files from CDN
-        if [ ! -f "$SOURCE/docker-compose.yml" ]; then
-          curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.yml \
-            -o "$SOURCE/docker-compose.yml"
-        fi
+        # Compose files from pinned source (always overwrite to match config)
+        echo "Installing compose files from pinned source (${gitTag})..."
+        cp ${coolify-patched}/compose/docker-compose.yml     "$SOURCE/docker-compose.yml"
+        cp ${coolify-patched}/compose/docker-compose.prod.yml "$SOURCE/docker-compose.prod.yml"
 
-        if [ ! -f "$SOURCE/docker-compose.prod.yml" ]; then
-          curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.prod.yml \
-            -o "$SOURCE/docker-compose.prod.yml"
-        fi
-
+        # .env template — only copy if no .env exists yet (preserves secrets)
         if [ ! -f "$ENV_FILE" ]; then
-          curl -fsSL https://cdn.coollabs.io/coolify/.env.production \
-            -o "$ENV_FILE"
+          cp ${coolify-patched}/compose/.env.production "$ENV_FILE"
         fi
 
         # Permissions
@@ -140,17 +207,23 @@ in {
           docker network create --attachable coolify
 
         ${lib.optionalString cfg.nixosOverlay ''
-          # NixOS overlay: patch the official image with NixOS OS-detection
-          # support (upstream PR #7170 + InstallPrerequisites fix).
-          # Remove this block once Coolify ships native NixOS support.
-          echo "Installing NixOS overlay files..."
-          cp ${dockerfileOverlay} "$SOURCE/Dockerfile.overlay"
-          cp ${patchPrereqs}      "$SOURCE/patch-prerequisites.php"
-          cp ${composeOverride}   "$SOURCE/docker-compose.override.yml"
+          # Build patched image from Nix-prepared files
+          echo "Building coolify-nixos:local overlay image (${gitTag})..."
+          BUILD_DIR=$(mktemp -d)
+          cp ${coolify-patched}/patched-php/constants.php            "$BUILD_DIR/"
+          cp ${coolify-patched}/patched-php/InstallPrerequisites.php "$BUILD_DIR/"
+          cp ${coolify-patched}/patched-php/InstallDocker.php        "$BUILD_DIR/"
+          cat > "$BUILD_DIR/Dockerfile" << 'DOCKERFILE'
+        ${dockerfileContent}
+        DOCKERFILE
 
-          echo "Building coolify-nixos:local overlay image..."
-          docker build -t coolify-nixos:local \
-            -f "$SOURCE/Dockerfile.overlay" "$SOURCE"
+          docker build -t coolify-nixos:local "$BUILD_DIR"
+          rm -rf "$BUILD_DIR"
+
+          # Install compose override
+          cat > "$SOURCE/docker-compose.override.yml" << 'OVERRIDE'
+        ${composeOverrideContent}
+        OVERRIDE
         ''}
       '';
     };
@@ -192,28 +265,32 @@ in {
       path = with pkgs; [ docker docker-compose ];
     };
 
-    # ── Weekly upgrade timer ─────────────────────────────────────────────
-    # Re-downloads compose files from CDN, rebuilds the overlay if enabled,
-    # and recreates containers.
+    # ── Upgrade service ───────────────────────────────────────────────
+    # To upgrade Coolify, bump `version` and `hash` above, update the
+    # patched PHP files if needed, then `nixos-rebuild switch`.
     systemd.services.coolify-upgrade = {
-      description = "Upgrade Coolify to latest release";
+      description = "Redeploy Coolify containers";
       serviceConfig = {
         Type             = "oneshot";
         WorkingDirectory = "/data/coolify/source";
       };
-      path   = with pkgs; [ docker docker-compose curl ];
+      path   = with pkgs; [ docker docker-compose ];
       script = ''
         set -euo pipefail
         cd /data/coolify/source
 
-        curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.yml \
-          -o docker-compose.yml
-        curl -fsSL https://cdn.coollabs.io/coolify/docker-compose.prod.yml \
-          -o docker-compose.prod.yml
-
         ${lib.optionalString cfg.nixosOverlay ''
-          docker build --pull -t coolify-nixos:local \
-            -f Dockerfile.overlay .
+          # Rebuild overlay in case base image was updated
+          BUILD_DIR=$(mktemp -d)
+          cp ${coolify-patched}/patched-php/constants.php            "$BUILD_DIR/"
+          cp ${coolify-patched}/patched-php/InstallPrerequisites.php "$BUILD_DIR/"
+          cp ${coolify-patched}/patched-php/InstallDocker.php        "$BUILD_DIR/"
+          cat > "$BUILD_DIR/Dockerfile" << 'DOCKERFILE'
+        ${dockerfileContent}
+        DOCKERFILE
+
+          docker build --pull -t coolify-nixos:local "$BUILD_DIR"
+          rm -rf "$BUILD_DIR"
         ''}
 
         docker compose --env-file .env \

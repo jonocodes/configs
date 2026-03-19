@@ -243,7 +243,7 @@ in {
     ../../modules/gnome.nix
     #../../modules/kde.nix
 
-    ../../modules/coolify
+    ../../modules/coolify/from-source
 
   ];
 

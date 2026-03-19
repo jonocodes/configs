@@ -56,11 +56,6 @@ in {
   	settings.General.EnableNetworkConfiguration = true;
   };
 
-  security.sudo.extraConfig = ''
-    Defaults timestamp_timeout=60
-    Defaults timestamp_type=global
-  '';
-#   security.doas.enable = lib.mkForce false;
 
   networking.hosts = {
     "198.54.114.213" = ["rokeachphoto.com"];

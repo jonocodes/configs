@@ -46,6 +46,10 @@ in {
     #   sshKeys)
   ];
 
+  home.sessionVariables = {
+    HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  };
+
   programs.fish = {
 
     enable = true;
@@ -172,6 +176,7 @@ in {
       nmap
       iperf3
       speedtest-cli
+      sqlite
 
       lynx
       browsh
@@ -194,9 +199,15 @@ in {
       # TODO: https://github.com/thiagokokada/nix-alien
       #   other methods: https://unix.stackexchange.com/questions/522822/different-methods-to-run-a-non-nixos-executable-on-nixos
 
-    ] ++ (with pkgs; [
+      # AI tools
+      gh # home-manager programs.gh.settings does not really cover all auth I want anyway. still need to manually 'gh auth login' first time.
+      claude-code
+      opencode
+      codex
+      happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
+      ollama
 
-      # inputs.flox.packages.${pkgs.system}.default
+    ] ++ (with pkgs; [
 
     ]);
 

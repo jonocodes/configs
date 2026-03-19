@@ -8,6 +8,9 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Enable lingering for jono so happy-coder-daemon runs even when not logged in
+  users.users.jono.linger = true;
+
   users.users.backup = {
 
     # NOTE: manually test backup send from dobro

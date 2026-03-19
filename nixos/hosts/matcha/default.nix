@@ -55,6 +55,23 @@ in
     };
   };
 
+  # # Happy Coder daemon configuration
+  # services.happy-coder = {
+  #   enable = true;
+  #   user = "jono";
+  #   group = "users";
+  #   homeDir = "/home/jono/.happy-coder";
+  #   happyCommand = "/home/jono/.nix-profile/bin/happy";
+
+  #   # Optional: Add any extra arguments
+  #   # extraArgs = [ "--yolo" ];
+
+  #   # Optional: Environment variables
+  #   # environment = {
+  #   #   HAPPY_LOG_LEVEL = "debug";
+  #   # };
+  # };
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix

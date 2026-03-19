@@ -4,7 +4,50 @@ let
 
 in
 {
-  
+
+  # Enable Docker/OCI containers
+  virtualisation.oci-containers.backend = "docker";
+
+  # Tailscale serve configuration for happy-server
+  # Creates a Tailscale service at https://happy-server.wolf-typhon.ts.net
+  # Note: Service requires approval in Tailscale admin console before it becomes accessible
+  systemd.services.tailscale-serve-happy = {
+    description = "Tailscale Serve for Happy Server";
+    after = [ "tailscaled.service" "docker-happy-dev.service" ];
+    wants = [ "docker-happy-dev.service" ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service=svc:happy-server --yes --https=443 http://localhost:3005";
+      ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service=svc:happy-server reset";
+    };
+  };
+
+  # Docker container service for happy-server-light
+  virtualisation.oci-containers.containers.happy-dev = {
+    image = "node:20";
+    ports = [ "3005:3005" ];
+    volumes = [
+      "happy-data:/data"
+      "/home/jono/src/happy-server-light:/app"
+    ];
+    workdir = "/app";
+    environment = {
+      PORT = "3005";
+      DATABASE_URL = "file:/data/happy-server-light.sqlite";
+      PUBLIC_URL = "https://happy-server.wolf-typhon.ts.net";
+      HAPPY_SERVER_LIGHT_DATA_DIR = "/data";
+      HAPPY_SERVER_LIGHT_FILES_DIR = "/data/files";
+    };
+    cmd = [
+      "bash"
+      "-c"
+      "apt-get update && apt-get install -y python3 ffmpeg && yarn install --ignore-engines && yarn dev"
+    ];
+  };
+
   # expose 'http://uptime' service on tailnet. tried 88 so it would not conflict with dokploy
   # environment.etc."tailscale/serveconfig.json".text = ''
   #   {

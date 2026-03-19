@@ -9,7 +9,7 @@
 #
 # Remove this once Coolify ships native NixOS support.
 
-ARG COOLIFY_VERSION=latest
+ARG COOLIFY_IMAGE=ghcr.io/coollabsio/coolify:latest
 
 # ── Stage 1: grab patched source files from the PR branch ────────────
 FROM alpine/git:latest AS nixos-patch
@@ -18,7 +18,7 @@ RUN git clone --depth 1 -b "${NIXOS_PR_REF}" \
       https://github.com/rockofox/coolify.git /src
 
 # ── Stage 2: layer patches onto the official image ───────────────────
-FROM ghcr.io/coollabsio/coolify:${COOLIFY_VERSION}
+FROM ${COOLIFY_IMAGE}
 
 COPY --from=nixos-patch --chown=9999:9999 \
   /src/bootstrap/helpers/constants.php \

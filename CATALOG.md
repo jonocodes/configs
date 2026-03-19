@@ -35,15 +35,29 @@ network: berk (but cant run tailscale, so its being exposed via tailscale subnet
 ## Matcha
 
 description: offsite backup
-hardware: minipc x86 N100
+hardware: LIMYEE minipc
+order link: https://www.amazon.com/dp/B0D6YCNSKZ?ref=ppx_yo2ov_dt_b_fed_asin_title
 software: NixOS
+specs: Intel 12th Gen Alder Lake N100 minipc 16GB DDR5 RAM 512GB SATA3 M.2 SSD 4K Dual Display/2*HDMI/WiFi 6/BT5.2/Dual Gigabit Port
 network: berk
 
 
-## Lute    -  TODO
+## Lute
+
+description: main work station running ZFS, backups to nas and offsite
+hardware: Desktop home build workstation
+software: NixOS
+network: home
+specs: 
+	MINISFORUM AI X1 minipc, AMD Ryzen™ 7 255 Processor
+	nixos, 64gb memory
+	1tb root ssd, 2tb ssd datadrive
+order link: https://store.minisforum.com/products/minisforum-ai-x1-mini-pc?_pos=1&_fid=c90d183d3&_ss=c&variant=46484012892405
+
 
 ## Dobro
 
+status: decomissioned
 description: main work station running ZFS, backups to nas and offsite
 hardware: Desktop home build workstation
 software: NixOS
@@ -77,8 +91,22 @@ specs:
  	5Tb zfs
 
 
+## Ocraina
+
+type: router
+hardware: minipc x86
+software: NixOS
+network: home
+description: main gateway for home network
+
+specs: AOOSTAR opnsense, $189
+	AOOSTAR N-BOX Pro Intel N100 Mini PC With LPDDR5 16G RAM
+	M.2 SSD W11 PRO 2.5G LAN Full-featured Type-C Port - 16GB RAM +512G...
+	dual nics
+
 ## Opnsense
 
+state: decomissioned
 type: router
 hardware: minipc x86
 software: Opnsense

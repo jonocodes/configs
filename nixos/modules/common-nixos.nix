@@ -21,6 +21,11 @@ let inherit (inputs) self;
 
     # orc
     "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDW4SMTIQQChTCFL/SJKkOp9mejFiCih0cNjT3mirFLcuuGPiH/jlp/h6312238Piea737cgbt0c70Jt1S7F/zmsKVU9rQPk/kluOoE5jMJLoOqZeUxxRmZVYs1ebxeSoI2MHQGv+9U0YjKMCvKfQfT5IDm9sjRtcfodo81RbUOayCvc3Kq4B6iUe1A4/UbNXlHEzsbIVpn3fcgzAYynuzCkQ/rzMfNwIz8JTs4oxs4WVo0hmCyqcrpQqsXUQ8OXrIim/EQaJgQp+1Y7c7r9eMjV3HzQBWfd4sKTROcAUXgff0uW6ieArIuugOnDjE/ipxI0n1b9PQGg1b0ZkqZo2Nj ssh-key-2025-02-18"
+
+    # terra laptop
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINjLSiNwVjPaInjm1oxkb1S+ll0jxto3siYkj/KyKD2i jono@foodnotblogs.com"
+
+    # zeeba, does not have a key. should make one.
   ];          
 
 in {
@@ -57,6 +62,12 @@ in {
     enable = true;
     # dockerCompat = true;
   };
+
+  # this helps with cross term auth, needed for agents running sudo
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=60
+    Defaults timestamp_type=global
+  '';
 
   security = {
 #     doas.enable = true;
@@ -107,12 +118,6 @@ in {
 #       frequency = "daily";
 #       options = "--delete-older-than 7d";
 #     };
-
-  # this is here mostly to help LLMs run sudo commands when needed
-  security.sudo.extraConfig = ''
-    Defaults timestamp_timeout=60
-    Defaults timestamp_type=global
-  '';
 
   users.users = {
 

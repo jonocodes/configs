@@ -68,9 +68,9 @@ in {
   home.packages = with pkgs-unstable;
     [
 
-      lazydocker
+      # lazydocker
 
-      lazygit
+      # lazygit
 
       # trayscale # looks featurefull does not seem to work in kde
       # tailscale-systray # lists connected nodes, but has no toggles
@@ -87,7 +87,6 @@ in {
 
       # jetbrains.pycharm-professional
 
-      code-cursor
 
       uv # since the flox version is not working
 
@@ -96,10 +95,12 @@ in {
       vim
 
       # for AI
-      gh
-      opencode
+      # gh
+      # opencode
+      # claude-code
 
-      claude-code
+      code-cursor
+      
       nodejs
       playwright-mcp
       playwright-test
@@ -109,12 +110,7 @@ in {
 
     ] ++ (with pkgs;
       [
-
-        # TODO: waiting on https://github.com/flox/flox/issues/2811
-        # inputs.flox-master.packages.${pkgs.system}.default
-
         inputs.flox.packages.${pkgs.system}.default
-
       ]);
 
   programs.fish.shellInit = ''
