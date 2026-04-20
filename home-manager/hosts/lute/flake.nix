@@ -19,6 +19,9 @@
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    flox.url = "github:flox/flox/v1.10.0";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs = inputs: {

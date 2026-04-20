@@ -2,14 +2,15 @@
 { pkgs, pkgs-unstable, inputs, modulesPath, config, ... }:
 let
   inherit (inputs) self;
+  vars = import ../vars.nix;
 
 in {
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # Enable lingering for jono so happy-coder-daemon runs even when not logged in
-  users.users.jono.linger = true;
+  # Enable lingering for user so happy-coder-daemon runs even when not logged in
+  users.users.${vars.username}.linger = true;
 
   users.users.backup = {
 

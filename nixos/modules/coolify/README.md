@@ -16,7 +16,7 @@ services.coolify.enable = true;
 |---|---|---|
 | [from-compose](from-compose/) | Downloads compose files from CDN, runs `docker compose up`. All services in Docker. Closest to the official install. | Working (zeeba) |
 | [from-source](from-source/) | Pins source via `fetchFromGitHub`, bundles patched PHP files, still uses docker-compose. | Working (lute) |
-| [from-image](from-image/) | Native PostgreSQL/Redis, only app + realtime in Docker via `oci-containers`. | Implemented, untested |
+| [from-image](from-image/) | Native PostgreSQL/Redis, only app + realtime in Docker via `oci-containers`. | Implemented, builds (lute) |
 
 ## Background
 

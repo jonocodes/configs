@@ -25,7 +25,14 @@ let inherit (inputs) self;
     # terra laptop
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINjLSiNwVjPaInjm1oxkb1S+ll0jxto3siYkj/KyKD2i jono@foodnotblogs.com"
 
+    # matcha
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJtsvkAUNGcxjPPsm6YFN/xB+dLx5gPnns9hjc78pi4s jono@foodnotblogs.com"
+
     # zeeba, does not have a key. should make one.
+
+    # s23
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFBNtannzxb9Qr9olhfc5ekFzd+joym78f8H929AILfY jono@foodnotblogs.com"
+
   ];          
 
 in {
@@ -64,14 +71,12 @@ in {
   };
 
   # this helps with cross term auth, needed for agents running sudo
-  security.sudo.extraConfig = ''
-    Defaults timestamp_timeout=60
-    Defaults timestamp_type=global
-  '';
-
-  security = {
-#     doas.enable = true;
-    sudo.enable = true;
+  security.sudo = {
+    enable =  true;
+    extraConfig = ''
+      Defaults timestamp_timeout=60
+      Defaults timestamp_type=global
+    '';
   };
 
   # services.envfs.enable = true;

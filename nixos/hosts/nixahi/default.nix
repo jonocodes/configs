@@ -1,5 +1,7 @@
 { lib, pkgs, pkgs-unstable, inputs, modulesPath, nixos-hardware, ... }:
 let
+  vars = import ../vars.nix;
+
   # Build asahi packages against 25.05 nixpkgs to avoid LLVM/Rust incompatibilities
   pkgs-asahi = import inputs.nixpkgs-asahi {
     system = "aarch64-linux";
@@ -48,7 +50,7 @@ in {
 
   # fix service flags for syncthing 2.x (25.05 module generates 1.x-style flags)
   systemd.services.syncthing.serviceConfig.ExecStart = lib.mkForce (
-    "${pkgs-unstable.syncthing}/bin/syncthing serve --no-browser --no-restart --gui-address=0.0.0.0:8388 --config=/home/jono/sync/.config/syncthing --data=/home/jono/sync/.config/syncthing"
+    "${pkgs-unstable.syncthing}/bin/syncthing serve --no-browser --no-restart --gui-address=0.0.0.0:8388 --config=${vars.syncRoot}/.config/syncthing --data=${vars.syncRoot}/.config/syncthing"
   );
 
   networking.wireless.iwd = {

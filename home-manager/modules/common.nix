@@ -1,12 +1,12 @@
-{ pkgs, pkgs-unstable, lib, inputs, modulesPath, home-manager, ... }:
+{ pkgs, pkgs-unstable, lib, inputs, modulesPath, home-manager, hostVars, ... }:
 let
 
   syncthingIgnores = builtins.readFile ../files/syncthingIgnores.txt;
-  
+
 in {
 
-  home.username = "jono";
-  home.homeDirectory = "/home/jono";
+  home.username = hostVars.username;
+  home.homeDirectory = hostVars.homeDirectory;
 
   home.stateVersion = lib.mkDefault "25.11";
 
@@ -35,7 +35,15 @@ in {
 
       ".claude/settings.json".source = ../files/claude-settings.json;
 
+      ".config/opencode/AGENTS.md".source = ../files/AGENTS.md;
+      ".codex/AGENTS.md".source = ../files/AGENTS.md;
+      ".claude/CLAUDE.md".source = ../files/AGENTS.md;
+
       ".config/opencode/plugins/sudo-check.ts".source = ../files/opencode-sudo-check.ts;
+
+      # restores scrolling to screen command
+      ".screenrc".text = "termcapinfo xterm* ti@:te@";
+      ".tmux.conf".text = "set -g mouse on";
     }
 
     # (lib.mapAttrs'
@@ -46,9 +54,9 @@ in {
     #   sshKeys)
   ];
 
-  home.sessionVariables = {
-    HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
-  };
+  # home.sessionVariables = {
+  #   HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  # };
 
   programs.fish = {
 
@@ -61,8 +69,10 @@ in {
     shellInit = ''
       set -x EDITOR micro
 
-      set -x FLAKE_OS $HOME/sync/configs/nixos
-      set -x FLAKE_HOME $HOME/sync/configs/home-manager
+      set -x FLAKE_OS ${hostVars.configsRoot}/nixos
+      set -x FLAKE_HOME ${hostVars.configsRoot}/home-manager
+
+      set -x HAPPY_SERVER_URL "https://happy-server.wolf-typhon.ts.net"
       '';
 
     shellAbbrs = {
@@ -84,11 +94,11 @@ in {
     shellAliases = {
 
       # using impure to source secrets from the filesystem
-      i-nixos = "nh os switch $FLAKE_OS --impure";
+      i-nixos = "nh os switch --show-activation-logs $FLAKE_OS --impure";
 
       u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
 
-      i-home = "nh home switch $FLAKE_HOME";
+      i-home = "nh home switch --show-activation-logs $FLAKE_HOME";
 
       u-home = "cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
 
@@ -154,6 +164,7 @@ in {
       jq
       file
       screen
+      tmux
       gnumake
       just
       unzip
@@ -167,7 +178,7 @@ in {
       witr
 
       # editors, networking
-      htop
+      # htop
       btop
       iotop
       wget
@@ -179,18 +190,18 @@ in {
       sqlite
 
       lynx
-      browsh
+      # browsh
 
-      helix
+      # helix
       micro
 
       # nix helpers
       nvd
       # rnix-lsp
       nh
-      comma  # run uninstalled apps ie > , xeyes
-      age # for sops encryption
-      sops
+      comma  # run uninstalled apps ie > , xeyes . does not work well
+      # age # for sops encryption
+      # sops
 
       #   nix binary runner helpers
       # nix-index
@@ -206,6 +217,7 @@ in {
       codex
       happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
       ollama
+      ripgrep
 
     ] ++ (with pkgs; [
 

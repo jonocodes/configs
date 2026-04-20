@@ -37,6 +37,18 @@ in
     useRoutingFeatures = "server";
   };
 
+  # systemd.services.tailscale-serve-openclaw = {
+  #   description = "Tailscale serve for OpenClaw";
+  #   after = [ "tailscaled.service" ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     RemainAfterExit = true;
+  #     ExecStart = "${pkgs.tailscale}/bin/tailscale serve --service=svc:oc --yes --https=443 http://localhost:18999";
+  #     ExecStop = "${pkgs.tailscale}/bin/tailscale serve --service=svc:oc reset";
+  #   };
+  # };
+
   digitus.services.syncthing = {
     enable = true;
     folderDevices = {
@@ -54,23 +66,6 @@ in
 
     };
   };
-
-  # # Happy Coder daemon configuration
-  # services.happy-coder = {
-  #   enable = true;
-  #   user = "jono";
-  #   group = "users";
-  #   homeDir = "/home/jono/.happy-coder";
-  #   happyCommand = "/home/jono/.nix-profile/bin/happy";
-
-  #   # Optional: Add any extra arguments
-  #   # extraArgs = [ "--yolo" ];
-
-  #   # Optional: Environment variables
-  #   # environment = {
-  #   #   HAPPY_LOG_LEVEL = "debug";
-  #   # };
-  # };
 
   imports =
     [ # Include the results of the hardware scan.

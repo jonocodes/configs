@@ -76,17 +76,22 @@ in {
       };
 
       Service = {
-        Type = "forking";
+        Type = "simple";
         WorkingDirectory = cfg.dataDir;
 
-        ExecStart = "${cfg.package}/bin/happy daemon start ${escapeShellArgs cfg.extraArgs}";
+        ExecStart = "${cfg.package}/bin/happy daemon start-sync ${escapeShellArgs cfg.extraArgs}";
         ExecStop = "${cfg.package}/bin/happy daemon stop";
 
         Restart = "on-failure";
         RestartSec = "10s";
 
         Environment = mapAttrsToList (name: value: "${name}=${value}") cfg.environment
-          ++ [ "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${config.home.username}/bin:${config.home.homeDirectory}/.nix-profile/bin" ];
+          ++ [
+            # The CLI ignores WorkingDirectory for its state/log paths; wire the
+            # configured dataDir through the env var it actually reads.
+            "HAPPY_HOME_DIR=${cfg.dataDir}"
+            "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${config.home.username}/bin:${config.home.homeDirectory}/.nix-profile/bin"
+          ];
 
         LimitNOFILE = "65536";
 

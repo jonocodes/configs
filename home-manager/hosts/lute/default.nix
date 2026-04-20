@@ -2,6 +2,17 @@
 let
   inherit (inputs) self;
 
+    # node wrapper with playwright available via NODE_PATH and browsers pre-configured
+  playwright-node = pkgs-unstable.writeShellScriptBin "playwright-node" ''
+    export PLAYWRIGHT_BROWSERS_PATH="${pkgs-unstable.playwright-driver.browsers}"
+    export NODE_PATH="${pkgs-unstable.playwright-test}/lib/node_modules''${NODE_PATH:+:$NODE_PATH}"
+    exec ${pkgs-unstable.nodejs}/bin/node "$@"
+  '';
+
+
+  coolify-cli = pkgs.callPackage ../../packages/coolify-cli {};
+  limux = pkgs.callPackage ../../packages/limux {};
+
 in {
 
     fonts.fontconfig.enable = false;
@@ -12,6 +23,8 @@ in {
     # apps specific to this host
     home.packages = with pkgs-unstable;
       [
+        coolify-cli
+        limux
 
     		killall
         hunspellDicts.en_US
@@ -64,14 +77,14 @@ in {
         # happy-coder
 
         # claude-code
-        # nodejs
+        nodejs
         playwright-mcp
         playwright-test
-        # playwright-node
+        playwright-node
 
       ] ++ (with pkgs;
         [
-          # inputs.llm-agents.packages.${pkgs.system}.ccusage
+          inputs.llm-agents.packages.${pkgs.system}.ccusage
 
           # temp moved here because of cmake error. https://github.com/NixOS/nixpkgs/issues/445447
           rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://github.com/nix-community/home-manager/pull/6101
@@ -80,17 +93,26 @@ in {
 
           vscode
 
-          # inputs.flox.packages.${pkgs.system}.default
+          inputs.flox.packages.${pkgs.system}.default
 
         ]);
 
-  services.happy-coder-daemon = {
-    enable = true;
+  # services.happy-coder-daemon = {
+  #   enable = true;
 
-    environment = {
-      HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
-      # HAPPY_LOG_LEVEL = "info";
-    };
+  #   environment = {
+  #     HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  #     # HAPPY_LOG_LEVEL = "info";
+  #   };
+  # };
+
+  programs.fish.shellInit = ''
+    set -gx PLAYWRIGHT_BROWSERS_PATH "${pkgs-unstable.playwright-driver.browsers}"
+    # set -gx PLAYWRIGHT_BROWSERS_PATH_1541 "..."  # moved to flox
+  '';
+
+  home.sessionVariables = {
+    HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
   };
 
   imports = [

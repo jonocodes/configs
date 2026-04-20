@@ -54,6 +54,8 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, lute-flake, ... }@inputs:
     let
+      # Import shared user/host vars
+      hostVars = import ./hosts/vars.nix;
 
       mkHome = hostName: system: home-manager.lib.homeManagerConfiguration {
 
@@ -70,6 +72,7 @@
           };
 
           inherit inputs;
+          inherit hostVars;
         };
 
         modules = [
@@ -106,12 +109,17 @@
               ];
             }] else []);
         in
-        hostInputs.home-manager.lib.homeManagerConfiguration {
-
-          pkgs = import hostInputs.nixpkgs {
+        let
+          basePkgs = import hostInputs.nixpkgs {
             inherit system;
             config.allowUnfree = true;
           };
+          openclawOverlay = if hostInputs ? openclaw then hostInputs.openclaw.overlays.default else (_: _: { });
+          pkgs = basePkgs.extend(openclawOverlay);
+        in
+        hostInputs.home-manager.lib.homeManagerConfiguration {
+
+          inherit pkgs;
 
           extraSpecialArgs = {
 
@@ -121,6 +129,9 @@
             };
 
             inputs = hostInputs;
+            inherit hostVars;
+
+            openclaw = if hostInputs ? openclaw then hostInputs.openclaw else null;
           };
 
           modules = [
@@ -141,10 +152,12 @@
         "jono@orc" = mkHome "orc" "aarch64-linux";
         "jono@imbp" = mkHome "imbp" "x86_64-linux";
         "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
-        "jono@matcha" = mkHomeWithFlake "matcha" "x86_64-linux" matcha-flake;
         "jono@plex" = mkHome "plex" "x86_64-linux";
-        "jono@lute" = mkHomeWithFlake "lute" "x86_64-linux" lute-flake;
         "jono@ocarina" = mkHome "ocarina" "x86_64-linux";
+
+        # migrated hosts
+        "jono@lute" = mkHomeWithFlake "lute" "x86_64-linux" lute-flake;
+        "jono@matcha" = mkHomeWithFlake "matcha" "x86_64-linux" matcha-flake;
       };
 
     };

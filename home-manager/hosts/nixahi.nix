@@ -1,7 +1,8 @@
-{ pkgs, pkgs-unstable, inputs, nix-flatpak, home-manager-master, ... }:
+{ pkgs, pkgs-unstable, inputs, nix-flatpak, home-manager-master, hostVars, ... }:
 let
 
-  syncRoot = "/home/jono/syncHome";
+  # nixahi uses a non-standard sync location
+  syncRoot = "${hostVars.homeDirectory}/syncHome";
 
   coolify-cli = pkgs.callPackage ../packages/coolify-cli {};
 

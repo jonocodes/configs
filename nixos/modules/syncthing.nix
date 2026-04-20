@@ -4,6 +4,7 @@ with lib;
 
 let
   cfg = config.digitus.services.syncthing;
+  vars = import ../hosts/vars.nix;
 
   # TODO: Fix versioning. it is not creating any files right now.
 
@@ -11,7 +12,7 @@ let
 
   # NOTE: if there are sync issues, they can often be resolved like so> /nix/store/gij0yzbyi9d64rh4f62386fqd3x4nl8g-syncthing-1.28.0/bin/syncthing --reset-database
 
-  syncRoot = "/home/jono/sync";
+  syncRoot = vars.syncRoot;
 
   deviceMap = {
 
@@ -154,7 +155,7 @@ in {
   config = mkIf cfg.enable {
     services.syncthing = {
       enable = true;    # TODO: this should not be hard coded
-      user = "jono";
+      user = vars.username;
       dataDir = syncRoot;
       configDir = "${syncRoot}/.config/syncthing";
       overrideDevices = true;

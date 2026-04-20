@@ -15,33 +15,41 @@
 #     pusher.appSecretFile = "/run/secrets/coolify-pusher-secret";
 #   };
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.services.coolify;
 
   # Docker image reference: use digest if pinned, otherwise "latest"
-  imageRef = if cfg.imageDigest != null
-    then "ghcr.io/coollabsio/coolify@${cfg.imageDigest}"
-    else "ghcr.io/coollabsio/coolify:latest";
+  imageRef =
+    if cfg.imageDigest != null then
+      "ghcr.io/coollabsio/coolify@${cfg.imageDigest}"
+    else
+      "ghcr.io/coollabsio/coolify:latest";
 
   # Build context for the patched Docker image
-  patchContext = pkgs.runCommand "coolify-patch-context" {} ''
+  patchContext = pkgs.runCommand "coolify-patch-context" { } ''
     mkdir -p $out
     cp ${./Dockerfile.overlay} $out/Dockerfile
     cp ${./patch-prerequisites.php} $out/patch-prerequisites.php
   '';
 
-in {
+in
+{
 
   options.services.coolify = {
 
     enable = lib.mkEnableOption "Coolify PaaS (v4.x)";
 
     imageDigest = lib.mkOption {
-      type        = lib.types.nullOr lib.types.str;
-      default     = null;
-      example     = "sha256:5ac58c4f2aed0fa6e9c093947303d266babfcaf18cac1b6c6d671d1093b38c33";
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "sha256:5ac58c4f2aed0fa6e9c093947303d266babfcaf18cac1b6c6d671d1093b38c33";
       description = ''
         Pin the Coolify Docker image by digest for reproducibility.
         When null (default), uses the "latest" tag.
@@ -50,8 +58,8 @@ in {
     };
 
     nixosOverlay = lib.mkOption {
-      type        = lib.types.bool;
-      default     = true;
+      type = lib.types.bool;
+      default = true;
       description = ''
         Build and use a patched Coolify image that adds NixOS OS-detection
         support (upstream PR #7170). Set to false once Coolify ships native
@@ -60,40 +68,40 @@ in {
     };
 
     port = lib.mkOption {
-      type        = lib.types.port;
-      default     = 8000;
+      type = lib.types.port;
+      default = 8000;
       description = "Host port for the Coolify web UI.";
     };
 
     soketiPort = lib.mkOption {
-      type        = lib.types.port;
-      default     = 6001;
+      type = lib.types.port;
+      default = 6001;
       description = "Host port for the Soketi WebSocket server.";
     };
 
     terminalPort = lib.mkOption {
-      type        = lib.types.port;
-      default     = 6002;
+      type = lib.types.port;
+      default = 6002;
       description = "Host port for the terminal WebSocket server.";
     };
 
     realtimeVersion = lib.mkOption {
-      type        = lib.types.str;
-      default     = "1.0.11";
+      type = lib.types.str;
+      default = "1.0.11";
       description = "Version tag for the coolify-realtime Docker image.";
     };
 
     dataDir = lib.mkOption {
-      type        = lib.types.str;
-      default     = "/data/coolify";
+      type = lib.types.str;
+      default = "/data/coolify";
       description = "Base directory for Coolify persistent data.";
     };
 
     # ── Secrets ──────────────────────────────────────────────────────────
 
     appKeyFile = lib.mkOption {
-      type        = lib.types.nullOr lib.types.path;
-      default     = null;
+      type = lib.types.nullOr lib.types.path;
+      default = null;
       description = ''
         Path to a file containing the Laravel APP_KEY (e.g. "base64:...").
         If null, a key will be auto-generated on first setup.
@@ -102,18 +110,18 @@ in {
 
     pusher = {
       appId = lib.mkOption {
-        type    = lib.types.str;
+        type = lib.types.str;
         default = "coolify";
         description = "Pusher/Soketi app ID.";
       };
       appKeyFile = lib.mkOption {
-        type        = lib.types.nullOr lib.types.path;
-        default     = null;
+        type = lib.types.nullOr lib.types.path;
+        default = null;
         description = "Path to a file containing the Pusher app key. Auto-generated if null.";
       };
       appSecretFile = lib.mkOption {
-        type        = lib.types.nullOr lib.types.path;
-        default     = null;
+        type = lib.types.nullOr lib.types.path;
+        default = null;
         description = "Path to a file containing the Pusher app secret. Auto-generated if null.";
       };
     };
@@ -122,33 +130,33 @@ in {
 
     database = {
       createLocally = lib.mkOption {
-        type        = lib.types.bool;
-        default     = true;
+        type = lib.types.bool;
+        default = true;
         description = "Whether to provision a local PostgreSQL database.";
       };
       host = lib.mkOption {
-        type        = lib.types.str;
-        default     = "host.docker.internal";
+        type = lib.types.str;
+        default = "host.docker.internal";
         description = "PostgreSQL host. Only used when createLocally is false.";
       };
       port = lib.mkOption {
-        type        = lib.types.port;
-        default     = 5432;
+        type = lib.types.port;
+        default = 5432;
         description = "PostgreSQL port.";
       };
       name = lib.mkOption {
-        type        = lib.types.str;
-        default     = "coolify";
+        type = lib.types.str;
+        default = "coolify";
         description = "Database name.";
       };
       username = lib.mkOption {
-        type        = lib.types.str;
-        default     = "coolify";
+        type = lib.types.str;
+        default = "coolify";
         description = "Database username.";
       };
       passwordFile = lib.mkOption {
-        type        = lib.types.nullOr lib.types.path;
-        default     = null;
+        type = lib.types.nullOr lib.types.path;
+        default = null;
         description = "Path to a file containing the database password. Auto-generated if null.";
       };
     };
@@ -157,23 +165,23 @@ in {
 
     redis = {
       createLocally = lib.mkOption {
-        type        = lib.types.bool;
-        default     = true;
+        type = lib.types.bool;
+        default = true;
         description = "Whether to provision a local Redis instance.";
       };
       host = lib.mkOption {
-        type        = lib.types.str;
-        default     = "host.docker.internal";
+        type = lib.types.str;
+        default = "host.docker.internal";
         description = "Redis host. Only used when createLocally is false.";
       };
       port = lib.mkOption {
-        type        = lib.types.port;
-        default     = 6379;
+        type = lib.types.port;
+        default = 6379;
         description = "Redis port.";
       };
       passwordFile = lib.mkOption {
-        type        = lib.types.nullOr lib.types.path;
-        default     = null;
+        type = lib.types.nullOr lib.types.path;
+        default = null;
         description = "Path to a file containing the Redis password. Auto-generated if null.";
       };
     };
@@ -181,7 +189,7 @@ in {
     # ── PHP tuning ───────────────────────────────────────────────────────
 
     phpMemoryLimit = lib.mkOption {
-      type    = lib.types.str;
+      type = lib.types.str;
       default = "256M";
       description = "PHP memory limit.";
     };
@@ -189,8 +197,8 @@ in {
     # ── Firewall ─────────────────────────────────────────────────────────
 
     openFirewall = lib.mkOption {
-      type        = lib.types.bool;
-      default     = false;
+      type = lib.types.bool;
+      default = false;
       description = "Open firewall ports for Coolify (app, soketi, terminal).";
     };
 
@@ -220,10 +228,12 @@ in {
       enable = true;
       package = pkgs.postgresql_15;
       ensureDatabases = [ cfg.database.name ];
-      ensureUsers = [{
-        name = cfg.database.username;
-        ensureDBOwnership = true;
-      }];
+      ensureUsers = [
+        {
+          name = cfg.database.username;
+          ensureDBOwnership = true;
+        }
+      ];
       settings = {
         listen_addresses = lib.mkDefault "127.0.0.1,172.17.0.1";
       };
@@ -236,26 +246,40 @@ in {
     # ── Redis (local) ──────────────────────────────────────────────────
     services.redis.servers.coolify = lib.mkIf cfg.redis.createLocally {
       enable = true;
-      port   = cfg.redis.port;
-      bind   = "127.0.0.1 172.17.0.1";
+      port = cfg.redis.port;
+      bind = "127.0.0.1 172.17.0.1";
       settings = {
-        save     = "20 1";
-        loglevel = "warning";
+        save = lib.mkForce "20 1";
+        loglevel = lib.mkDefault "warning";
       };
     };
 
     # ── First-time setup + secrets generation ──────────────────────────
     systemd.services.coolify-setup = {
       description = "Coolify first-time setup";
-      after  = [ "docker.service" "network-online.target" ]
-               ++ lib.optional cfg.database.createLocally "postgresql.service"
-               ++ lib.optional cfg.redis.createLocally "redis-coolify.service";
-      wants  = [ "docker.service" "network-online.target" ];
+      after = [
+        "docker.service"
+        "network-online.target"
+      ]
+      ++ lib.optional cfg.database.createLocally "postgresql.service"
+      ++ lib.optional cfg.redis.createLocally "redis-coolify.service";
+      wants = [
+        "docker.service"
+        "network-online.target"
+      ];
       serviceConfig = {
-        Type            = "oneshot";
+        Type = "oneshot";
         RemainAfterExit = true;
       };
-      path = with pkgs; [ openssl docker coreutils gnused gnugrep bash openssh ];
+      path = with pkgs; [
+        openssl
+        docker
+        coreutils
+        gnused
+        gnugrep
+        bash
+        openssh
+      ];
       script = ''
         set -euo pipefail
 
@@ -305,18 +329,24 @@ in {
 
         # Set DB password for local PostgreSQL user if we manage it
         ${lib.optionalString cfg.database.createLocally ''
-          DB_PASS=$(cat ${if cfg.database.passwordFile != null
-            then toString cfg.database.passwordFile
-            else "/run/coolify/db-password"})
+          DB_PASS=$(cat ${
+            if cfg.database.passwordFile != null then
+              toString cfg.database.passwordFile
+            else
+              "/run/coolify/db-password"
+          })
           ${pkgs.sudo}/bin/sudo -u postgres ${config.services.postgresql.package}/bin/psql \
             -c "ALTER USER ${cfg.database.username} WITH PASSWORD '$DB_PASS';" || true
         ''}
 
         # Set Redis password if we manage it
         ${lib.optionalString cfg.redis.createLocally ''
-          REDIS_PASS=$(cat ${if cfg.redis.passwordFile != null
-            then toString cfg.redis.passwordFile
-            else "/run/coolify/redis-password"})
+          REDIS_PASS=$(cat ${
+            if cfg.redis.passwordFile != null then
+              toString cfg.redis.passwordFile
+            else
+              "/run/coolify/redis-password"
+          })
           ${pkgs.redis}/bin/redis-cli -p ${toString cfg.redis.port} \
             CONFIG SET requirepass "$REDIS_PASS" || true
           ${pkgs.redis}/bin/redis-cli -p ${toString cfg.redis.port} \
@@ -328,21 +358,28 @@ in {
           docker network create --attachable coolify
 
         # Build .env file for the container
-        APP_KEY=$(cat ${if cfg.appKeyFile != null
-          then toString cfg.appKeyFile
-          else "/run/coolify/app-key"})
-        DB_PASS=$(cat ${if cfg.database.passwordFile != null
-          then toString cfg.database.passwordFile
-          else "/run/coolify/db-password"})
-        REDIS_PASS=$(cat ${if cfg.redis.passwordFile != null
-          then toString cfg.redis.passwordFile
-          else "/run/coolify/redis-password"})
-        PUSHER_KEY=$(cat ${if cfg.pusher.appKeyFile != null
-          then toString cfg.pusher.appKeyFile
-          else "/run/coolify/pusher-key"})
-        PUSHER_SECRET=$(cat ${if cfg.pusher.appSecretFile != null
-          then toString cfg.pusher.appSecretFile
-          else "/run/coolify/pusher-secret"})
+        APP_KEY=$(cat ${if cfg.appKeyFile != null then toString cfg.appKeyFile else "/run/coolify/app-key"})
+        DB_PASS=$(cat ${
+          if cfg.database.passwordFile != null then
+            toString cfg.database.passwordFile
+          else
+            "/run/coolify/db-password"
+        })
+        REDIS_PASS=$(cat ${
+          if cfg.redis.passwordFile != null then
+            toString cfg.redis.passwordFile
+          else
+            "/run/coolify/redis-password"
+        })
+        PUSHER_KEY=$(cat ${
+          if cfg.pusher.appKeyFile != null then toString cfg.pusher.appKeyFile else "/run/coolify/pusher-key"
+        })
+        PUSHER_SECRET=$(cat ${
+          if cfg.pusher.appSecretFile != null then
+            toString cfg.pusher.appSecretFile
+          else
+            "/run/coolify/pusher-secret"
+        })
 
         cat > "${cfg.dataDir}/source/.env" << EOF
         APP_NAME=Coolify
@@ -389,11 +426,17 @@ in {
     # ── Build patched image ────────────────────────────────────────────
     systemd.services.coolify-build = lib.mkIf cfg.nixosOverlay {
       description = "Build patched Coolify Docker image";
-      after    = [ "docker.service" "coolify-setup.service" ];
-      requires = [ "docker.service" "coolify-setup.service" ];
-      before   = [ "docker-coolify.service" ];
+      after = [
+        "docker.service"
+        "coolify-setup.service"
+      ];
+      requires = [
+        "docker.service"
+        "coolify-setup.service"
+      ];
+      before = [ "docker-coolify.service" ];
       serviceConfig = {
-        Type            = "oneshot";
+        Type = "oneshot";
         RemainAfterExit = true;
       };
       path = [ pkgs.docker ];
@@ -408,11 +451,14 @@ in {
     # ── Docker network ─────────────────────────────────────────────────
     systemd.services.coolify-network = {
       description = "Create Coolify Docker network";
-      after    = [ "docker.service" ];
+      after = [ "docker.service" ];
       requires = [ "docker.service" ];
-      before   = [ "docker-coolify.service" "docker-coolify-realtime.service" ];
+      before = [
+        "docker-coolify.service"
+        "docker-coolify-realtime.service"
+      ];
       serviceConfig = {
-        Type            = "oneshot";
+        Type = "oneshot";
         RemainAfterExit = true;
       };
       path = [ pkgs.docker ];
@@ -449,12 +495,18 @@ in {
 
     # Wire up service dependencies
     systemd.services.docker-coolify = {
-      after    = [ "coolify-setup.service" "coolify-network.service" ]
-                 ++ lib.optional cfg.nixosOverlay "coolify-build.service"
-                 ++ lib.optional cfg.database.createLocally "postgresql.service"
-                 ++ lib.optional cfg.redis.createLocally "redis-coolify.service";
-      requires = [ "coolify-setup.service" "coolify-network.service" ]
-                 ++ lib.optional cfg.nixosOverlay "coolify-build.service";
+      after = [
+        "coolify-setup.service"
+        "coolify-network.service"
+      ]
+      ++ lib.optional cfg.nixosOverlay "coolify-build.service"
+      ++ lib.optional cfg.database.createLocally "postgresql.service"
+      ++ lib.optional cfg.redis.createLocally "redis-coolify.service";
+      requires = [
+        "coolify-setup.service"
+        "coolify-network.service"
+      ]
+      ++ lib.optional cfg.nixosOverlay "coolify-build.service";
     };
 
     # ── Coolify realtime container ─────────────────────────────────────
@@ -477,15 +529,25 @@ in {
     };
 
     systemd.services.docker-coolify-realtime = {
-      after    = [ "coolify-setup.service" "coolify-network.service" ];
-      requires = [ "coolify-setup.service" "coolify-network.service" ];
+      after = [
+        "coolify-setup.service"
+        "coolify-network.service"
+      ];
+      requires = [
+        "coolify-setup.service"
+        "coolify-network.service"
+      ];
     };
 
     # ── Firewall (opt-in) ──────────────────────────────────────────────
-    networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall
-      [ cfg.port cfg.soketiPort cfg.terminalPort 80 443 ];
-    networking.firewall.allowedUDPPorts = lib.mkIf cfg.openFirewall
-      [ 443 ];
+    networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
+      cfg.port
+      cfg.soketiPort
+      cfg.terminalPort
+      80
+      443
+    ];
+    networking.firewall.allowedUDPPorts = lib.mkIf cfg.openFirewall [ 443 ];
 
   };
 }

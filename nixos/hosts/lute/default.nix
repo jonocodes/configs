@@ -58,7 +58,7 @@ in {
   services.duplicati = {
     # run as user to read home dir
     enable = true;
-    user = "jono";
+    user = vars.username;
   };
 
   # local nas
@@ -85,7 +85,7 @@ in {
     };
 
     "/media/matcha_home" = {
-      device = "jono@matcha:/home/jono";
+      device = "${vars.username}@matcha:${vars.homeDirectory}";
       fsType = "fuse.sshfs";
       options = [
         "reconnect"
@@ -146,6 +146,28 @@ in {
 
     };
   };
+
+  services.code-server = {
+    enable = true;
+    user = vars.username;
+    host = "0.0.0.0";
+    port = 4444;
+    auth = "none";
+    extraArguments = [
+      "--disable-telemetry"
+      "${vars.homeDirectory}/src"
+    ];
+    extraEnvironment = {
+      HOME = vars.homeDirectory;
+    };
+  };
+
+  systemd.services.code-server.preStart = ''
+    ${pkgs.code-server}/bin/code-server --install-extension bbenoist.nix
+  '';
+
+  # open firewall for code-server
+  networking.firewall.allowedTCPPorts = [ 4444 ];
 
   services = {
 
@@ -247,9 +269,16 @@ in {
 
   ];
 
-  services.coolify = {
-    enable = true;
-    openFirewall = true;
-  };
+  # turning this off for now since I need to use port 3000 . I never fully checked that this is working anyway
+  # services.coolify = {
+  #   enable = true;
+  #   openFirewall = true;
+  # };
+
+  # services.ntfy-sh = {
+  #   enable = true;
+  #   settings.base-url = "htt8888888888888888888888888888888p://lute:2586";
+  #   settings.listen-http = ":2586";
+  # };
 
 }

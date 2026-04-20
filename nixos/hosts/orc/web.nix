@@ -1,6 +1,7 @@
 { pkgs, config, ... }:
 
 let
+  vars = import ../vars.nix;
 
 in
 {
@@ -31,7 +32,7 @@ in
     ports = [ "3005:3005" ];
     volumes = [
       "happy-data:/data"
-      "/home/jono/src/happy-server-light:/app"
+      "${vars.homeDirectory}/src/happy-server-light:/app"
     ];
     workdir = "/app";
     environment = {

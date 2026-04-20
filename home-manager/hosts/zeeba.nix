@@ -27,18 +27,18 @@ in {
 
   # Happy Coder daemon - runs as user service
   # Server config: runs 24/7 for remote Claude Code sessions
-  services.happy-coder-daemon = {
-    enable = true;
+  # services.happy-coder-daemon = {
+  #   enable = true;
 
-    extraArgs = [
-      "--yolo"
-    ];
+  #   extraArgs = [
+  #     "--yolo"
+  #   ];
 
-    environment = {
-      HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
-      # HAPPY_LOG_LEVEL = "info";
-    };
-  };
+  #   environment = {
+  #     HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  #     # HAPPY_LOG_LEVEL = "info";
+  #   };
+  # };
 
   imports = [
     ../modules/common.nix

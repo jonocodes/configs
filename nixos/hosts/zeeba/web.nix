@@ -1,6 +1,26 @@
 { pkgs, config, ... }:
 
 let
+  armadiettoConf = pkgs.writeText "armadietto-conf.json" (builtins.toJSON {
+    allow_signup = false;
+    storage_path = "/usr/share/armadietto";
+    cache_views = true;
+    http = {
+      host = "0.0.0.0";
+      port = 8000;
+    };
+    https = {
+      enable = false;
+      force = false;
+    };
+    logging = {
+      log_dir = "logs";
+      stdout = [ "info" ];
+      log_files = [ "error" ];
+    };
+    basePath = "";
+  });
+
   # Reusable PHP site configuration
   rokeachphotoPhp = ''
     root * /srv/rokeachphoto
@@ -60,6 +80,16 @@ in
         };
         # name = "triplit-server";
         volumes = [ "/run/sfcarpool:/data" ];
+      };
+
+      armadietto = {
+        image = "remotestorage/armadietto-monolithic";
+        ports = [ "8010:8000" ];
+        extraOptions = [ "--user=root" ];
+        volumes = [
+          "${armadiettoConf}:/etc/armadietto/conf.json:ro"
+          "/dpool/armadietto:/usr/share/armadietto"
+        ];
       };
 
     };
@@ -442,6 +472,11 @@ in
         }
       '';
 
+
+      virtualHosts."hop.dgt.is".extraConfig = ''
+        reverse_proxy localhost:82
+      '';
+
       # Coolify preview deployments - wildcard for dev and PR branches
 
       # virtualHosts."preview.savr.link".extraConfig = ''
@@ -514,6 +549,15 @@ in
         }
       '';
 
+      # remoteStorage server — tailscale-internal HTTP only (no TLS)
+      # Access at http://zeeba:8010 or http://<tailnet-ip>:8010
+      # To add a clean URL via Caddy + tailscale cert, uncomment and run:
+      #   tailscale cert zeeba.wolf-typhon.ts.net
+      # virtualHosts."zeeba.wolf-typhon.ts.net".extraConfig = ''
+      #   tls /run/secrets/tailscale-cert.pem /run/secrets/tailscale-key.pem
+      #   reverse_proxy localhost:8010
+      # '';
+
       virtualHosts."rokeachphoto.dgt.is".extraConfig = rokeachphotoPhp;
       virtualHosts."dgt.rokeachphoto.com".extraConfig = rokeachphotoPhp;
     };
@@ -566,6 +610,26 @@ in
   environment.systemPackages = with pkgs; [
     php83
     php83Packages.composer
+    (pkgs.writeShellScriptBin "armadietto-adduser" ''
+      set -euo pipefail
+      if [ $# -ne 3 ]; then
+        echo "Usage: armadietto-adduser <username> <email> <password>" >&2
+        exit 1
+      fi
+      USERNAME="$1" EMAIL="$2" PASSWORD="$3"
+      docker exec \
+        --user root \
+        -e RS_USERNAME="$USERNAME" \
+        -e RS_EMAIL="$EMAIL" \
+        -e RS_PASSWORD="$PASSWORD" \
+        armadietto node -e "
+          const A = require('/opt/armadietto/lib/armadietto');
+          const store = new A.FileTree({ path: '/usr/share/armadietto' });
+          store.createUser({ username: process.env.RS_USERNAME, email: process.env.RS_EMAIL, password: process.env.RS_PASSWORD })
+            .then(() => console.log('Created user: ' + process.env.RS_USERNAME))
+            .catch(e => { console.error(e.message); process.exit(1); });
+        "
+    '')
   ];
 
   # Pass deSEC API token to Caddy for DNS-01 challenge

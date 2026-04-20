@@ -38,6 +38,7 @@ in {
     [
     ] ++ (with pkgs; [
      vscode  # TODO: add back
+     graphite-cli
     ]);
 
 
@@ -56,6 +57,11 @@ in {
 
   # tell flatpak? user services to start when enabled. needed by home manager
   systemd.user.startServices = "sd-switch";
+
+  # Add nix-profile share to XDG_DATA_DIRS so GNOME can find desktop files
+  home.sessionVariables = {
+    XDG_DATA_DIRS = "$HOME/.nix-profile/share:$XDG_DATA_DIRS";
+  };
 
   # This may actually not be used as the global service may handle it??
   services.flatpak = {

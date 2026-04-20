@@ -35,14 +35,14 @@ in {
     PRISMA_SCHEMA_ENGINE_BINARY = "${pkgs.prisma-engines}/bin/schema-engine";
   };
 
-  services.happy-coder-daemon = {
-    enable = true;
+  # services.happy-coder-daemon = {
+  #   enable = true;
 
-    environment = {
-      HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
-      # HAPPY_LOG_LEVEL = "info";
-    };
-  };
+  #   environment = {
+  #     HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  #     # HAPPY_LOG_LEVEL = "info";
+  #   };
+  # };
 
   imports = [
     ../modules/common.nix

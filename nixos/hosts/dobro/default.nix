@@ -79,12 +79,12 @@ in {
   services.duplicati = {
     # run as user to read home dir
     enable = true;
-    user = "jono";
+    user = vars.username;
   };
 
   # encrypted data drive. aka /dev/disks/by-id/ata-WDC_WD20EZRX-00D8PB0_WD-WCC4N1390887-part1
   # environment.etc.crypttab.text =
-  #   "datadrive UUID=a8271935-0b31-44a6-8ed8-5627626ea945 /home/jono/sync/configs/nix/hosts/dobro/files/secondary-hd.keyfile luks";
+  #   "datadrive UUID=a8271935-0b31-44a6-8ed8-5627626ea945 /home/jono/sync/configs/archive/hosts/dobro/files/secondary-hd.keyfile luks";
 
   # local nas
   fileSystems = {
@@ -110,7 +110,7 @@ in {
     };
 
     "/media/matcha_home" = {
-      device = "jono@matcha:/home/jono";
+      device = "${vars.username}@matcha:${vars.homeDirectory}";
       fsType = "fuse.sshfs";
       options = [
         "reconnect"
@@ -193,7 +193,7 @@ in {
 
       # I think there is some permissions issue with the identity file, so this may not be working
 
-      user = "jono";
+      user = vars.username;
       sshKey = "${jonoHome}/.ssh/id_ed25519";
       commands = {
         "backup-thunderbird" = {

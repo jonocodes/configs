@@ -8,7 +8,7 @@ in {
   hardware.sane.enable = true;
   hardware.graphics.enable = true;
 
-#   programs.nix-ld.enable = true; # for remote vscode. dont know if this works yet
+  programs.nix-ld.enable = true; # the only thing I know using this is wrangler for cloudflare dev
 
   services.xserver = { enable = true; };
 

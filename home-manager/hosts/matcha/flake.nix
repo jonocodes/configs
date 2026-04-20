@@ -19,6 +19,9 @@
 
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
+
+    openclaw.url = "github:openclaw/nix-openclaw";
+    openclaw.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = inputs: {
