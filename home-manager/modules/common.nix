@@ -33,9 +33,34 @@ in {
         source = ../files/claude-sudo-check.sh;
       };
 
-      ".claude/settings.json".source = ../files/claude-settings.json;
+      # MCP servers config - claude reads this from home directory.
+      # Note: mcpServers in ~/.claude/settings.json is NOT read by claude for MCP;
+      # it must live here in ~/.mcp.json (user-level) or .mcp.json (project-level).
+      ".mcp.json".text = builtins.toJSON {
+        mcpServers = {
+          playwright = {
+            command = "npx";
+            args = [ "-y" "@playwright/mcp@latest" ];
+          };
+          # TODO: telegram MCP via npx does not work - it is an external plugin requiring bun.
+          # The proper flow is: claude plugin install telegram@claude-plugins-official
+          # then: claude --channels plugin:telegram@claude-plugins-official
+          # But --channels requires the plugin to be registered in settings.json (writable).
+          # We tried programs.claude-code.mcpServers - generates a file but claude ignores it.
+          # We tried programs.claude-code.settings - works but makes settings.json read-only,
+          #   blocking `claude plugin install`. Workaround: home.activation to seed a writable
+          #   settings.json, then manually run `claude plugin install telegram@...` once.
+          #   Even after that, `--channels` loads the plugin but it doesn't actually connect.
+          # Leaving telegram out for now.
+          # telegram = {
+          #   command = "npx";
+          #   args = [ "-y" "telegram@claude-plugins-official" ];
+          # };
+        };
+      };
 
       ".config/opencode/AGENTS.md".source = ../files/AGENTS.md;
+
       ".codex/AGENTS.md".source = ../files/AGENTS.md;
       ".claude/CLAUDE.md".source = ../files/AGENTS.md;
 
@@ -107,6 +132,7 @@ in {
       u = lib.mkDefault "u-home && u-nixos";
 
       cl = "sudo -v && claude --dangerously-skip-permissions";
+      clt = "sudo -v && claude --dangerously-skip-permissions --plugin-dir ~/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/telegram";
       fa = "flox activate";
     };
   };
@@ -213,6 +239,8 @@ in {
       # AI tools
       gh # home-manager programs.gh.settings does not really cover all auth I want anyway. still need to manually 'gh auth login' first time.
       claude-code
+      nodejs # needed for npx (used by claude mcp servers)
+      # bun # needed for claude telegram plugin - disabled while telegram integration is shelved
       opencode
       codex
       happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
@@ -222,5 +250,36 @@ in {
     ] ++ (with pkgs; [
 
     ]);
+
+  # Seed claude settings.json as a writable file so plugins can modify it.
+  # Only writes if the file doesn't already exist (preserving plugin-installed state).
+  home.activation.claudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    settings_file="$HOME/.claude/settings.json"
+    if [ ! -f "$settings_file" ] || [ -L "$settings_file" ]; then
+      rm -f "$settings_file"
+      mkdir -p "$(dirname "$settings_file")"
+      cat > "$settings_file" << 'SETTINGS_EOF'
+{
+  "skipDangerousModePermissionPrompt": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/sudo-check.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "web_fetch": {
+    "allowed_domains": ["*"]
+  }
+}
+SETTINGS_EOF
+    fi
+  '';
 
 }

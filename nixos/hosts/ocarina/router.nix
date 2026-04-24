@@ -100,6 +100,8 @@
         "/*.todo.stashcast.net/192.168.30.114"
         "/hubsnub.dgt.is/192.168.30.114"
         "/hop.dgt.is/192.168.30.114"
+        "/loam.dgt.is/192.168.30.114"
+        "/garden.dgt.is/192.168.30.114"
       ];
 
       log-queries = true;

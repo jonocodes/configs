@@ -477,6 +477,14 @@ in
         reverse_proxy localhost:82
       '';
 
+      virtualHosts."loam.dgt.is".extraConfig = ''
+        reverse_proxy localhost:82
+      '';
+
+      virtualHosts."garden.dgt.is".extraConfig = ''
+        redir https://loam.dgt.is/p/jonos-garden/aHR0cHM6Ly9zdG9yYWdlLjVhcHBzLmNvbS9kaWdpdHVzL3B1YmxpYy9sb2FtL2luZGV4Lmpzb24 permanent
+      '';
+
       # Coolify preview deployments - wildcard for dev and PR branches
 
       # virtualHosts."preview.savr.link".extraConfig = ''
