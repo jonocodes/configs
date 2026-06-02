@@ -481,9 +481,44 @@ in
         reverse_proxy localhost:82
       '';
 
+
       virtualHosts."garden.dgt.is".extraConfig = ''
-        redir https://loam.dgt.is/p/jonos-garden/aHR0cHM6Ly9zdG9yYWdlLjVhcHBzLmNvbS9kaWdpdHVzL3B1YmxpYy9sb2FtL2luZGV4Lmpzb24 permanent
+        # rewrite * /p/jonos-garden/e2:aHR0cHM6Ly9zdG9yYWdlLjVhcHBzLmNvbS9kaWdpdHVzL3B1YmxpYy9sb2FtL2luZGV4Lmpzb24
+        # reverse_proxy localhost:82 {
+        #   header_up Host loam.dgt.is
+        # }
+        
+        redir * https://loam.dgt.is/p/jonos-garden/e2:aHR0cHM6Ly9zdG9yYWdlLjVhcHBzLmNvbS9kaWdpdHVzL3B1YmxpYy9sb2FtL2luZGV4Lmpzb24 301
       '';
+
+      # virtualHosts."garden.dgt.is".extraConfig = ''
+      #   # @app {
+      #   #   not path /assets/* /vite.svg /favicon.ico
+      #   # }
+      #   # rewrite @app /p/jonos-garden/e2:aHR0cHM6Ly9zdG9yYWdlLjVhcHBzLmNvbS9kaWdpdHVzL3B1YmxpYy9sb2FtL2luZGV4Lmpzb24
+      #   # reverse_proxy localhost:82 {
+      #   #   header_up Host loam.dgt.is
+      #   # }
+
+      #   @app {
+      #     not path /assets/* /vite.svg /favicon.ico
+      #   }
+      #   uri @app query index https://storage.5apps.com/digitus/public/loam/index.json
+      #   reverse_proxy localhost:82 {
+      #     header_up Host loam.dgt.is
+      #   }
+      # '';
+
+      # virtualHosts."garden.dgt.is".extraConfig = ''
+      #   handle /.well-known/loam.json {
+      #     header Content-Type application/json
+      #     respond `{"indexUrl":"https://storage.5apps.com/digitus/public/loam/index.json"}` 200
+      #   }
+
+      #   reverse_proxy localhost:82 {
+      #     header_up Host loam.dgt.is
+      #   }
+      # '';
 
       # Coolify preview deployments - wildcard for dev and PR branches
 

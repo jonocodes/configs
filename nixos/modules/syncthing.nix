@@ -17,6 +17,9 @@ let
   deviceMap = {
 
     # desktop
+    lute = "HRMG4CG-6CVQQ67-TATB5UK-4DIQDM2-ZQBXHE5-EJF3A7V-XYVIIMU-STT7SQM";
+
+    # old desktop
     dobro = "QDPAOUZ-TN6RRAG-X6AJNTZ-QMXHGC4-RZPBFTG-4VS74JF-3ESV6QN-KMZTOAS";
 
     # home server

@@ -40,19 +40,16 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "galaxyS23" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" "dobro" "jonodot" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" ];
         };
         configs = {
-          devices = [ "choco" "dobro" "jonodot" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "galaxyS23" ];
           versioned = true;
         };
-        # savr_data = {
-        #   devices = [ "choco" "dobro" "galaxyS23" "jonodot" ];
-        # };
 
       };
     };

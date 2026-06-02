@@ -156,9 +156,6 @@ in {
 
         configs = { devices = [ "choco" "zeeba" "orc" "matcha" ]; };
         
-        # savr_data = {
-        #   devices = [ "choco" "zeeba" "galaxyS23" ];
-        # };
       };
 
     };

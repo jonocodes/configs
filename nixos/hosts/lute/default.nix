@@ -40,6 +40,7 @@ in {
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
 
@@ -47,6 +48,23 @@ in {
     # no need to redefine it in your config for now)
     #media-session.enable = true;
   };
+
+  # disable the internal speaker, which seems to turn on when monitors turn off. since pipewire is falling back. 
+  #  I dont think this is working as expected.
+  environment.etc."wireplumber/wireplumber.conf.d/51-disable-internal-audio.conf".text = ''
+    monitor.alsa.rules = [
+      {
+        matches = [
+          { device.name = "alsa_card.pci-0000_c5_00.6" }
+        ]
+        actions = {
+          update-props = {
+            device.disabled = true
+          }
+        }
+      }
+    ]
+  '';
 
 
 

@@ -58,6 +58,8 @@ in {
 
         distrobox
 
+        # zed-editor # switched to flatpak
+
         #   nix binary runner helpers
         # nix-index
         # nix-locate
@@ -87,7 +89,7 @@ in {
           inputs.llm-agents.packages.${pkgs.system}.ccusage
 
           # temp moved here because of cmake error. https://github.com/NixOS/nixpkgs/issues/445447
-          rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://github.com/nix-community/home-manager/pull/6101
+          rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://mynixos.com/home-manager/options/programs.rclone.remotes.%3Cname%3E
 
           tilix # temp moved here because compile problem on 9/15/24
 

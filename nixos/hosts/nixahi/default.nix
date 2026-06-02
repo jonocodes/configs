@@ -87,19 +87,16 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" ];
+          devices = [ "choco" "zeeba" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" ];
+          devices = [ "choco" "zeeba"  ];
         };
         configs = {
-          devices = [ "choco" ];
+          devices = [ "choco" "zeeba" ];
           versioned = true;
         };
-        # savr_data = {
-        #   devices = [ "choco" ];
-        # };
 
       };
     };

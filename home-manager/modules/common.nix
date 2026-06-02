@@ -22,7 +22,7 @@ in {
       "sync/common/.stignore".text = syncthingIgnores;
       "sync/configs/.stignore".text = syncthingIgnores;
       "sync/more/.stignore".text = syncthingIgnores;
-      "sync/savr_data/.stignore".text = syncthingIgnores;
+      # "sync/savr_data/.stignore".text = syncthingIgnores;
 
       # ".ssh/authorized_keys" = {
       #   text = pubKeys;
@@ -244,7 +244,7 @@ in {
       opencode
       codex
       happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
-      ollama
+      ollama-rocm
       ripgrep
 
     ] ++ (with pkgs; [
