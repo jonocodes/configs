@@ -18,7 +18,7 @@ in {
         
         # more = { devices = [ "choco" ]; };
 
-        configs = { devices = [ "choco" ]; };
+        configs = { devices = [ "choco" "zeeba" ]; };
         
       };
     };

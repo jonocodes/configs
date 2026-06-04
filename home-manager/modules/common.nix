@@ -108,7 +108,6 @@ in {
 
       "..." = "cd ../..";
 
-
       # TODO: clean up syncthing conflicts like so:
       # DIFFPROG=org.gnome.meld ./syncthing-resolve-conflicts -d ./common -f
 
@@ -155,7 +154,7 @@ in {
         addKeysToAgent = "yes";
       };
       "berk_nas" = { # WD My Cloud Nas
-        hostname = "192.168.1.140";
+        hostname = "berk-nas";
         user = "sshd";
         addKeysToAgent = "yes";
       };

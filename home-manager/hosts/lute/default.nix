@@ -28,7 +28,7 @@ in {
 
     		killall
         hunspellDicts.en_US
-        rclone
+        # rclone
 
         # pcmanfm # lightweight file manager, with right click tar
         numix-icon-theme
@@ -108,14 +108,49 @@ in {
   #   };
   # };
 
-  programs.fish.shellInit = ''
-    set -gx PLAYWRIGHT_BROWSERS_PATH "${pkgs-unstable.playwright-driver.browsers}"
-    # set -gx PLAYWRIGHT_BROWSERS_PATH_1541 "..."  # moved to flox
-  '';
-
-  home.sessionVariables = {
-    HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  services.podman = {
+    enable = true;
   };
+
+  programs.rclone = {
+    enable = true;
+    remotes.berk_nas = {
+      config = {
+        type = "sftp";
+        host = "berk-nas";
+        user = "sshd";
+        shell_type = "unix";
+        md5sum_command = "md5sum";
+        sha1sum_command = "none";
+      };
+      # file containing unobscured password
+      secrets.pass = "${config.home.homeDirectory}/.config/secrets/rclone_berk_nas_pass";
+    };
+  };
+
+
+  programs.fish = {
+
+    shellInit = ''
+      set -gx PLAYWRIGHT_BROWSERS_PATH "${pkgs-unstable.playwright-driver.browsers}"
+      # set -gx PLAYWRIGHT_BROWSERS_PATH_1541 "..."  # moved to flox
+    '';
+
+    shellAbbrs = {
+
+      backup-media-to-nas = "rclone sync -i --skip-links --size-only --exclude '.*' /dpool/media /media/nas_backup/jono/media";
+
+      backup-camera-to-nas = "rclone sync -i --skip-links --size-only --exclude '.*' /dpool/camera /media/nas_backup/jono/camera";
+
+      backup-camera-to-berk = "rclone sync -i --skip-links --size-only --exclude '.*' /dpool/camera berk_nas:/mnt/HD/HD_a2/jono/camera";
+
+    };
+  };
+  
+
+  # home.sessionVariables = {
+  #   HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
+  # };
 
   imports = [
 

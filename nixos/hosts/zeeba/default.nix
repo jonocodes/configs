@@ -22,9 +22,14 @@ in {
     group = "backup";
     isSystemUser = true;
 
-    # TODO: restrict executable actions
+    # Dedicated syncoid keys per source host. `restrict` disables shell
+    # features (pty, forwarding, X11, agent, exec) but still allows the
+    # commands syncoid runs (zfs send/receive/list/snapshot/destroy/bookmark
+    # and the lzop/mbuffer pipeline). Tightening further (command="...")
+    # would require a wrapper script — left as future work.
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGI9g+ml4fmwK8eNYe7qb7lWHlqZ4baVc5U6nkMCbnG jono@foodnotblogs.com"  # for backing up from dobro
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPGI9g+ml4fmwK8eNYe7qb7lWHlqZ4baVc5U6nkMCbnG jono@foodnotblogs.com"  # legacy: for backing up from dobro
+      "restrict,pty ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICmAOYsJX3uR9eysPwLqfkjsxJDALe3UHXNiUnFMtC4N syncoid@lute"
     ];
   };
 
@@ -47,7 +52,7 @@ in {
           devices = [ "choco" "dobro" "jonodot" "lute" ];
         };
         configs = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "galaxyS23" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "ocarina""galaxyS23" ];
           versioned = true;
         };
 
@@ -82,6 +87,35 @@ in {
 
     sanoid = {
       enable = true;
+      # Don't auto-snapshot received datasets (lute's snapshots come over the
+      # wire). But do prune them with our own longer retention so zeeba acts
+      # as a longer-term archive.
+      datasets = {
+        "dpool/lute/thunderbird_data" = {
+          autosnap = false;
+          autoprune = true;
+          hourly = 0;
+          daily = 30;
+          monthly = 12;
+          yearly = 2;
+        };
+        "dpool/lute/files" = {
+          autosnap = false;
+          autoprune = true;
+          hourly = 0;
+          daily = 30;
+          monthly = 12;
+          yearly = 2;
+        };
+        "dpool/lute/camera" = {
+          autosnap = false;
+          autoprune = true;
+          hourly = 0;
+          daily = 30;
+          monthly = 12;
+          yearly = 2;
+        };
+      };
     };
 
 
@@ -137,6 +171,10 @@ in {
   [
     git
     docker-compose
+
+    # syncoid pipeline (used when zeeba is a sync target)
+    lzop
+    mbuffer
   ];
 
 

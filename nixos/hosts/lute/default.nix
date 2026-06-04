@@ -83,14 +83,14 @@ in {
   fileSystems = {
 
     # NOTE: turned this off for a bit while I mess with different routers
-    # "/media/nas_backup" = {
-    #   device = "nas.alb:/shares/backup";
-    #   fsType = "nfs";
-    # };
+    "/media/nas_backup" = {
+      device = "lacie:/shares/backup";
+      fsType = "nfs";
+    };
 
     # offsite backup drive (routed through matcha)
     "/media/berk_nas" = {
-      device = "//192.168.1.140/jono";
+      device = "//berk-nas/jono";
       fsType = "cifs";
       options = let
         # this line prevents hanging on network split
@@ -191,46 +191,126 @@ in {
 
     davfs2.enable = true;
 
-    # sanoid = {
-    #   enable = true;
+    sanoid = {
+      enable = true;
+      package = pkgs.sanoid;
 
-    #   package = pkgs.sanoid;
+      # One-time setup on lute:
+      #   sudo zfs allow -u jono send,snapshot,hold,bookmark,destroy,mount dpool/thunderbird_data
+      # One-time setup on zeeba:
+      #   sudo zfs create dpool/lute
+      #   sudo zfs allow -u backup create,mount,receive,destroy,rollback,canmount dpool/lute
 
-    #   # manually run> sudo zfs allow -u backup send,snapshot,hold dpool
+      datasets = {
+        "dpool/thunderbird_data" = {
+          recursive = true;
+          hourly = 24;
+          daily = 7;
+          monthly = 3;
+          autoprune = true;
+          autosnap = true;
+        };
+        "dpool/files" = {
+          recursive = true;
+          hourly = 24;
+          daily = 7;
+          monthly = 3;
+          autoprune = true;
+          autosnap = true;
+        };
+        "dpool/camera" = {
+          recursive = true;
+          hourly = 24;
+          daily = 7;
+          monthly = 3;
+          autoprune = true;
+          autosnap = true;
+        };
+      };
+    };
 
-    #   datasets = {
-    #     "dpool/thunderbird_data" = {
-    #       recursive = true;
-    #       hourly = 24;
-    #       daily = 7;
-    #       monthly = 3;
-    #       autoprune = true;
-    #       autosnap = true;
-    #     };
-    #   };
-
-    # };
-
-    # syncoid = {
-    #   enable = true;
-
-    #   # I think there is some permissions issue with the identity file, so this may not be working
-
-    #   user = "jono";
-    #   sshKey = "${jonoHome}/.ssh/id_ed25519";
-    #   commands = {
-    #     "backup-thunderbird" = {
-    #       source = "dpool/thunderbird_data";
-    #       target = "backup@zeeba:dpool/dobro/thunderbird_data";
-    #       recursive = true;
-    #       # extraArgs = [ "--compress" ];
-    #       sendOptions = "v";
-    #       recvOptions = "v";
-    #     };
-    #   };
-    # };
+    syncoid = {
+      enable = true;
+      # Use the module default `syncoid` system user (key under /var/lib/syncoid
+      # is auto-mapped into the unit's chroot via StateDirectory=syncoid).
+      sshKey = "/var/lib/syncoid/.ssh/id_ed25519";
+      # Don't pass -v to `zfs send`: it spawns a progress thread that calls
+      # timer_create(), which the upstream unit's SystemCallFilter=~@timer
+      # kills with SIGSYS. (See sendOptions = "" below.)
+      commands = {
+        "backup-thunderbird" = {
+          source = "dpool/thunderbird_data";
+          target = "backup@zeeba:dpool/lute/thunderbird_data";
+          recursive = true;
+          sendOptions = "";
+          recvOptions = "v";
+        };
+        "backup-files" = {
+          source = "dpool/files";
+          target = "backup@zeeba:dpool/lute/files";
+          recursive = true;
+          sendOptions = "";
+          recvOptions = "v";
+        };
+        "backup-camera" = {
+          source = "dpool/camera";
+          target = "backup@zeeba:dpool/lute/camera";
+          recursive = true;
+          sendOptions = "";
+          recvOptions = "v";
+        };
+      };
+    };
 
   };
+
+  # zeeba's host key — written to /etc/ssh/ssh_known_hosts which is visible
+  # inside syncoid's chroot (since /etc is bind-mounted in).
+  programs.ssh.knownHosts.zeeba = {
+    hostNames = [ "zeeba" ];
+    publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBFywxBdIOFjj34k6ATjyXjsg3cT4TvPbP8dNqpYPVZo";
+  };
+
+  # Notify ntfy.sh on syncoid run finish (success and failure).
+  # NOTE: I need to manually subscribe to this topic on my phone/desktop —
+  # nothing else is watching it. Topic is a long random string for obscurity
+  # (ntfy.sh has no auth). On phone, filter by priority if success pings
+  # are too noisy (~3/hr with three commands).
+  systemd.services."syncoid-backup-thunderbird".unitConfig = {
+    OnFailure = [ "syncoid-failure-notify@%n.service" ];
+    OnSuccess = [ "syncoid-success-notify@%n.service" ];
+  };
+
+  # Stagger the three syncoid timers (default is all hourly at :00) so they
+  # don't fight for bandwidth. Sanoid still fires at :00 so snapshots are
+  # fresh before each sync.
+  systemd.timers."syncoid-backup-thunderbird".timerConfig.OnCalendar = pkgs.lib.mkForce "*:15";
+  systemd.timers."syncoid-backup-files".timerConfig.OnCalendar = pkgs.lib.mkForce "*:30";
+  systemd.timers."syncoid-backup-camera".timerConfig.OnCalendar = pkgs.lib.mkForce "*:45";
+  systemd.services."syncoid-backup-files".unitConfig = {
+    OnFailure = [ "syncoid-failure-notify@%n.service" ];
+    OnSuccess = [ "syncoid-success-notify@%n.service" ];
+  };
+  systemd.services."syncoid-backup-camera".unitConfig = {
+    OnFailure = [ "syncoid-failure-notify@%n.service" ];
+    OnSuccess = [ "syncoid-success-notify@%n.service" ];
+  };
+
+  systemd.services."syncoid-failure-notify@" = {
+    description = "Notify ntfy.sh on syncoid failure (%i)";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.curl}/bin/curl -fsS -m 15 -H 'Title: syncoid failed on lute' -H 'Priority: high' -H 'Tags: warning' -d 'syncoid unit failed — check journalctl on lute (%i)' https://ntfy.sh/lute-jono-backups-9f3a2c";
+    };
+  };
+
+  # systemd.services."syncoid-success-notify@" = {
+  #   description = "Notify ntfy.sh on syncoid success (%i)";
+  #   serviceConfig = {
+  #     Type = "oneshot";
+  #     ExecStart = "${pkgs.curl}/bin/curl -fsS -m 15 -H 'Title: syncoid ok on lute' -H 'Priority: low' -H 'Tags: white_check_mark' -d 'syncoid unit completed (%i)' https://ntfy.sh/lute-jono-backups-9f3a2c";
+  #   };
+  # };
 
 
   programs.steam = {

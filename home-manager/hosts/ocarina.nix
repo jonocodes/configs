@@ -13,6 +13,13 @@ in {
       mbuffer
     ]);
 
+  programs.fish = {
+    shellAbbrs = { 
+      show-leases = "sudo fish -c 'cat /var/lib/kea/*'";
+      show-static = "jq '.Dhcp4.subnet4[].reservations[]' /etc/kea/dhcp4-server.conf";
+    };
+  };
+
   imports = [ 
     ../modules/common.nix
   ];

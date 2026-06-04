@@ -82,16 +82,38 @@ in
         volumes = [ "/run/sfcarpool:/data" ];
       };
 
-      armadietto = {
-        image = "remotestorage/armadietto-monolithic";
-        ports = [ "8010:8000" ];
-        extraOptions = [ "--user=root" ];
-        volumes = [
-          "${armadiettoConf}:/etc/armadietto/conf.json:ro"
-          "/dpool/armadietto:/usr/share/armadietto"
-        ];
-      };
+    };
+  };
 
+  # armadietto runs on podman (not the docker backend above).
+  # oci-containers.backend is global, so this container is defined as its
+  # own podman-backed systemd unit instead.
+  virtualisation.podman.enable = true;
+
+  systemd.services.podman-armadietto = {
+    description = "Podman container: armadietto (remoteStorage server)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" "podman.service" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "notify";
+      NotifyAccess = "all";
+      Restart = "always";
+      TimeoutStartSec = 300;
+      TimeoutStopSec = 70;
+      # Clean up any stale container from a previous run before starting
+      ExecStartPre = [ "-${pkgs.podman}/bin/podman rm -f armadietto" ];
+      ExecStart = ''
+        ${pkgs.podman}/bin/podman run \
+          --rm --replace --name=armadietto \
+          --sdnotify=conmon -d \
+          --user=root \
+          -p 8010:8000 \
+          -v ${armadiettoConf}:/etc/armadietto/conf.json:ro \
+          -v /dpool/armadietto:/usr/share/armadietto \
+          remotestorage/armadietto-monolithic
+      '';
+      ExecStop = "${pkgs.podman}/bin/podman stop --ignore --time 10 armadietto";
     };
   };
 
@@ -660,7 +682,7 @@ in
         exit 1
       fi
       USERNAME="$1" EMAIL="$2" PASSWORD="$3"
-      docker exec \
+      ${pkgs.podman}/bin/podman exec \
         --user root \
         -e RS_USERNAME="$USERNAME" \
         -e RS_EMAIL="$EMAIL" \

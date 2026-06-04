@@ -1,4 +1,8 @@
 { pkgs, config, ... }:
+let
+  # zeeba's internal LAN IP - target for split-horizon DNS entries
+  zeebaIP = "192.168.30.114";
+in
 {
 
   boot.kernel.sysctl = {
@@ -77,31 +81,38 @@
       bind-interfaces = true;
       cache-size = 1000;
 
+      # Static LAN host records
+      host-record = [
+        "lacie,192.168.30.100"
+        "berk-nas,192.168.1.140"
+        # "zeeba-local,${zeebaIP}"
+      ];
+
       # Split-horizon DNS entries - resolve to zeeba's internal IP for LAN clients
-      address = [
-        "/digit.us.to/192.168.30.114"
-        "/dgt.rokeachphoto.com/192.168.30.114"
-        "/rokeachphoto.dgt.is/192.168.30.114"
-        "/zeeba.dgt.is/192.168.30.114"
-        "/a.dgt.is/192.168.30.114"
-        "/savr.dgt.is/192.168.30.114"
-        "/deploy.dgt.is/192.168.30.114"
-        # "/*.savr.dgt.is/192.168.30.114"
-        "/dev.preview.savr.link/192.168.30.114"
-        # "/preview.savr.link/192.168.30.114"
-        "/*.preview.savr.link/192.168.30.114"
-        "/demo.stash.dgt.is/192.168.30.114"
-        "/jono.stash.dgt.is/192.168.30.114"
-        "/*.preview.stash.dgt.is/192.168.30.114"
-        "/demo.stashcast.net/192.168.30.114"
-        "/jono.stashcast.net/192.168.30.114"
-        "/*.preview.stashcast.net/192.168.30.114"
-        "/*.coolup.stashcast.net/192.168.30.114"
-        "/*.todo.stashcast.net/192.168.30.114"
-        "/hubsnub.dgt.is/192.168.30.114"
-        "/hop.dgt.is/192.168.30.114"
-        "/loam.dgt.is/192.168.30.114"
-        "/garden.dgt.is/192.168.30.114"
+      address = map (domain: "/${domain}/${zeebaIP}") [
+        "digit.us.to"
+        "dgt.rokeachphoto.com"
+        "rokeachphoto.dgt.is"
+        "zeeba.dgt.is"
+        "a.dgt.is"
+        "savr.dgt.is"
+        "deploy.dgt.is"
+        # "*.savr.dgt.is"
+        "dev.preview.savr.link"
+        # "preview.savr.link"
+        "*.preview.savr.link"
+        "demo.stash.dgt.is"
+        "jono.stash.dgt.is"
+        "*.preview.stash.dgt.is"
+        "demo.stashcast.net"
+        "jono.stashcast.net"
+        "*.preview.stashcast.net"
+        "*.coolup.stashcast.net"
+        "*.todo.stashcast.net"
+        "hubsnub.dgt.is"
+        "hop.dgt.is"
+        "loam.dgt.is"
+        "garden.dgt.is"
       ];
 
       log-queries = true;
@@ -138,10 +149,14 @@
         name = "/var/lib/kea/dhcp4.leases";
       };
 
+      cache-threshold = 0.0;
+
       subnet4 = [{
         id = 1;
         subnet = "192.168.30.0/24";
         interface = "enp2s0";
+
+        valid-lifetime = 604800; # (7 days)
 
         pools = [{
           pool = "192.168.30.100 - 192.168.30.200";
@@ -163,8 +178,13 @@
         reservations = [
           {
             hw-address = "00:25:90:7a:b6:26";
-            ip-address = "192.168.30.114";
-            hostname = "zeeba";
+            ip-address = zeebaIP;
+            hostname = "_zeeba"; # these are confusing and dont actually do anything. but useful when listing static lists
+          }
+          {
+            hw-address = "00:d0:4b:93:c1:48";
+            ip-address = "192.168.30.100";
+            hostname = "_lacie";
           }
         ];
       }];
@@ -258,16 +278,16 @@
       checkReversePath = false;
     };
 
-    # Port forwarding from external ports 80 and 443 to zeeba (192.168.30.114)
+    # Port forwarding from external ports 80 and 443 to zeeba server
     nat.forwardPorts = [
       {
         sourcePort = 80;
-        destination = "192.168.30.114:80";
+        destination = "${zeebaIP}:80";
         proto = "tcp";
       }
       {
         sourcePort = 443;
-        destination = "192.168.30.114:443";
+        destination = "${zeebaIP}:443";
         proto = "tcp";
       }
     ];
