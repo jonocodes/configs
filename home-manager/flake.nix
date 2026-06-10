@@ -114,8 +114,7 @@
             inherit system;
             config.allowUnfree = true;
           };
-          openclawOverlay = if hostInputs ? openclaw then hostInputs.openclaw.overlays.default else (_: _: { });
-          pkgs = basePkgs.extend(openclawOverlay);
+          pkgs = basePkgs;
         in
         hostInputs.home-manager.lib.homeManagerConfiguration {
 
@@ -131,7 +130,6 @@
             inputs = hostInputs;
             inherit hostVars;
 
-            openclaw = if hostInputs ? openclaw then hostInputs.openclaw else null;
           };
 
           modules = [

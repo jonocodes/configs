@@ -136,7 +136,6 @@ in
     # TODO: maybe move this out of web.nix
     samba = {
       enable = true;
-      securityType = "user";
       openFirewall = true;
 
       settings = {
@@ -448,7 +447,7 @@ in
           "github.com/caddy-dns/cloudflare@v0.2.3"
         ];
 
-        hash = "sha256-cDd8gWUO0WvaEfRr0md4F8ljFQA5TDEbLCmfcf264r4=";
+        hash = "sha256-tiOgOjsl0t+bP6RWWZrIIl/fib7Je7imFGxNQb5te14=";
       };
 
       # virtualHosts."localhost".extraConfig = ''

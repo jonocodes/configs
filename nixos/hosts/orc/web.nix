@@ -7,7 +7,7 @@ in
 {
 
   # Enable Docker/OCI containers
-  virtualisation.oci-containers.backend = "docker";
+  # virtualisation.oci-containers.backend = "docker";
 
   # Tailscale serve configuration for happy-server
   # Creates a Tailscale service at https://happy-server.wolf-typhon.ts.net

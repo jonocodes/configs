@@ -56,7 +56,7 @@ in {
         lazydocker
         lazyjournal
 
-        distrobox
+        # distrobox
 
         # zed-editor # switched to flatpak
 
@@ -84,6 +84,8 @@ in {
         playwright-test
         playwright-node
 
+        pi-coding-agent
+
       ] ++ (with pkgs;
         [
           inputs.llm-agents.packages.${pkgs.system}.ccusage
@@ -107,10 +109,6 @@ in {
   #     # HAPPY_LOG_LEVEL = "info";
   #   };
   # };
-
-  services.podman = {
-    enable = true;
-  };
 
   programs.rclone = {
     enable = true;

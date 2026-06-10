@@ -42,20 +42,6 @@ in {
             command = "npx";
             args = [ "-y" "@playwright/mcp@latest" ];
           };
-          # TODO: telegram MCP via npx does not work - it is an external plugin requiring bun.
-          # The proper flow is: claude plugin install telegram@claude-plugins-official
-          # then: claude --channels plugin:telegram@claude-plugins-official
-          # But --channels requires the plugin to be registered in settings.json (writable).
-          # We tried programs.claude-code.mcpServers - generates a file but claude ignores it.
-          # We tried programs.claude-code.settings - works but makes settings.json read-only,
-          #   blocking `claude plugin install`. Workaround: home.activation to seed a writable
-          #   settings.json, then manually run `claude plugin install telegram@...` once.
-          #   Even after that, `--channels` loads the plugin but it doesn't actually connect.
-          # Leaving telegram out for now.
-          # telegram = {
-          #   command = "npx";
-          #   args = [ "-y" "telegram@claude-plugins-official" ];
-          # };
         };
       };
 
@@ -83,21 +69,46 @@ in {
   #   HAPPY_SERVER_URL = "https://happy-server.wolf-typhon.ts.net";
   # };
 
+  # only enableing bash here so user shell aliases work across shells
+  programs.bash = {
+    enable = true;
+
+    # HM only sources hm-session-vars.sh from ~/.profile (login shells), so
+    # interactive non-login bash misses home.sessionVariables (EDITOR, BROWSER,
+    # XDG_*). Source it here too. The file self-guards via __HM_SESS_VARS_SOURCED,
+    # and our fish session leaks that flag with incomplete values, so unset it
+    # first to force a full re-export.
+    initExtra = ''
+      unset __HM_SESS_VARS_SOURCED
+      . "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+    '';
+  };
+
   programs.fish = {
 
     enable = true;
+
+    # Use unstable to keep fish in sync with the NixOS system fish (which is
+    # newer than the stable 25.11 fish). Mismatched versions cause the 4.3
+    # fish_key_bindings migration to loop forever — the older fish re-sets the
+    # universal var on every shell startup.
+    package = pkgs-unstable.fish;
 
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
     '';
 
     shellInit = ''
-      set -x EDITOR micro
+      # config.fish sources hm-session-vars.fish before this, but the stale
+      # __HM_SESS_VARS_SOURCED flag leaking from the systemd user environment
+      # makes it bail early. Clear the flag and
+      # re-run the function it already defined to force a full re-export.
+      set -e __HM_SESS_VARS_SOURCED
+      setup_hm_session_vars
 
-      set -x FLAKE_OS ${hostVars.configsRoot}/nixos
-      set -x FLAKE_HOME ${hostVars.configsRoot}/home-manager
-
-      set -x HAPPY_SERVER_URL "https://happy-server.wolf-typhon.ts.net"
+      # set -x FLAKE_OS ${hostVars.configsRoot}/nixos
+      # set -x FLAKE_HOME ${hostVars.configsRoot}/home-manager
+      # set -x HAPPY_SERVER_URL "https://happy-server.wolf-typhon.ts.net"
       '';
 
     shellAbbrs = {
@@ -115,25 +126,35 @@ in {
 
     };
 
-    shellAliases = {
+  };
 
-      # using impure to source secrets from the filesystem
-      i-nixos = "nh os switch --show-activation-logs $FLAKE_OS --impure";
+  home.shellAliases = {
 
-      u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
+    # using impure to source secrets from the filesystem
+    i-nixos = "nh os switch --show-activation-logs $FLAKE_OS --impure";
 
-      i-home = "nh home switch --show-activation-logs $FLAKE_HOME";
+    u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
 
-      u-home = "cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
+    i-home = "nh home switch --show-activation-logs $FLAKE_HOME";
 
-      i = lib.mkDefault "i-nixos && i-home";
+    u-home = "cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
 
-      u = lib.mkDefault "u-home && u-nixos";
+    i = lib.mkDefault "i-nixos && i-home";
 
-      cl = "sudo -v && claude --dangerously-skip-permissions";
-      clt = "sudo -v && claude --dangerously-skip-permissions --plugin-dir ~/.claude/plugins/marketplaces/claude-plugins-official/external_plugins/telegram";
-      fa = "flox activate";
-    };
+    u = lib.mkDefault "u-home && u-nixos";
+
+    cl = "sudo -v && claude --dangerously-skip-permissions";
+
+    fa = "flox activate";
+  };
+
+  home.sessionVariables = {
+
+    EDITOR = "micro";
+
+    FLAKE_OS ="${hostVars.configsRoot}/nixos";
+
+    FLAKE_HOME = "${hostVars.configsRoot}/home-manager";
   };
 
   programs.ssh = {
@@ -239,11 +260,10 @@ in {
       gh # home-manager programs.gh.settings does not really cover all auth I want anyway. still need to manually 'gh auth login' first time.
       claude-code
       nodejs # needed for npx (used by claude mcp servers)
-      # bun # needed for claude telegram plugin - disabled while telegram integration is shelved
       opencode
-      codex
-      happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
-      ollama-rocm
+      # codex
+      # happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
+      # ollama-rocm
       ripgrep
 
     ] ++ (with pkgs; [

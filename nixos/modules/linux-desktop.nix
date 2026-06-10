@@ -10,6 +10,11 @@ in {
 
   programs.nix-ld.enable = true; # the only thing I know using this is wrangler for cloudflare dev
 
+  # Desktops use podman as the container engine (rootless, via home-manager
+  # services.podman + a `docker` wrapper). Don't run the unused docker daemon.
+  # Overrides the mkDefault true in common-nixos.nix.
+  virtualisation.docker.enable = false;
+
   services.xserver = { enable = true; };
 
   xdg.portal.enable = true;

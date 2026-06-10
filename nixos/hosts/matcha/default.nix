@@ -9,6 +9,8 @@ in
 
   networking.hostName = "matcha";
 
+  virtualisation.docker.enable = false;
+
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -53,14 +55,14 @@ in
     enable = true;
     folderDevices = {
       common = {
-        devices = [ "choco" "dobro" ];
+        devices = [ "choco" "zeeba" ];
         versioned = true;
       };
       more = {
-        devices = [ "choco" "dobro" ];
+        devices = [ "choco" "zeeba" ];
       };
       configs = {
-        devices = [ "choco" "dobro" ];
+        devices = [ "choco" "zeeba" ];
         versioned = true;
       };
 

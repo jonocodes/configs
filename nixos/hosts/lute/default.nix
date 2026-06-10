@@ -144,7 +144,7 @@ in {
         ]; };
         
         more = { devices = [ "choco" "zeeba"
-         "orc" "matcha" 
+        #  "orc" "matcha" 
         ]; };
         
         camera = {

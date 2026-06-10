@@ -1,14 +1,11 @@
 {
-  description = "Plex host inputs (independent lock file)";
+  description = "matcha host inputs (independent lock file)";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware";
   };
@@ -18,6 +15,3 @@
     inherit inputs;
   };
 }
-
-
-

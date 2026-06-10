@@ -15,6 +15,7 @@ in {
     initrd.systemd.enable = true;
   };
 
+  virtualisation.docker.enable = false;
 
   documentation.enable = false;
 
@@ -51,14 +52,14 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" "dobro" ];
+          devices = [ "choco" "zeeba" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" "dobro" ];
+          devices = [ "choco" "zeeba" ];
         };
         configs = {
-          devices = [ "choco" "dobro" ];
+          devices = [ "choco" "zeeba" ];
           versioned = true;
         };
 

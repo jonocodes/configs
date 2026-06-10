@@ -61,14 +61,14 @@ in {
   systemd.services.NetworkManager-wait-online.enable = false;
 
   networking.networkmanager.enable = true;
-  virtualisation.docker.enable = true;
+  virtualisation.docker.enable = lib.mkDefault true;
 
   programs.mosh.enable = true;
   
-  virtualisation.podman = {
-    enable = true;
-    # dockerCompat = true;
-  };
+  # virtualisation.podman = {
+  #   enable = true;
+  #   # dockerCompat = true;
+  # };
 
   # this helps with cross term auth, needed for agents running sudo
   security.sudo = {

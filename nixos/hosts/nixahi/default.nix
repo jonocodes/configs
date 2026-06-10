@@ -59,6 +59,11 @@ in {
   };
 
 
+  # I tried this for the 26.05 upgrade, but it just took out my networking so could not proceede
+  # NetworkManager sets networking.wireless.enable = true (wpa_supplicant), which conflicts with iwd
+  # networking.wireless.enable = lib.mkForce false;
+
+
   networking.hosts = {
     "198.54.114.213" = ["rokeachphoto.com"];
   };
@@ -91,7 +96,7 @@ in {
           versioned = true;
         };
         more = {
-          devices = [ "choco" "zeeba"  ];
+          devices = [ "choco" "zeeba" ];
         };
         configs = {
           devices = [ "choco" "zeeba" ];

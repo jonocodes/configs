@@ -45,14 +45,14 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "galaxyS23" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "galaxyS23" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" "dobro" "jonodot" "lute" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" ];
         };
         configs = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "ocarina""galaxyS23" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "ocarina" "galaxyS23" ];
           versioned = true;
         };
 
@@ -151,12 +151,14 @@ in {
       package = pkgs.nextcloud30;
 
       config = {
-        overwriteProtocol = "https";
         dbtype = "mysql";
         adminpassFile = "/etc/nextcloud-admin-pass";
       };
 
-      settings.trusted_domains = [ "zeeba" "zeeba.wolf-typhon.ts.net"];
+      settings = {
+        trusted_domains = [ "zeeba" "zeeba.wolf-typhon.ts.net"];
+        overwriteprotocol = "https";
+      };
       enableImagemagick = true;
 
       extraApps = {

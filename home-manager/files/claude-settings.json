@@ -4,10 +4,6 @@
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
-    },
-    "telegram": {
-      "command": "npx",
-      "args": ["-y", "telegram@claude-plugins-official"]
     }
   },
   "hooks": {
