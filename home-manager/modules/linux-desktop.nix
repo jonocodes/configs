@@ -67,6 +67,7 @@ in {
   programs.firefox = {
     # not using flatpak since keepass integration does not work there
     enable = true;
+    configPath = ".mozilla/firefox";
 
     # firefox sync takes care of the bookmarks and extenions
 

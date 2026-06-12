@@ -1,11 +1,9 @@
 {
-  description = "Lute host inputs (independent lock file)";
+  description = "Zeeba host inputs (independent lock file)";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
-
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -20,12 +18,10 @@
     nix-index-database.url = "github:nix-community/nix-index-database";
     nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
 
-    flox.url = "github:flox/flox/v1.10.0";
     llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs = inputs: {
-    # Just expose the inputs for the parent flake to use
     inherit inputs;
   };
 }

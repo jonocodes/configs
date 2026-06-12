@@ -72,17 +72,17 @@ let
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "limux";
-  version = "0.1.11";
+  version = "0.1.19";
 
   src = fetchFromGitHub {
     owner = "am-will";
     repo = "limux";
     rev = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-OML1f4TvLegpXHr17MVcFvP1PJkFFMk3s+QMvrC7+ok=";
+    hash = "sha256-49UqeLUZF9bn3JGRi6vXi1LYCPRAvCR9CdMlqWelQwY=";
   };
 
-  cargoHash = "sha256-uHYgmdwYHjxnq/jpRkolAnq5oQMlZsfNIFjoYF5QLRE=";
+  cargoHash = "sha256-CdGjtN3NYqVP3FBTSlpGOMaHOgzgpoSPusFh14n+HWc=";
 
   ghosttyDeps = callPackage "${finalAttrs.src}/ghostty/build.zig.zon.nix" {
     name = "limux-ghostty-zig-cache";
@@ -148,6 +148,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
   doCheck = false;
   strictDeps = true;
   dontSetZigDefaultFlags = true;
+  dontUseZigBuild = true;
+  dontUseZigCheck = true;
+  dontUseZigInstall = true;
+  dontUseZigConfigure = true;
 
   env = {
     ZIG_GLOBAL_CACHE_DIR = ".zig-cache-global";
@@ -173,6 +177,9 @@ rustPlatform.buildRustPackage (finalAttrs: {
         -Dgtk-wayland=true \
         -Doptimize=ReleaseFast \
         -Dcpu=baseline \
+        -fno-sys=freetype \
+        -fno-sys=libpng \
+        -fno-sys=zlib \
         --prefix "$PWD/zig-out"
     )
   '';

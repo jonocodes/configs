@@ -21,7 +21,7 @@ in {
       mbuffer
 
       # ccusage from llm-agents (now uses Node.js - no AVX2 requirement)
-      inputs.llm-agents.packages.${pkgs.system}.ccusage
+      # inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.ccusage
 
     ]);
 
@@ -41,8 +41,8 @@ in {
   # };
 
   imports = [
-    ../modules/common.nix
-    ../modules/happy/happy-coder-daemon.nix
+    ../../modules/common.nix
+    ../../modules/happy/happy-coder-daemon.nix
   ];
 
 }

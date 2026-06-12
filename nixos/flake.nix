@@ -3,7 +3,7 @@
 
   inputs = {
 
-    nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
 
     # TODO: replace this with the offical flatpak service once merged
@@ -32,6 +32,7 @@
     imbp-flake.url = "path:./hosts/imbp";
     nixahi-flake.url = "path:./hosts/nixahi";
     matcha-flake.url = "path:./hosts/matcha";
+    orc-flake.url = "path:./hosts/orc";
   };
 
   nixConfig = {
@@ -40,7 +41,7 @@
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, disko
-    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake, ocarina-flake, imbp-flake, nixahi-flake, matcha-flake }@inputs:
+    , nixos-hardware, nix-topology, plex-flake, zeeba-flake, lute-flake, ocarina-flake, imbp-flake, nixahi-flake, matcha-flake, orc-flake }@inputs:
     let
 
       # Standard host builder (for hosts without per-host flakes)
@@ -114,7 +115,6 @@
 
     in {
       nixosConfigurations = {
-        dobro = mkHost "dobro" "x86_64-linux";
 
         # Hosts with independent flakes
         zeeba = mkHostWithFlake "zeeba" "x86_64-linux" zeeba-flake;
@@ -124,9 +124,10 @@
         imbp = mkHostWithFlake "imbp" "x86_64-linux" imbp-flake;
         nixahi = mkHostWithFlake "nixahi" "aarch64-linux" nixahi-flake;
         matcha = mkHostWithFlake "matcha" "x86_64-linux" matcha-flake;
+        orc = mkHostWithFlake "orc" "aarch64-linux" orc-flake;
 
-        # Hosts managed directly from main flake
-        orc = mkHost "orc" "aarch64-linux";
+        # legacy shared flake hosts
+        dobro = mkHost "dobro" "x86_64-linux";
         # x200 = mkHost "x200" "x86_64-linux";
         # t430 = mkHost "t430" "x86_64-linux";
       };

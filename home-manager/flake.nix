@@ -2,7 +2,7 @@
   description = "Jono's top flake for home manager";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-25.11";
+    nixpkgs.url = "nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     
     nix-flatpak.url = "github:gmodena/nix-flatpak"; # unstable branch. Use github:gmodena/nix-flatpak/?ref=<tag> to pin releases.
@@ -10,7 +10,7 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
 
       # url = "github:jonocodes/home-manager/thunderbird-gmail-oauth2";
@@ -40,6 +40,9 @@
     # Per-host flakes (for independent lock files)
     matcha-flake.url = "path:./hosts/matcha";
     lute-flake.url = "path:./hosts/lute";
+    zeeba-flake.url = "path:./hosts/zeeba";
+    orc-flake.url = "path:./hosts/orc";
+    ocarina-flake.url = "path:./hosts/ocarina";
   };
 
   nixConfig = {
@@ -52,7 +55,7 @@
     extra-substituters = [ "https://cache.flox.dev" ];
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, lute-flake, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, lute-flake, zeeba-flake, orc-flake, ocarina-flake, ... }@inputs:
     let
       # Import shared user/host vars
       hostVars = import ./hosts/vars.nix;
@@ -145,17 +148,20 @@
 
     in {
       homeConfigurations = {
-        "jono@dobro" = mkHome "dobro" "x86_64-linux";
-        "jono@zeeba" = mkHome "zeeba" "x86_64-linux";
-        "jono@orc" = mkHome "orc" "aarch64-linux";
-        "jono@imbp" = mkHome "imbp" "x86_64-linux";
-        "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
-        "jono@plex" = mkHome "plex" "x86_64-linux";
-        "jono@ocarina" = mkHome "ocarina" "x86_64-linux";
 
-        # migrated hosts
+        # migrated hosts to individual flakes
         "jono@lute" = mkHomeWithFlake "lute" "x86_64-linux" lute-flake;
         "jono@matcha" = mkHomeWithFlake "matcha" "x86_64-linux" matcha-flake;
+        "jono@zeeba" = mkHomeWithFlake "zeeba" "x86_64-linux" zeeba-flake;
+        "jono@orc" = mkHomeWithFlake "orc" "aarch64-linux" orc-flake;
+        "jono@ocarina" = mkHomeWithFlake "ocarina" "x86_64-linux" ocarina-flake;
+
+        # legacy shared flake hosts
+        "jono@nixahi" = mkHome "nixahi" "aarch64-linux";
+
+        "jono@imbp" = mkHome "imbp" "x86_64-linux";
+        "jono@plex" = mkHome "plex" "x86_64-linux";
+        "jono@dobro" = mkHome "dobro" "x86_64-linux";
       };
 
     };

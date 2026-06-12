@@ -86,7 +86,7 @@ in {
           # android-studio # very old version, 2023
           # android-studio-full  # this takes so long to install because it has to build arm v8 every time
 
-          inputs.flox.packages.${pkgs.system}.default
+          inputs.flox.packages.${pkgs.stdenv.hostPlatform.system}.default
 
         ]);
 

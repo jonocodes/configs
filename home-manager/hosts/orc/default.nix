@@ -45,8 +45,8 @@ in {
   # };
 
   imports = [
-    ../modules/common.nix
-    ../modules/happy/happy-coder-daemon.nix
+    ../../modules/common.nix
+    ../../modules/happy/happy-coder-daemon.nix
   ];
 
 }

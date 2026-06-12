@@ -20,8 +20,8 @@ in {
     };
   };
 
-  imports = [ 
-    ../modules/common.nix
+  imports = [
+    ../../modules/common.nix
   ];
 
 }

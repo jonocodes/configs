@@ -88,16 +88,15 @@ in {
 
       ] ++ (with pkgs;
         [
-          inputs.llm-agents.packages.${pkgs.system}.ccusage
+          inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.ccusage
 
           # temp moved here because of cmake error. https://github.com/NixOS/nixpkgs/issues/445447
-          rclone-browser # TODO: declarative config for /home/jono/.config/rclone . see https://mynixos.com/home-manager/options/programs.rclone.remotes.%3Cname%3E
 
           tilix # temp moved here because compile problem on 9/15/24
 
           vscode
 
-          inputs.flox.packages.${pkgs.system}.default
+          inputs.flox.packages.${pkgs.stdenv.hostPlatform.system}.default
 
         ]);
 
@@ -112,17 +111,32 @@ in {
 
   programs.rclone = {
     enable = true;
-    remotes.berk_nas = {
-      config = {
-        type = "sftp";
-        host = "berk-nas";
-        user = "sshd";
-        shell_type = "unix";
-        md5sum_command = "md5sum";
-        sha1sum_command = "none";
+    remotes = {
+      berk_nas = {
+        config = {
+          type = "sftp";
+          host = "berk-nas";
+          user = "sshd";
+          shell_type = "unix";
+          md5sum_command = "md5sum";
+          sha1sum_command = "none";
+        };
+        # file containing unobscured password
+        secrets.pass = "${config.home.homeDirectory}/.config/secrets/rclone_berk_nas_pass";
       };
-      # file containing unobscured password
-      secrets.pass = "${config.home.homeDirectory}/.config/secrets/rclone_berk_nas_pass";
+      choco = {
+        config = {
+          type = "sftp";
+          host = "choco";
+          user = "jono";
+          shell_type = "unix";
+          # md5sum_command = "md5sum";
+          # sha1sum_command = "none";
+          known_hosts_file = "${config.home.homeDirectory}/.ssh/known_hosts";
+        };
+        # file containing unobscured password
+        # secrets.pass = "${config.home.homeDirectory}/.config/secrets/rclone_berk_nas_pass";
+      };
     };
   };
 

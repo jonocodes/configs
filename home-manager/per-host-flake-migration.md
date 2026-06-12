@@ -86,11 +86,11 @@ nh home switch . --dry-run
 | Host    | Type             |
 |---------|------------------|
 | matcha  | per-host flake   |
+| lute    | per-host flake   |
+| zeeba   | per-host flake   |
+| orc     | per-host flake   |
+| ocarina | per-host flake   |
 | dobro   | shared flake     |
-| zeeba   | shared flake     |
-| orc     | shared flake     |
 | imbp    | shared flake     |
 | nixahi  | shared flake     |
 | plex    | shared flake     |
-| lute    | shared flake     |
-| ocarina | shared flake     |

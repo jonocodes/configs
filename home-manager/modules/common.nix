@@ -161,23 +161,23 @@ in {
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       "fnb" = { # namecheap
-        hostname = "199.188.200.147";
-        port = 21098;
-        user = "foodjkut";
-        addKeysToAgent = "yes";
+        HostName = "199.188.200.147";
+        Port = 21098;
+        User = "foodjkut";
+        AddKeysToAgent = "yes";
       };
       "rokeachphoto" = { # namecheap
-        hostname = "198.54.114.213";
-        port = 21098;
-        user = "rokeeued";
-        addKeysToAgent = "yes";
+        HostName = "198.54.114.213";
+        Port = 21098;
+        User = "rokeeued";
+        AddKeysToAgent = "yes";
       };
       "berk_nas" = { # WD My Cloud Nas
-        hostname = "berk-nas";
-        user = "sshd";
-        addKeysToAgent = "yes";
+        HostName = "berk-nas";
+        User = "sshd";
+        AddKeysToAgent = "yes";
       };
     };
 

@@ -45,14 +45,14 @@ in {
       enable = true;
       folderDevices = {
         common = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "galaxyS23" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "orc" "matcha" "galaxyS23" ];
           versioned = true;
         };
         more = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "orc" "matcha" ];
         };
         configs = {
-          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "ocarina" "galaxyS23" ];
+          devices = [ "choco" "dobro" "jonodot" "lute" "nixahi" "orc" "matcha" "ocarina" "galaxyS23" ];
           versioned = true;
         };
 
