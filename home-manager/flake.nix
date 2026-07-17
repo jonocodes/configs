@@ -57,6 +57,8 @@
 
   outputs = { self, nixpkgs, nixpkgs-unstable, nix-flatpak, home-manager, home-manager-master, nix-index-database, flox, matcha-flake, lute-flake, zeeba-flake, orc-flake, ocarina-flake, ... }@inputs:
     let
+      lib = nixpkgs.lib;
+
       # Import shared user/host vars
       hostVars = import ./hosts/vars.nix;
 
@@ -117,7 +119,9 @@
             inherit system;
             config.allowUnfree = true;
           };
-          pkgs = basePkgs;
+          # Apply the per-host overlays (e.g. lute's t3code fork).
+          overlays = hostFlake.overlays or {};
+          pkgs = basePkgs.appendOverlays (lib.attrValues overlays);
         in
         hostInputs.home-manager.lib.homeManagerConfiguration {
 

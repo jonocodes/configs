@@ -24,8 +24,20 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
-  outputs = inputs: {
-    # Just expose the inputs for the parent flake to use
+  outputs = { self, ... }@inputs: {
     inherit inputs;
+
+    # Overlay that replaces pkgs.t3code (currently 0.0.24, an Electron
+    # desktop wrapper) with our local fork at v0.0.28 (server-only,
+    # suitable for headless systemd deployment).
+    #
+    # See /home/jono/sync/configs/nixos/packages/t3code-fork.nix and
+    # /home/jono/sync/configs/nixos/packages/t3code-fork.HANDOFF.md for
+    # derivation history and maintenance notes.
+    overlays.default = final: prev: {
+      t3code = import
+        ../../packages/t3code-fork.nix
+        final;
+    };
   };
 }

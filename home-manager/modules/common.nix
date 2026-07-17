@@ -260,7 +260,7 @@ in {
       gh # home-manager programs.gh.settings does not really cover all auth I want anyway. still need to manually 'gh auth login' first time.
       claude-code
       nodejs # needed for npx (used by claude mcp servers)
-      opencode
+      # opencode # now installed via programs.opencode in lute/default.nix
       # codex
       # happy-coder # this is just for the cli, though you probably dont need it since, its mostly used through the happy-coder-daemon
       # ollama-rocm

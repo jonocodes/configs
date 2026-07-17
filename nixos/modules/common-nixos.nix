@@ -128,8 +128,9 @@ in {
 
     jono = {
       isNormalUser = true;
-       extraGroups = [ "networkmanager" "wheel" "docker" ];
-       shell = pkgs.fish;
+      extraGroups = [ "networkmanager" "wheel" "docker" ];
+      shell = pkgs.fish;
+      linger = true;
 
       openssh = {
         # enable = true;

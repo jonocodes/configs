@@ -184,8 +184,9 @@ in {
     ${pkgs.code-server}/bin/code-server --install-extension bbenoist.nix
   '';
 
-  # open firewall for code-server
-  networking.firewall.allowedTCPPorts = [ 4444 ];
+  # open firewall for code-server and t3code (t3code is a home-manager
+  # user service; we still need the system firewall to let LAN traffic in).
+  networking.firewall.allowedTCPPorts = [ 4444 3773 ];
 
   services = {
 
