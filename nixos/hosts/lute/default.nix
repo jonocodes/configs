@@ -70,7 +70,7 @@ in {
 
   boot.zfs.extraPools = [ "dpool" ];
 
-  # boot.zfs.forceImportRoot = false;
+  boot.zfs.forceImportRoot = false;
   boot.initrd.systemd.enable = true;
 
   services.duplicati = {

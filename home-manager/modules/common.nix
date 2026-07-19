@@ -94,6 +94,11 @@ in {
     # universal var on every shell startup.
     package = pkgs-unstable.fish;
 
+    # HM's manpage→fish completion generator hard-codes
+    # $fish/share/fish/tools/create_manpage_completions.py; fish 4.8.1 removed
+    # that path, so the build fails. Native fish completions are unaffected.
+    generateCompletions = false;
+
     interactiveShellInit = ''
       set fish_greeting # Disable greeting
     '';
@@ -133,11 +138,15 @@ in {
     # using impure to source secrets from the filesystem
     i-nixos = "nh os switch --show-activation-logs $FLAKE_OS --impure";
 
-    u-nixos = "cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
+    # Per-host flakes have their own lock; parent-flake update doesn't
+    # cascade into path: inputs, so update it first.
+    u-nixos = "test -e $FLAKE_OS/hosts/$hostname/flake.nix && nix flake update --flake $FLAKE_OS/hosts/$hostname; cp $FLAKE_OS/flake.lock $FLAKE_OS/lock_backups/$hostname-nixos-flake.lock && i-nixos --update";
 
     i-home = "nh home switch --show-activation-logs $FLAKE_HOME";
 
-    u-home = "cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
+    # Per-host flakes (lute, ocarina, zeeba, matcha, orc) have their own lock;
+    # parent-flake update doesn't cascade into path: inputs, so update it first.
+    u-home = "test -e $FLAKE_HOME/hosts/$hostname/flake.nix && nix flake update --flake $FLAKE_HOME/hosts/$hostname; cp $FLAKE_HOME/flake.lock $FLAKE_HOME/lock_backups/$hostname-home-flake.lock && i-home --update";
 
     i = lib.mkDefault "i-nixos && i-home";
 
@@ -217,7 +226,7 @@ in {
       pv
       # parallel-disk-usage # pdu cli
       fishPlugins.z # using this instead of zoxide since I prefer its tab completion
-      encfs
+      # encfs # removed from nixpkgs — depended on deprecated fuse2
       lsof
       lazydocker
       lazygit
