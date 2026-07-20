@@ -29,6 +29,7 @@ in {
     		killall
         hunspellDicts.en_US
         # rclone
+        gocryptfs
 
         # pcmanfm # lightweight file manager, with right click tar
         numix-icon-theme

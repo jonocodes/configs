@@ -226,7 +226,6 @@ in {
       pv
       # parallel-disk-usage # pdu cli
       fishPlugins.z # using this instead of zoxide since I prefer its tab completion
-      # encfs # removed from nixpkgs — depended on deprecated fuse2
       lsof
       lazydocker
       lazygit
