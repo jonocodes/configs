@@ -6,6 +6,9 @@ let
 
   coolify-cli = pkgs.callPackage ../packages/coolify-cli {};
 
+  # Eugeny/tabby GUI terminal (NOT nixpkgs `tabby`, which is TabbyML). See ../packages/tabby.
+  tabby = pkgs.callPackage ../packages/tabby {};
+
   # pkgs-playwright-1541 = import inputs.nixpkgs-playwright-1541 {  # moved to flox
   #   system = pkgs.system;
   # };
@@ -108,6 +111,8 @@ in {
       playwright-node
 
       coolify-cli
+
+      tabby # Eugeny/tabby GUI terminal (see let-binding above)
 
     ] ++ (with pkgs;
       [

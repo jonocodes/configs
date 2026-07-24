@@ -1,0 +1,8 @@
+{
+  "name": "paseo-cli-wrapper",
+  "version": "0.1.110",
+  "private": true,
+  "dependencies": {
+    "@getpaseo/cli": "0.1.110"
+  }
+}

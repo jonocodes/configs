@@ -1,3 +1,12 @@
+# LOCAL STOPGAP — being upstreamed to home-manager as `programs.t3code.server`:
+#   https://github.com/nix-community/home-manager/pull/9695
+# Once that PR merges and reaches our home-manager input, delete this module
+# (and t3code.README.md) and migrate `services.t3code` usage in hosts/lute to
+# `programs.t3code.server`. Note the option surface differs slightly: the
+# upstream module drops the pairing-token / opencodeConfigPath machinery kept
+# here, and the OPENCODE_CONFIG_CONTENT fix lives in the package/upstream
+# (t3code#4239) rather than in this module.
+
 { config, lib, pkgs, ... }:
 
 with lib;
@@ -223,7 +232,11 @@ opencodeConfigPath = mkOption {
         _t3codeUnitHashNew=$(sha256sum "$(readlink -f "$_t3codeUnitPath")" 2>/dev/null | cut -d' ' -f1 || true)
       fi
       if [ -n "$_t3codeUnitHash" ] && [ "$_t3codeUnitHash" = "$_t3codeUnitHashNew" ]; then
-        systemctl --user start t3code.service || true
+        # Use an absolute systemctl + XDG_RUNTIME_DIR, as home-manager's own
+        # reloadSystemd does — bare `systemctl` isn't on PATH during activation,
+        # so it would silently no-op (and print "command not found").
+        $DRY_RUN_CMD env XDG_RUNTIME_DIR="''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+          ${pkgs.systemd}/bin/systemctl --user start t3code.service || true
       fi
     '';
 

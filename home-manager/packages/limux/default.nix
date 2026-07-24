@@ -51,6 +51,38 @@
 }:
 
 # TODO: submit this to nixpkgs
+#
+# ============================ BUILD STATUS (2026-07-23) ============================
+# UNFINISHED — does not produce a working binary on x86_64 OR aarch64 yet.
+# Verified on aarch64 (nixos-26.05): eval, source+submodule fetch, cargo vendor,
+# Zig build of libghostty.so, and ALL Rust crate compiles succeed. It fails only at
+# the FINAL link of the `limux` binary:
+#
+#   ghostty/zig-out/lib/libghostty.so: undefined reference to `gladLoaderLoadGLContext'
+#   ghostty/zig-out/lib/libghostty.so: undefined reference to `gladLoaderUnloadGLContext'
+#
+# Root cause (NOT arch-specific — would fail on x86_64 identically):
+#   * ghostty built with `-Dapp-runtime=none` produces a libghostty.so that does NOT
+#     bundle the glad GL loader (SharedDeps.zig only compiles vendor/glad/src/gl.c for
+#     the full app runtime).
+#   * By design, rust/limux-ghostty-sys/build.rs compiles vendor/glad/src/gl.c via `cc`
+#     to supply those symbols — but the resulting glad objects are dropped at link time
+#     (almost certainly `-Wl,--gc-sections`: the glad symbols are referenced only by the
+#     .so, not by any Rust object, so they are not GC roots and get stripped).
+#
+# Fix hypotheses to try when picking this back up (cheapest first):
+#   1. Force-retain the symbols so the glad archive survives GC, e.g. add to `env`:
+#        RUSTFLAGS = "-C link-arg=-Wl,-u,gladLoaderLoadGLContext "
+#                  + "-C link-arg=-Wl,-u,gladLoaderUnloadGLContext";
+#      (or -Wl,--no-gc-sections as a blunt instrument).
+#   2. Whole-archive the glad lib produced by limux-ghostty-sys's cc build.
+#   3. Thorough fix: patch the ghostty zig build so libghostty.so bundles glad even
+#      with -Dapp-runtime=none (self-contained .so).
+# If it links on one arch it should link on both — then set:
+#   platforms = [ "x86_64-linux" "aarch64-linux" ];
+# Also consider bumping to the latest upstream tag (v0.1.21) in case this is fixed there.
+# Not wired into nixahi; `hosts/lute` references it but lute has never been switched with it.
+# ==================================================================================
 
 let
   rustOverlay = import (builtins.fetchTarball {
@@ -225,6 +257,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     changelog = "https://github.com/am-will/limux/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
     mainProgram = "limux";
+    # NOTE: does not currently build on ANY platform — see BUILD STATUS note at top.
     platforms = [ "x86_64-linux" ];
   };
 })
